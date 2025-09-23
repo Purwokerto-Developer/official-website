@@ -31,6 +31,4 @@ export const editUser = async (id: number, name: string, age: number, email: str
         age,
         email
     }).where(eq(usersTable.id, id));
-
-    revalidatePath('/');
 }
