@@ -39,10 +39,14 @@ export default function NavbarSection() {
         <MobileNav>
           <MobileNavHeader>
             <NavbarLogo />
+            <div className="flex justify-center items-center gap-4">
+                          <ThemeMode />
+
             <MobileNavToggle
               isOpen={isMobileMenuOpen}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             />
+            </div>
           </MobileNavHeader>
 
           <MobileNavMenu
@@ -59,7 +63,8 @@ export default function NavbarSection() {
                 <span className="block">{item.name}</span>
               </a>
             ))}
-            <div className="flex w-full flex-col gap-4">
+            <div className="flex w-full  gap-4">
+
               <NavbarButton
                 onClick={() => setIsMobileMenuOpen(false)}
                 variant="primary"
@@ -67,13 +72,7 @@ export default function NavbarSection() {
               >
                 Login
               </NavbarButton>
-              <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
-              >
-                Book a call
-              </NavbarButton>
+          
             </div>
           </MobileNavMenu>
         </MobileNav>
