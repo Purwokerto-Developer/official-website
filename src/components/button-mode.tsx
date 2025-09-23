@@ -30,6 +30,12 @@ export function ThemeMode() {
   const { theme, setTheme } = useTheme()
   const id = React.useId()
 
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const items = [{
     value: "light",
     label: "Light",
@@ -91,6 +97,10 @@ export function ThemeMode() {
       </div>
     </div>
   )
+
+  if (!mounted) {
+    return <Button variant="outline" size="icon" />
+  }
 
   if (isDesktop) {
     return (

@@ -27,9 +27,8 @@ export default function NavbarSection() {
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
-            <NavbarButton variant="secondary">
+          
             <ThemeMode />
-            </NavbarButton>
           </div>
         </NavBody>
 
