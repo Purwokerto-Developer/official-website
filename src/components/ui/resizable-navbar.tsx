@@ -242,7 +242,7 @@ export const NavbarLogo = () => {
 
   if (!mounted) {
    
-    return <div style={{ width: 130, height: 130 }}></div>
+    return <div style={{ width: 130}}></div>
   }
   const src = resolvedTheme === "dark" ? "/logo-dark.png" : "/logo-light.png"
   return (
