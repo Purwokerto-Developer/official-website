@@ -1,3 +1,4 @@
+import NavbarSection from '@/components/navbar'
 import AboutSection from './about-section'
 import BlogSection from './blog-section'
 import EventSection from './event-section'
@@ -7,7 +8,8 @@ import ShowcaseSection from './showcase-section'
 
 const LandingPage = () => {
   return (
-    <div className="max-7xl w-full mx-auto">   
+    <div className="max-7xl w-full mx-auto"> 
+    <NavbarSection />  
       <HeroSection />
       <AboutSection />
       <EventSection />
