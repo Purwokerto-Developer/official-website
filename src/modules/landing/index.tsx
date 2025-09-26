@@ -8,7 +8,7 @@ import ShowcaseSection from './showcase-section'
 
 const LandingPage = () => {
   return (
-    <div className="max-7xl w-full mx-auto"> 
+    <div className="relative max-7xl w-full mx-auto"> 
     <NavbarSection />  
       <HeroSection />
       <AboutSection />

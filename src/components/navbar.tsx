@@ -23,7 +23,6 @@ export default function NavbarSection() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="relative">
       <Navbar>
         {/* Desktop Navigation */}
         <NavBody>
@@ -77,8 +76,6 @@ export default function NavbarSection() {
           </MobileNavMenu>
         </MobileNav>
       </Navbar>
-      {/* Navbar */}
-    </div>
   );
 }
 
