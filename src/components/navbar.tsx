@@ -16,6 +16,7 @@ import { ThemeMode } from "./button-mode";
 import Link from "next/link";
 import { buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
+import { AnimatedThemeToggler } from "./ui/animated-theme-toggler";
 
 export default function NavbarSection() {
  
@@ -29,8 +30,9 @@ export default function NavbarSection() {
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="flex items-center gap-2" style={{ position: "relative", zIndex: 50 }}>
-            <ThemeMode />
-            <Link href="/login" className={cn(buttonVariants({}),"dark:text-white font-semibold")}>Login</Link>
+            <AnimatedThemeToggler />
+            
+            <Link href="/login" className={cn(buttonVariants({}),"px-5 bg-gradient-to-r from-sky-500 via-blue-500 to-blue-600 text-white hover:scale-105 transition-transform rounded-full duration-200")}>Login</Link>
           </div>
         </NavBody>
 
@@ -66,8 +68,7 @@ export default function NavbarSection() {
 
               <NavbarButton
                 onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
+                className="w-full rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white hover:scale-105 transition-transform"
               >
                 Login
               </NavbarButton>

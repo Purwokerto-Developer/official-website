@@ -5,10 +5,11 @@ import EventSection from './event-section'
 import HeroSection from './hero-section'
 import JoinSection from './join-section'
 import ShowcaseSection from './showcase-section'
+import { ProgressiveBlur } from '@/components/ui/progressive-blur'
 
 const LandingPage = () => {
   return (
-    <div className="relative max-7xl w-full mx-auto"> 
+    <div className="relative max-7xl w-full h-screen overflow-hidden mx-auto"> 
     <NavbarSection />  
       <HeroSection />
       <AboutSection />
@@ -16,6 +17,7 @@ const LandingPage = () => {
       <BlogSection />
       <ShowcaseSection />
       <JoinSection />
+        <ProgressiveBlur />
     </div>
   )
 }

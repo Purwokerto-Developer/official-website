@@ -112,7 +112,6 @@
   --sidebar-ring: oklch(0.488 0.243 264.376);
 }
 
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -120,5 +119,25 @@
   body {
     @apply bg-background text-foreground;
   }
-  
+
+}
+
+::view-transition-old(root), ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+@layer utilities {
+  @keyframes shine {
+    0% {
+      background-position: 100%;
+    }
+    100% {
+      background-position: -100%;
+    }
+  }
+
+  .animate-shine {
+    animation: shine 5s linear infinite;
+  }
 }
