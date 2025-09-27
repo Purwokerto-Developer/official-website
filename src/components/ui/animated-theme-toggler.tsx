@@ -1,7 +1,8 @@
-"use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+
+import { useCallback, useRef, useEffect, useState } from "react"
 import { Moon, Sun } from "lucide-react"
+import { useTheme } from "next-themes"
 import { flushSync } from "react-dom"
 
 import { cn } from "@/lib/utils"
@@ -12,64 +13,53 @@ type Props = {
 }
 
 export const AnimatedThemeToggler = ({ className }: Props) => {
-  const [isDark, setIsDark] = useState(false)
+  const { theme, setTheme } = useTheme()
   const buttonRef = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    const updateTheme = () => {
-      setIsDark(document.documentElement.classList.contains("dark"))
-    }
-
-    updateTheme()
-
-    const observer = new MutationObserver(updateTheme)
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    })
-
-    return () => observer.disconnect()
-  }, [])
+  // Hydration fix: only render icon after mount
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
 
   const toggleTheme = useCallback(async () => {
     if (!buttonRef.current) return
 
+    const newTheme = theme === "dark" ? "light" : "dark"
+
+    if (!document.startViewTransition) {
+      setTheme(newTheme)
+      return
+    }
+
     await document.startViewTransition(() => {
       flushSync(() => {
-        const newTheme = !isDark
-        setIsDark(newTheme)
-        document.documentElement.classList.toggle("dark")
-        localStorage.setItem("theme", newTheme ? "dark" : "light")
+        setTheme(newTheme)
       })
     }).ready
 
-    const { top, left, width, height } =
-      buttonRef.current.getBoundingClientRect()
+    const { top, left, width, height } = buttonRef.current.getBoundingClientRect()
     const x = left + width / 2
     const y = top + height / 2
-    const maxRadius = Math.hypot(
-      Math.max(left, window.innerWidth - left),
-      Math.max(top, window.innerHeight - top)
-    )
+    const maxRadius = Math.hypot(Math.max(left, window.innerWidth - left), Math.max(top, window.innerHeight - top))
 
     document.documentElement.animate(
       {
-        clipPath: [
-          `circle(0px at ${x}px ${y}px)`,
-          `circle(${maxRadius}px at ${x}px ${y}px)`,
-        ],
+        clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${maxRadius}px at ${x}px ${y}px)`],
       },
       {
         duration: 700,
         easing: "ease-in-out",
         pseudoElement: "::view-transition-new(root)",
-      }
+      },
     )
-  }, [isDark])
+  }, [theme, setTheme])
 
   return (
-    <button ref={buttonRef} onClick={toggleTheme} className={cn(buttonVariants({variant:"ghost", size:"icon"}),className)}>
-      {isDark ? <Sun className="text-md"/> : <Moon className="text-md"/>}
+    <button
+      ref={buttonRef}
+      onClick={toggleTheme}
+      className={cn(buttonVariants({ variant: "ghost", size: "icon" }), className)}
+      aria-label="Toggle theme"
+    >
+  {mounted ? (theme === "dark" ? <Moon /> : <Sun />) : null}
     </button>
   )
 }
