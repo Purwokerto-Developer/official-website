@@ -1,7 +1,8 @@
 'use client'
-import CircularGallery from "@/components/CircularGallery"
 import DotGrid from "@/components/DotGrid"
+import { cn } from "@/lib/utils"
 import { useTheme } from "next-themes"
+import dynamic from "next/dynamic"
 
 const HeroSection = () => {
   const { resolvedTheme } = useTheme()
@@ -40,7 +41,7 @@ const HeroSection = () => {
         </div>
 
         <h1
-          className={`relative z-10 text-lg md:text-7xl lg:text-[150px] bg-clip-text text-transparent text-center font-sans font-bold capitalize ${textGradientClass}`}
+          className={cn(`relative z-10 text-lg md:text-7xl lg:text-[150px] bg-clip-text text-transparent text-center font-sans font-bold capitalize `, textGradientClass)}
         >
           Purwokerto<span className='font-light'>Dev</span>
         </h1>
@@ -53,4 +54,4 @@ const HeroSection = () => {
   )
 }
 
-export default HeroSection
+export default dynamic(() => Promise.resolve(HeroSection), { ssr: false })

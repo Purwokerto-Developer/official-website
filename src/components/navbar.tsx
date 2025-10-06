@@ -66,6 +66,7 @@ export default function NavbarSection() {
 
               <NavbarButton
                 onClick={() => setIsMobileMenuOpen(false)}
+                href="/login"
                 className="w-full rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white hover:scale-105 transition-transform"
               >
                 Login
