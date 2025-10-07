@@ -1,12 +1,9 @@
 "use client"
 
-import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, VariantProps } from "class-variance-authority"
-import { PanelLeftIcon } from "lucide-react"
+import * as React from "react"
 
-import { useIsMobile } from "@/hooks/use-mobile"
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
@@ -24,6 +21,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { cn } from "@/lib/utils"
+import { Scroll } from "iconsax-reactjs"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -273,7 +273,7 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      <PanelLeftIcon />
+      <Scroll variant="Bulk" className="text-slate-500 dark:text-slate-200"/>
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )
@@ -722,5 +722,6 @@ export {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
-  useSidebar,
+  useSidebar
 }
+

@@ -1,11 +1,11 @@
 
-
-import { useCallback, useRef, useEffect, useState } from "react"
-import { Moon, Sun } from "lucide-react"
+"use client"
 import { useTheme } from "next-themes"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { flushSync } from "react-dom"
 
 import { cn } from "@/lib/utils"
+import { Moon, Sun1 } from "iconsax-reactjs"
 import { buttonVariants } from "./button"
 
 type Props = {
@@ -56,10 +56,10 @@ export const AnimatedThemeToggler = ({ className }: Props) => {
     <button
       ref={buttonRef}
       onClick={toggleTheme}
-      className={cn(buttonVariants({ variant: "ghost", size: "icon" }), className)}
+      className={cn(buttonVariants({ variant: "secondary", size: "icon" }), className)}
       aria-label="Toggle theme"
     >
-  {mounted ? (theme === "dark" ? <Moon /> : <Sun />) : null}
+  {mounted ? (theme === "dark" ? <Moon variant="Bulk" className="text-yellow-400"/> : <Sun1 variant="Bulk" className="text-orange-500" />) : null}
     </button>
   )
 }

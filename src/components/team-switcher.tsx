@@ -18,6 +18,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { TeamItem } from "@/types/sidebar"
+import Image from "next/image"
 
 export function TeamSwitcher({ teams }: { teams: TeamItem[] }) {
   const { isMobile } = useSidebar()
@@ -34,8 +35,8 @@ export function TeamSwitcher({ teams }: { teams: TeamItem[] }) {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                <activeTeam.logo className="size-4" />
+              <div className=" text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                <Image src={activeTeam.logo} alt={activeTeam.name} height={32} width={32} />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{activeTeam.name}</span>
@@ -61,8 +62,8 @@ export function TeamSwitcher({ teams }: { teams: TeamItem[] }) {
                 onClick={() => setActiveTeam(team)}
                 className="gap-2 p-2"
               >
-                <div className="flex size-6 items-center justify-center rounded-md border">
-                  <team.logo className="size-3.5 shrink-0" />
+                <div className="flex size-6 items-center justify-center">
+                  <Image src={team.logo} alt={team.name} height={24} width={24} />
                 </div>
                 {team.name}
                 <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>

@@ -14,14 +14,22 @@ import {
 } from "@/components/ui/sidebar"
 
 import { sidebarItems } from "@/constants"
+import { auth } from "@/lib/auth"
+type Session = typeof auth.$Infer.Session;
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  session?: any
+  session?: Session
 }
 
+
 export function AppSidebar({ session, ...props }: AppSidebarProps) {
+  const user = session?.user
+
+  if (!user) {
+    return null
+  }
   return (
-    <Sidebar collapsible="icon" variant="floating" {...props}>
+    <Sidebar collapsible="icon" variant="inset" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={sidebarItems.teams} />
       </SidebarHeader>
@@ -32,7 +40,7 @@ export function AppSidebar({ session, ...props }: AppSidebarProps) {
       </SidebarContent>
 
       <SidebarFooter>
-        <NavUser user={session?.user} />
+        <NavUser user={user} />
       </SidebarFooter>
 
       <SidebarRail />

@@ -3,10 +3,7 @@
 import {
   BadgeCheck,
   Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
+  LogOut
 } from "lucide-react"
 
 import {
@@ -29,17 +26,20 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { auth } from "@/lib/auth"
 import { signOut } from "@/lib/auth-client"
+import { LogoutCurve, Scroll, SmsNotification, Verify } from "iconsax-reactjs"
 import { showToast } from "./custom-toaster"
+
+type Session = typeof auth.$Infer.Session;
+
 
 export function NavUser({
   user,
+  collapseIcon = true,
 }: {
-  user: {
-    name: string
-    email: string
-    image?: string 
-  }
+  user: Session["user"];
+  collapseIcon?: boolean;
 }) {
   const { isMobile } = useSidebar()
   console.log(user.image)
@@ -69,7 +69,10 @@ export function NavUser({
                 <span className="truncate font-medium">{user.name}</span>
                 <span className="truncate text-xs">{user.email}</span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              {collapseIcon && (
+                 <Scroll  variant="Bulk" className="rotate-90 text-slate-500 dark:text-slate-200"/>
+               
+              )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -93,17 +96,17 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <BadgeCheck />
+                <Verify className="text-slate-500 dark:text-slate-200" variant="Bulk" />
                 Account
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Bell />
+                <SmsNotification className="text-slate-500 dark:text-slate-200" variant="Bulk" />
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut}>
-              <LogOut />
+              <LogoutCurve className="text-slate-500 dark:text-slate-200 rotate-180" variant="Bulk" />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

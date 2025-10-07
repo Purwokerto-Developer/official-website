@@ -22,6 +22,7 @@
         "dotenv": "^17.2.3",
         "drizzle-orm": "^0.44.5",
         "gsap": "^3.13.0",
+        "iconsax-reactjs": "^0.0.8",
         "lucide-react": "^0.544.0",
         "motion": "^12.23.22",
         "next": "15.5.3",
@@ -776,6 +777,8 @@
     "https-proxy-agent": ["https-proxy-agent@7.0.6", "", { "dependencies": { "agent-base": "^7.1.2", "debug": "4" } }, "sha512-vK9P5/iUfdl95AI+JVyUuIcVtd4ofvtrOr3HNtM2yxC9bnMbEdp3x01OhQNnjb8IJYi38VlTE3mBXwcfvywuSw=="],
 
     "human-signals": ["human-signals@8.0.1", "", {}, "sha512-eKCa6bwnJhvxj14kZk5NCPc6Hb6BdsU9DZcOnmQKSnO1VKrfV0zCvtttPZUsBvjmNDn8rpcJfpwSYnHBjc95MQ=="],
+
+    "iconsax-reactjs": ["iconsax-reactjs@0.0.8", "", { "peerDependencies": { "react": "*" } }, "sha512-cb+uTMxbkSFNbu8ZclX7BWQVfOWQt8+m/PsDjnsm/H+mcYrnfTYMjHxiof1FB43k7UAgt1ds+0oFeMVKdqyslw=="],
 
     "iconv-lite": ["iconv-lite@0.7.0", "", { "dependencies": { "safer-buffer": ">= 2.1.2 < 3.0.0" } }, "sha512-cf6L2Ds3h57VVmkZe+Pn+5APsT7FpqJtEhhieDCvrE2MK5Qk9MyffgQyuxQTm6BChfeZNtcOLHp9IcWRVcIcBQ=="],
 

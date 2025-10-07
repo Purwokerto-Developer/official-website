@@ -1,5 +1,4 @@
-import { badgeVariants } from "@/components/ui/badge"
-import { VariantProps } from "class-variance-authority"
+import { Icon } from "iconsax-reactjs"
 import { type LucideIcon } from "lucide-react"
 
 
@@ -15,7 +14,7 @@ export interface NavSubItem {
 export interface NavItem {
   title: string
   url: string
-  icon?: LucideIcon
+  icon?: Icon,
   isActive?: boolean
   badge?: {
     label: string
@@ -26,7 +25,7 @@ export interface NavItem {
 
 export interface TeamItem {
   name: string
-  logo: LucideIcon
+  logo: string
   plan: string
 }
 

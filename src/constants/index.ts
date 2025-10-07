@@ -1,18 +1,6 @@
-import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Gift,
-  Home,
-  Map,
-  PieChart,
-  Settings2,
-  Shirt,
-  User
-} from "lucide-react"
+
+import { NavItem } from "@/types/sidebar"
+import {Calendar2, DocumentText, Gift, Home2, Personalcard,Setting,Shop} from "iconsax-reactjs"
 export const navItems = [
     {
       name: "Home",
@@ -42,18 +30,17 @@ export const navItems = [
 
 
 
-export const sidebarItems = {
+export const sidebarItems  = {
   teams: [
-    { name: "PurwokertoDev", logo: GalleryVerticalEnd, plan: "Community" },
-    { name: "TegalSec", logo: AudioWaveform, plan: "Partner" },
-    { name: "Amikom Labs", logo: Command, plan: "Education" },
+    { name: "PurwokertoDev", logo: '/img-logo.png', plan: "Community" },
+   
   ],
   navMain: [
-    { title: "Dashboard", url: "/u/dashboard", icon: Home },
+    { title: "Dashboard", url: "/u/dashboard", icon: Home2 },
     {
       title: "Events",
       url: "#",
-      icon: Bot,
+      icon: Calendar2,
       items: [
         { title: "All Events", url: "/u/events" },
         { title: "My Events", url: "/u/events/mine", badge: { label: "new", variant: "green" } },
@@ -61,8 +48,8 @@ export const sidebarItems = {
         { title: "History", url: "/u/events/history" },
       ],
     },
-    { title: "Articles", url: "/u/articles", icon: BookOpen },
-    { title: "Profile", url: "/u/profile", icon: User },
+    { title: "Articles", url: "/u/articles", icon: DocumentText },
+    { title: "Profile", url: "/u/profile", icon: Personalcard },
     {
       title: "Rewards",
       url: "/u/rewards",
@@ -72,15 +59,11 @@ export const sidebarItems = {
     {
       title: "Merch",
       url: "/u/merch",
-      icon: Shirt,
+      icon: Shop,
       badge: { label: "soon", variant: "secondary" },
     },
-    { title: "Settings", url: "/u/settings", icon: Settings2 },
-  ],
-  projects: [
-    { name: "Community Development", url: "#", icon: Frame },
-    { name: "Marketing", url: "#", icon: PieChart },
-    { name: "Exploration", url: "#", icon: Map },
-  ],
+    { title: "Settings", url: "/u/settings", icon: Setting },
+  ] as NavItem[],
+  
 } 
 
