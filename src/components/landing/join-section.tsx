@@ -1,9 +1,7 @@
-import React from 'react'
+import React from 'react';
 
 const JoinSection = () => {
-  return (
-    <div>JoinSection</div>
-  )
-}
+  return <div>JoinSection</div>;
+};
 
-export default JoinSection
+export default JoinSection;

@@ -1,32 +1,31 @@
-"use client"
+'use client';
 
-import * as React from "react"
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+import * as React from 'react';
+import { NavMain } from '@/components/nav-main';
+import { NavProjects } from '@/components/nav-projects';
+import { NavUser } from '@/components/nav-user';
+import { TeamSwitcher } from '@/components/team-switcher';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from '@/components/ui/sidebar';
 
-import { sidebarItems } from "@/constants"
-import { auth } from "@/lib/auth"
+import { sidebarItems } from '@/constants';
+import { auth } from '@/lib/auth';
 type Session = typeof auth.$Infer.Session;
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  session?: Session
+  session?: Session;
 }
 
-
 export function AppSidebar({ session, ...props }: AppSidebarProps) {
-  const user = session?.user
+  const user = session?.user;
 
   if (!user) {
-    return null
+    return null;
   }
   return (
     <Sidebar collapsible="icon" variant="inset" {...props}>
@@ -45,5 +44,5 @@ export function AppSidebar({ session, ...props }: AppSidebarProps) {
 
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

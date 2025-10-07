@@ -1,24 +1,26 @@
-'use client'
-import DotGrid from "@/components/dot-grid"
-import { cn } from "@/lib/utils"
-import { useTheme } from "next-themes"
-import dynamic from "next/dynamic"
+'use client';
+import DotGrid from '@/components/dot-grid';
+import { cn } from '@/lib/utils';
+import { useTheme } from 'next-themes';
+import dynamic from 'next/dynamic';
 
 const HeroSection = () => {
-  const { resolvedTheme } = useTheme()
+  const { resolvedTheme } = useTheme();
 
-  const baseColor = resolvedTheme === "dark" ? "#1F2038" : "#F1F5F9" 
-  const activeColor = resolvedTheme === "dark" ? "#2930FF" : "#74d4ff" 
+  const baseColor = resolvedTheme === 'dark' ? '#1F2038' : '#F1F5F9';
+  const activeColor = resolvedTheme === 'dark' ? '#2930FF' : '#74d4ff';
 
   const textGradientClass =
-    resolvedTheme === "dark"
-      ? "bg-gradient-to-b from-white to-slate-500"
-      : "bg-gradient-to-b from-blue-200 to-blue-700"
+    resolvedTheme === 'dark'
+      ? 'bg-gradient-to-b from-white to-slate-500'
+      : 'bg-gradient-to-b from-blue-200 to-blue-700';
 
   return (
-    <section id="hero" className='relative z-0 flex min-h-screen w-full flex-col items-start justify-start overflow-hidden'>
-
-      <div className="absolute inset-0 -z-10 w-full h-full">
+    <section
+      id="hero"
+      className="relative z-0 flex min-h-screen w-full flex-col items-start justify-start overflow-hidden"
+    >
+      <div className="absolute inset-0 -z-10 h-full w-full">
         <DotGrid
           dotSize={5}
           gap={15}
@@ -34,24 +36,30 @@ const HeroSection = () => {
         <div className="hero-radial-gradient" />
       </div>
 
-      <div className="mt-60 w-full z-10 flex flex-col items-center justify-center gap-4">
-        <div className="dark:bg-gradient-to-b border dark:from-slate-900/80 dark:to-slate-700/80 opacity-80 hover:scale-105 bg-gradient-to-tr from-slate-200/80 to-slate-100/80 cursor-pointer transition-all duration-200 backdrop-blur-lg rounded-full px-2 py-3 w-fit text-center dark:text-slate-300 text-slate-800 font-medium">
-          <span className="bg-gradient-to-b from-primary to-blue-700 text-white p-2 rounded-full mr-4 text-sm">Hello 🎉</span>
+      <div className="z-10 mt-60 flex w-full flex-col items-center justify-center gap-4">
+        <div className="w-fit cursor-pointer rounded-full border bg-gradient-to-tr from-slate-200/80 to-slate-100/80 px-2 py-3 text-center font-medium text-slate-800 opacity-80 backdrop-blur-lg transition-all duration-200 hover:scale-105 dark:bg-gradient-to-b dark:from-slate-900/80 dark:to-slate-700/80 dark:text-slate-300">
+          <span className="from-primary mr-4 rounded-full bg-gradient-to-b to-blue-700 p-2 text-sm text-white">
+            Hello 🎉
+          </span>
           Welcome to the community
         </div>
 
         <h1
-          className={cn(`relative z-10 text-lg md:text-7xl lg:text-[150px] bg-clip-text text-transparent text-center font-sans font-bold capitalize `, textGradientClass)}
+          className={cn(
+            `relative z-10 bg-clip-text text-center font-sans text-lg font-bold text-transparent capitalize md:text-7xl lg:text-[150px]`,
+            textGradientClass,
+          )}
         >
-          Purwokerto<span className='font-light'>Dev</span>
+          Purwokerto<span className="font-light">Dev</span>
         </h1>
 
-        <p className="relative mx-auto mt-4 max-w-xl text-center text-slate-400 dark:text-white text-xl">
-          Komunitas Developer Purwokerto. Wadah Komunitas Developer Purwokerto untuk Berkreasi, Terkoneksi, dan Berkolaborasi.
+        <p className="relative mx-auto mt-4 max-w-xl text-center text-xl text-slate-400 dark:text-white">
+          Komunitas Developer Purwokerto. Wadah Komunitas Developer Purwokerto untuk Berkreasi,
+          Terkoneksi, dan Berkolaborasi.
         </p>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default dynamic(() => Promise.resolve(HeroSection), { ssr: false })
+export default dynamic(() => Promise.resolve(HeroSection), { ssr: false });

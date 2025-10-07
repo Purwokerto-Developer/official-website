@@ -1,6 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-
+@import 'tailwindcss';
+@import 'tw-animate-css';
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -119,12 +118,12 @@
   body {
     @apply bg-background text-foreground;
   }
-
 }
 
-::view-transition-old(root), ::view-transition-new(root) {
-    animation: none;
-    mix-blend-mode: normal;
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }
 
 @layer utilities {
@@ -141,7 +140,7 @@
     animation: shine 5s linear infinite;
   }
 
-   .hero-radial-gradient {
+  .hero-radial-gradient {
     pointer-events: none;
     position: absolute;
     inset: 0;
@@ -150,6 +149,12 @@
     border-bottom-left-radius: 60px;
     border-bottom-right-radius: 60px;
     z-index: 1;
-    background: radial-gradient(circle at 50% 95%, transparent 0%, transparent 30%, var(--background) 80%, var(--background) 100%);
+    background: radial-gradient(
+      circle at 50% 95%,
+      transparent 0%,
+      transparent 30%,
+      var(--background) 80%,
+      var(--background) 100%
+    );
   }
 }

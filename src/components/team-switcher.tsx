@@ -1,14 +1,10 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import { TeamItem } from "@/types/sidebar";
-import { ChevronsUpDown } from "lucide-react";
-import { ShieldTick, Verify } from "iconsax-reactjs";
+import Image from 'next/image';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { TeamItem } from '@/types/sidebar';
+import { ChevronsUpDown } from 'lucide-react';
+import { ShieldTick, Verify } from 'iconsax-reactjs';
 
 export function TeamSwitcher({ teams }: { teams: TeamItem[] }) {
   const activeTeam = teams[0];
@@ -20,7 +16,7 @@ export function TeamSwitcher({ teams }: { teams: TeamItem[] }) {
       <SidebarMenuItem>
         <SidebarMenuButton
           size="lg"
-          className="cursor-default bg-sidebar-accent text-sidebar-accent-foreground"
+          className="bg-sidebar-accent text-sidebar-accent-foreground cursor-default"
         >
           <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
             <Image
@@ -33,14 +29,12 @@ export function TeamSwitcher({ teams }: { teams: TeamItem[] }) {
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-medium">{activeTeam.name}</span>
-            <span className="truncate text-xs text-muted-foreground">
-              {activeTeam.plan}
-            </span>
+            <span className="text-muted-foreground truncate text-xs">{activeTeam.plan}</span>
           </div>
           <ShieldTick
-            className="text-green-500 dark:text-green-500 text-[50px]"
+            className="text-[50px] text-green-500 dark:text-green-500"
             variant="Bulk"
-          />{" "}
+          />{' '}
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>

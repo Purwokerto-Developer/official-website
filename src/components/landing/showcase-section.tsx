@@ -1,9 +1,7 @@
-import React from 'react'
+import React from 'react';
 
 const ShowcaseSection = () => {
-  return (
-    <div>ShowcaseSection</div>
-  )
-}
+  return <div>ShowcaseSection</div>;
+};
 
-export default ShowcaseSection
+export default ShowcaseSection;
