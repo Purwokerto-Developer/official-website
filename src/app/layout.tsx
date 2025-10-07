@@ -1,8 +1,8 @@
+import { CustomToaster } from "@/components/custom-toaster";
 import { ThemeProvider } from "@/components/theme-proovider";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-
 
 
 const poppins = Poppins({
@@ -33,6 +33,7 @@ export default function RootLayout({
           >
             {children}
           </ThemeProvider>
+          <CustomToaster />
       </body>
     </html>
   );

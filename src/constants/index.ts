@@ -5,10 +5,13 @@ import {
   Command,
   Frame,
   GalleryVerticalEnd,
+  Gift,
+  Home,
   Map,
   PieChart,
   Settings2,
-  SquareTerminal,
+  Shirt,
+  User
 } from "lucide-react"
 export const navItems = [
     {
@@ -37,133 +40,47 @@ export const navItems = [
     }
 ]
 
-// sidebar
-// This is sample data.
-export const sidebar = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
+
+
+export const sidebarItems = {
   teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
+    { name: "PurwokertoDev", logo: GalleryVerticalEnd, plan: "Community" },
+    { name: "TegalSec", logo: AudioWaveform, plan: "Partner" },
+    { name: "Amikom Labs", logo: Command, plan: "Education" },
   ],
   navMain: [
+    { title: "Dashboard", url: "/u/dashboard", icon: Home },
     {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
+      title: "Events",
       url: "#",
       icon: Bot,
       items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
+        { title: "All Events", url: "/u/events" },
+        { title: "My Events", url: "/u/events/mine", badge: { label: "new", variant: "green" } },
+        { title: "Upcoming", url: "/u/events/upcoming" },
+        { title: "History", url: "/u/events/history" },
       ],
+    },
+    { title: "Articles", url: "/u/articles", icon: BookOpen },
+    { title: "Profile", url: "/u/profile", icon: User },
+    {
+      title: "Rewards",
+      url: "/u/rewards",
+      icon: Gift,
+      badge: { label: "beta", variant:"yellow" },
     },
     {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
+      title: "Merch",
+      url: "/u/merch",
+      icon: Shirt,
+      badge: { label: "soon", variant: "secondary" },
     },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
+    { title: "Settings", url: "/u/settings", icon: Settings2 },
   ],
   projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
+    { name: "Community Development", url: "#", icon: Frame },
+    { name: "Marketing", url: "#", icon: PieChart },
+    { name: "Exploration", url: "#", icon: Map },
   ],
-}
+} 
+
