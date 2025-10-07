@@ -1,85 +1,48 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { ChevronsUpDown, Plus } from "lucide-react"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import Image from "next/image";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar"
-import { TeamItem } from "@/types/sidebar"
-import Image from "next/image"
+} from "@/components/ui/sidebar";
+import { TeamItem } from "@/types/sidebar";
+import { ChevronsUpDown } from "lucide-react";
+import { ShieldTick, Verify } from "iconsax-reactjs";
 
 export function TeamSwitcher({ teams }: { teams: TeamItem[] }) {
-  const { isMobile } = useSidebar()
-  const [activeTeam, setActiveTeam] = React.useState(teams[0])
+  const activeTeam = teams[0];
 
-  if (!activeTeam) return null
+  if (!activeTeam) return null;
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
-              <div className=" text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                <Image src={activeTeam.logo} alt={activeTeam.name} height={32} width={32} />
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{activeTeam.name}</span>
-                <span className="truncate text-xs">{activeTeam.plan}</span>
-              </div>
-              <ChevronsUpDown className="ml-auto" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            align="start"
-            side={isMobile ? "bottom" : "right"}
-            sideOffset={4}
-          >
-            <DropdownMenuLabel className="text-muted-foreground text-xs">
-              Teams
-            </DropdownMenuLabel>
-
-            {teams.map((team, index) => (
-              <DropdownMenuItem
-                key={team.name}
-                onClick={() => setActiveTeam(team)}
-                className="gap-2 p-2"
-              >
-                <div className="flex size-6 items-center justify-center">
-                  <Image src={team.logo} alt={team.name} height={24} width={24} />
-                </div>
-                {team.name}
-                <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
-              </DropdownMenuItem>
-            ))}
-
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2">
-              <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
-                <Plus className="size-4" />
-              </div>
-              <div className="text-muted-foreground font-medium">Add team</div>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <SidebarMenuButton
+          size="lg"
+          className="cursor-default bg-sidebar-accent text-sidebar-accent-foreground"
+        >
+          <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+            <Image
+              src={activeTeam.logo}
+              alt={activeTeam.name}
+              height={32}
+              width={32}
+              className="rounded-md"
+            />
+          </div>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-medium">{activeTeam.name}</span>
+            <span className="truncate text-xs text-muted-foreground">
+              {activeTeam.plan}
+            </span>
+          </div>
+          <ShieldTick
+            className="text-green-500 dark:text-green-500 text-[50px]"
+            variant="Bulk"
+          />{" "}
+        </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

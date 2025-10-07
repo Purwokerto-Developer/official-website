@@ -1,16 +1,6 @@
-"use client"
+"use client";
 
-import {
-  BadgeCheck,
-  Bell,
-  LogOut
-} from "lucide-react"
-
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,20 +9,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { auth } from "@/lib/auth"
-import { signOut } from "@/lib/auth-client"
-import { LogoutCurve, Scroll, SmsNotification, Verify } from "iconsax-reactjs"
-import { showToast } from "./custom-toaster"
+} from "@/components/ui/sidebar";
+import { auth } from "@/lib/auth";
+import { signOut } from "@/lib/auth-client";
+import { LogoutCurve, Scroll, SmsNotification, Verify } from "iconsax-reactjs";
+import { showToast } from "./custom-toaster";
 
 type Session = typeof auth.$Infer.Session;
-
 
 export function NavUser({
   user,
@@ -41,17 +30,17 @@ export function NavUser({
   user: Session["user"];
   collapseIcon?: boolean;
 }) {
-  const { isMobile } = useSidebar()
-  console.log(user.image)
+  const { isMobile } = useSidebar();
+  console.log(user.image);
 
   async function handleSignOut() {
-    const {success} = await signOut()
-    if(!success){
-      showToast("error", "Failed to sign out")
+    const { success } = await signOut();
+    if (!success) {
+      showToast("error", "Failed to sign out");
+    } else {
+      showToast("success", "Signed out successfully");
     }
-    else{
-      showToast("success", "Signed out successfully")
-    }}
+  }
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -70,8 +59,10 @@ export function NavUser({
                 <span className="truncate text-xs">{user.email}</span>
               </div>
               {collapseIcon && (
-                 <Scroll  variant="Bulk" className="rotate-90 text-slate-500 dark:text-slate-200"/>
-               
+                <Scroll
+                  variant="Bulk"
+                  className="rotate-90 text-slate-500 dark:text-slate-200"
+                />
               )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -96,22 +87,31 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Verify className="text-slate-500 dark:text-slate-200" variant="Bulk" />
+                <Verify
+                  className="text-slate-500 dark:text-slate-200"
+                  variant="Bulk"
+                />
                 Account
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <SmsNotification className="text-slate-500 dark:text-slate-200" variant="Bulk" />
+                <SmsNotification
+                  className="text-slate-500 dark:text-slate-200"
+                  variant="Bulk"
+                />
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut}>
-              <LogoutCurve className="text-slate-500 dark:text-slate-200 rotate-180" variant="Bulk" />
+              <LogoutCurve
+                className="text-slate-500 dark:text-slate-200 rotate-180"
+                variant="Bulk"
+              />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }
