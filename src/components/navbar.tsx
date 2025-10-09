@@ -5,7 +5,6 @@ import {
   MobileNavMenu,
   MobileNavToggle,
   Navbar,
-  NavbarButton,
   NavbarLogo,
   NavBody,
   NavItems,
@@ -43,7 +42,7 @@ export default function NavbarSection({ session }: { session?: Session }) {
             </Link>
           ) : (
             <Link
-              href="/login"
+              href="/u/dashboard"
               className={cn(
                 buttonVariants({}),
                 'rounded-full bg-gradient-to-r from-sky-500 via-blue-500 to-blue-600 px-5 text-white transition-transform duration-200 hover:scale-105',
@@ -82,21 +81,25 @@ export default function NavbarSection({ session }: { session?: Session }) {
           ))}
           <div className="flex w-full gap-4">
             {!session ? (
-              <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
+              <Link
                 href="/login"
-                className="w-full rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white transition-transform hover:scale-105"
+                className={cn(
+                  buttonVariants({}),
+                  'rounded-full bg-gradient-to-r from-sky-500 via-blue-500 to-blue-600 px-5 text-white transition-transform duration-200 hover:scale-105',
+                )}
               >
                 <Login size="32" className="text-white" variant="Bulk" /> Login
-              </NavbarButton>
+              </Link>
             ) : (
-              <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
+              <Link
                 href="/u/dashboard"
-                className="w-full rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white transition-transform hover:scale-105"
+                className={cn(
+                  buttonVariants({}),
+                  'rounded-full bg-gradient-to-r from-sky-500 via-blue-500 to-blue-600 px-5 text-white transition-transform duration-200 hover:scale-105',
+                )}
               >
                 <Category2 size="32" className="text-white" variant="Bulk" /> Dashboard
-              </NavbarButton>
+              </Link>
             )}
           </div>
         </MobileNavMenu>

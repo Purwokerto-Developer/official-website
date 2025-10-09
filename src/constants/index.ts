@@ -1,3 +1,5 @@
+// Demo data for EventList component
+
 import { NavItem } from '@/types/sidebar';
 import {
   Calendar2,
@@ -90,5 +92,101 @@ export const stateData = [
     description: 'Event yang sudah kamu ikuti atau telah selesai diselenggarakan.',
     count: 9,
     icon: CalendarRemove,
+  },
+];
+
+// Demo data for EventStats component
+export const demoEventStats = {
+  stats: [
+    { label: 'total', value: '4K' },
+    { label: 'online', value: '6.2K' },
+    { label: 'offline', value: '100' },
+  ],
+};
+
+export const demoEventList = [
+  {
+    id: 1,
+    title: 'React Workshop',
+    creator: 'Purwokerto Dev',
+    image: '',
+    likes: 23,
+    type: 'online',
+    date: '2025-10-15',
+    location: 'Zoom',
+    buyNow: 'Free',
+    highestBid: '-',
+  },
+  {
+    id: 2,
+    title: 'Frontend Meetup',
+    creator: 'Purwokerto Dev',
+    image: '',
+    likes: 15,
+    type: 'offline',
+    date: '2025-11-01',
+    location: 'Coworking Space',
+    buyNow: 'Free',
+    highestBid: '-',
+  },
+  {
+    id: 3,
+    title: 'Backend Bootcamp',
+    creator: 'Purwokerto Dev',
+    image: '',
+    likes: 30,
+    type: 'online',
+    date: '2025-12-05',
+    location: 'Google Meet',
+    buyNow: 'Free',
+    highestBid: '-',
+  },
+  {
+    id: 4,
+    title: 'Tech Talk: AI',
+    creator: 'Purwokerto Dev',
+    image: '',
+    likes: 18,
+    type: 'offline',
+    date: '2025-12-20',
+    location: 'Universitas Jenderal Soedirman',
+    buyNow: 'Free',
+    highestBid: '-',
+  },
+  {
+    id: 5,
+    title: 'UI/UX Seminar',
+    creator: 'Purwokerto Dev',
+    image: '',
+    likes: 12,
+    type: 'online',
+    date: '2026-01-10',
+    location: 'Zoom',
+    buyNow: 'Free',
+    highestBid: '-',
+  },
+  {
+    id: 6,
+    title: 'Startup Pitch Day',
+    creator: 'Purwokerto Dev',
+    image: '',
+    likes: 27,
+    type: 'offline',
+    date: '2026-02-01',
+    location: 'Startup Hub',
+    buyNow: 'Free',
+    highestBid: '-',
+  },
+  {
+    id: 7,
+    title: 'Startup Pitch Day',
+    creator: 'Purwokerto Dev',
+    image: '',
+    likes: 27,
+    type: 'offline',
+    date: '2026-02-01',
+    location: 'Startup Hub',
+    buyNow: 'Free',
+    highestBid: '-',
   },
 ];
