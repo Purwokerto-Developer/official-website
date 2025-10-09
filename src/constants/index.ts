@@ -1,5 +1,15 @@
 import { NavItem } from '@/types/sidebar';
-import { Calendar2, DocumentText, Gift, Home2, Personalcard, Setting, Shop } from 'iconsax-reactjs';
+import {
+  Calendar2,
+  DocumentText,
+  Gift,
+  Home2,
+  Personalcard,
+  Setting,
+  Shop,
+  CalendarRemove,
+  CalendarTick,
+} from 'iconsax-reactjs';
 export const navItems = [
   {
     name: 'Home',
@@ -33,14 +43,8 @@ export const sidebarItems = {
     { title: 'Dashboard', url: '/u/dashboard', icon: Home2 },
     {
       title: 'Events',
-      url: '#',
+      url: '/u/events',
       icon: Calendar2,
-      items: [
-        { title: 'All Events', url: '/u/events' },
-        { title: 'My Events', url: '/u/events/mine', badge: { label: 'new', variant: 'green' } },
-        { title: 'Upcoming', url: '/u/events/upcoming' },
-        { title: 'History', url: '/u/events/history' },
-      ],
     },
     { title: 'Articles', url: '/u/articles', icon: DocumentText },
     { title: 'Profile', url: '/u/profile', icon: Personalcard },
@@ -59,3 +63,32 @@ export const sidebarItems = {
     { title: 'Settings', url: '/u/settings', icon: Setting },
   ] as NavItem[],
 };
+
+// dashboard dummy
+
+export const stateData = [
+  {
+    title: 'Total Events',
+    description: 'Jumlah semua event yang pernah kamu ikuti di komunitas ini.',
+    count: 13,
+    icon: Calendar2,
+  },
+  {
+    title: 'Upcoming',
+    description: 'Event yang akan datang dan belum kamu ikuti.',
+    count: 2,
+    icon: CalendarTick,
+  },
+  {
+    title: 'My Articles',
+    description: 'Jumlah artikel yang telah kamu tulis dan publikasikan.',
+    count: 4,
+    icon: DocumentText,
+  },
+  {
+    title: 'Past Events',
+    description: 'Event yang sudah kamu ikuti atau telah selesai diselenggarakan.',
+    count: 9,
+    icon: CalendarRemove,
+  },
+];

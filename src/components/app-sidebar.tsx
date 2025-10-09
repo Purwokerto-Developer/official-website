@@ -14,8 +14,8 @@ import {
 } from '@/components/ui/sidebar';
 
 import { sidebarItems } from '@/constants';
-import { auth } from '@/lib/auth';
-type Session = typeof auth.$Infer.Session;
+import { auth } from '@/lib/better-auth/auth';
+import { Session } from '@/types/better-auth';
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   session?: Session;

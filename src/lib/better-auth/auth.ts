@@ -19,4 +19,15 @@ export const auth = betterAuth({
     },
   },
   plugins: [nextCookies()],
+  user: {
+    additionalFields: {
+      role: {
+        type: 'string',
+        input: false,
+      },
+    },
+  },
+  session: {
+    expiresIn: 60 * 60 * 24,
+  },
 });

@@ -1,0 +1,364 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "THREE.GLTFExporter r174"
+  },
+  "scenes": [
+    {
+      "name": "AuxScene",
+      "nodes": [4]
+    }
+  ],
+  "scene": 0,
+  "nodes": [
+    {
+      "matrix": [
+        1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -0.17412595450878143, -0.03145722672343254,
+        0.4368237555027008, 1
+      ],
+      "name": "card",
+      "extras": {
+        "name": "card",
+        "associations": {
+          "meshes": 0,
+          "primitives": 0,
+          "nodes": 0
+        },
+        "variantData": {}
+      },
+      "mesh": 0
+    },
+    {
+      "matrix": [
+        1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -0.17412595450878143, -0.03145722672343254,
+        0.4368237555027008, 1
+      ],
+      "name": "clip",
+      "extras": {
+        "name": "clip",
+        "associations": {
+          "meshes": 1,
+          "primitives": 0,
+          "nodes": 1
+        },
+        "variantData": {}
+      },
+      "mesh": 1
+    },
+    {
+      "matrix": [
+        1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -0.17412595450878143, -0.03145722672343254,
+        0.4368237555027008, 1
+      ],
+      "name": "clamp",
+      "extras": {
+        "name": "clamp",
+        "associations": {
+          "meshes": 2,
+          "primitives": 0,
+          "nodes": 2
+        },
+        "variantData": {}
+      },
+      "mesh": 2
+    },
+    {
+      "name": "Scene",
+      "extras": {
+        "name": "Scene",
+        "associations": {
+          "nodes": 3
+        }
+      },
+      "children": [0, 1, 2]
+    },
+    {
+      "name": "AuxScene",
+      "children": [3]
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 13968,
+      "target": 34962,
+      "byteStride": 12
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 13968,
+      "byteLength": 13968,
+      "target": 34962,
+      "byteStride": 12
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 27936,
+      "byteLength": 9312,
+      "target": 34962,
+      "byteStride": 8
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 37248,
+      "byteLength": 8216,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 45464,
+      "byteLength": 13548,
+      "target": 34962,
+      "byteStride": 12
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 59012,
+      "byteLength": 13548,
+      "target": 34962,
+      "byteStride": 12
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 72560,
+      "byteLength": 9032,
+      "target": 34962,
+      "byteStride": 8
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 81592,
+      "byteLength": 7152,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 88744,
+      "byteLength": 20652,
+      "target": 34962,
+      "byteStride": 12
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 109396,
+      "byteLength": 20652,
+      "target": 34962,
+      "byteStride": 12
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 130048,
+      "byteLength": 13768,
+      "target": 34962,
+      "byteStride": 8
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 143816,
+      "byteLength": 14328,
+      "target": 34963
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "card_data.bin",
+      "byteLength": 158144
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 1164,
+      "max": [0.35820895433425903, 1.0229052305221558, 0.005398052278906107],
+      "min": [-0.35820895433425903, 0.02290511131286621, 0.001373126171529293],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 1164,
+      "max": [1, 1, 1],
+      "min": [-1, -1, -1],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 1164,
+      "max": [1, 0.7572484612464905],
+      "min": [0.0008288687095046043, 0.0022159814834594727],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 4107,
+      "max": [1163],
+      "min": [0],
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 4,
+      "componentType": 5126,
+      "count": 1129,
+      "max": [0.06820666044950485, 1.2293701171875, 0.03205162659287453],
+      "min": [-0.06900214403867722, 1.1182847023010254, -0.031905218958854675],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 5,
+      "componentType": 5126,
+      "count": 1129,
+      "max": [0.9866361618041992, 0.9999806880950928, 0.9908397197723389],
+      "min": [-0.9866361618041992, -0.9990124106407166, -0.9909759163856506],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 6,
+      "componentType": 5126,
+      "count": 1129,
+      "max": [1.0044538974761963, 1],
+      "min": [-0.0044538769870996475, -0.040865302085876465],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 7,
+      "componentType": 5123,
+      "count": 3576,
+      "max": [1128],
+      "min": [0],
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 8,
+      "componentType": 5126,
+      "count": 1721,
+      "max": [0.024095552042126656, 1.1183339357376099, 0.04557735472917557],
+      "min": [-0.02497350051999092, 0.9323668479919434, -0.044764820486307144],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 9,
+      "componentType": 5126,
+      "count": 1721,
+      "max": [0.9996973872184753, 0.9998471736907959, 0.988928496837616],
+      "min": [-0.9976668953895569, -0.9998417496681213, -0.992756187915802],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 10,
+      "componentType": 5126,
+      "count": 1721,
+      "max": [1.19272780418396, 1.7248313426971436],
+      "min": [-0.051431816071271896, -0.07117509841918945],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 11,
+      "componentType": 5123,
+      "count": 7164,
+      "max": [1720],
+      "min": [0],
+      "type": "SCALAR"
+    }
+  ],
+  "materials": [
+    {
+      "pbrMetallicRoughness": {
+        "metallicFactor": 0.3,
+        "roughnessFactor": 0,
+        "baseColorTexture": {
+          "index": 0,
+          "texCoord": 0
+        }
+      },
+      "doubleSided": true,
+      "name": "base",
+      "extras": {
+        "associations": {
+          "materials": 0
+        }
+      }
+    },
+    {
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [0.03638001158833504, 0.03638001158833504, 0.03638001158833504, 1],
+        "metallicFactor": 1,
+        "roughnessFactor": 0.5
+      },
+      "doubleSided": true,
+      "name": "metal",
+      "extras": {
+        "associations": {
+          "materials": 1
+        }
+      }
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0,
+      "name": "blob:https://modelviewer.dev/af4f0545-2150-405a-8567-fea9b058fa17"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "images": [
+    {
+      "uri": "card_img0.png"
+    }
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "mode": 4,
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0
+        }
+      ]
+    },
+    {
+      "primitives": [
+        {
+          "mode": 4,
+          "attributes": {
+            "POSITION": 4,
+            "NORMAL": 5,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 1
+        }
+      ]
+    },
+    {
+      "primitives": [
+        {
+          "mode": 4,
+          "attributes": {
+            "POSITION": 8,
+            "NORMAL": 9,
+            "TEXCOORD_0": 10
+          },
+          "indices": 11,
+          "material": 1
+        }
+      ]
+    }
+  ]
+}

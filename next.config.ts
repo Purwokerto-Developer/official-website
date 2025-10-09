@@ -3,8 +3,9 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
-    domains: ['lh3.googleusercontent.com', 'avatars.githubusercontent.com'],
+    remotePatterns: [new URL('https://lh3.googleusercontent.com/**')],
   },
+  transpilePackages: ['three'],
 };
 
 export default nextConfig;

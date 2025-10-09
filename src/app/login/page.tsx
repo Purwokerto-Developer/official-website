@@ -1,14 +1,10 @@
 import { LoginForm } from '@/components/auth/login-form';
-import { auth } from '@/lib/auth';
+import { getServerSession } from '@/lib/better-auth/get-session';
 import { GalleryVerticalEnd } from 'lucide-react';
-import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import React from 'react';
 
 const LoginPage = async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getServerSession();
 
   if (session) {
     redirect('/u/dashboard');

@@ -16,8 +16,11 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { AnimatedThemeToggler } from './ui/animated-theme-toggler';
 import { buttonVariants } from './ui/button';
+import { Category2, Login } from 'iconsax-reactjs';
+import { useSession } from '@/lib/better-auth/auth-client';
+import { Session } from '@/types/better-auth';
 
-export default function NavbarSection() {
+export default function NavbarSection({ session }: { session?: Session }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
@@ -28,15 +31,27 @@ export default function NavbarSection() {
         <NavItems items={navItems} />
         <div className="flex items-center gap-2" style={{ position: 'relative', zIndex: 50 }}>
           <AnimatedThemeToggler />
-          <Link
-            href="/login"
-            className={cn(
-              buttonVariants({}),
-              'rounded-full bg-gradient-to-r from-sky-500 via-blue-500 to-blue-600 px-5 text-white transition-transform duration-200 hover:scale-105',
-            )}
-          >
-            Login
-          </Link>
+          {!session ? (
+            <Link
+              href="/login"
+              className={cn(
+                buttonVariants({}),
+                'rounded-full bg-gradient-to-r from-sky-500 via-blue-500 to-blue-600 px-5 text-white transition-transform duration-200 hover:scale-105',
+              )}
+            >
+              <Login size="32" className="text-white" variant="Bulk" /> Login
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className={cn(
+                buttonVariants({}),
+                'rounded-full bg-gradient-to-r from-sky-500 via-blue-500 to-blue-600 px-5 text-white transition-transform duration-200 hover:scale-105',
+              )}
+            >
+              <Category2 size="32" className="text-white" variant="Bulk" /> Dashboard
+            </Link>
+          )}
         </div>
       </NavBody>
 
@@ -66,13 +81,23 @@ export default function NavbarSection() {
             </a>
           ))}
           <div className="flex w-full gap-4">
-            <NavbarButton
-              onClick={() => setIsMobileMenuOpen(false)}
-              href="/login"
-              className="w-full rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white transition-transform hover:scale-105"
-            >
-              Login
-            </NavbarButton>
+            {!session ? (
+              <NavbarButton
+                onClick={() => setIsMobileMenuOpen(false)}
+                href="/login"
+                className="w-full rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white transition-transform hover:scale-105"
+              >
+                <Login size="32" className="text-white" variant="Bulk" /> Login
+              </NavbarButton>
+            ) : (
+              <NavbarButton
+                onClick={() => setIsMobileMenuOpen(false)}
+                href="/u/dashboard"
+                className="w-full rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white transition-transform hover:scale-105"
+              >
+                <Category2 size="32" className="text-white" variant="Bulk" /> Dashboard
+              </NavbarButton>
+            )}
           </div>
         </MobileNavMenu>
       </MobileNav>

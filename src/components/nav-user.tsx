@@ -16,8 +16,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { auth } from '@/lib/auth';
-import { signOut } from '@/lib/auth-client';
+import { auth } from '@/lib/better-auth/auth';
+import { signOut } from '@/lib/better-auth/auth-client';
 import { LogoutCurve, Scroll, SmsNotification, Verify } from 'iconsax-reactjs';
 import { showToast } from './custom-toaster';
 

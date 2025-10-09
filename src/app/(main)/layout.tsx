@@ -1,6 +1,10 @@
 import { AppSidebar } from '@/components/app-sidebar';
-import { NavUser } from '@/components/nav-user';
 import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler';
+import { Separator } from '@/components/ui/separator';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { getServerSession } from '@/lib/better-auth/get-session';
+import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,12 +13,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { Separator } from '@/components/ui/separator';
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { auth } from '@/lib/auth';
-import type { Metadata } from 'next';
-import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { DynamicBreadcrumb } from '@/components/dynamic-breadcrumb';
 
 export const metadata: Metadata = {
   title: 'Purwokerto Dev',
@@ -26,9 +25,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getServerSession();
   if (!session) {
     redirect('/login');
   }
@@ -45,10 +42,10 @@ export default async function RootLayout({
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
+            <DynamicBreadcrumb />
           </div>
           <div className="mx-4 flex items-center gap-2">
             <AnimatedThemeToggler />
-            {/* <NavUser user={user} collapseIcon={false} /> */}
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>

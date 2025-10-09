@@ -28,13 +28,16 @@ export function TeamSwitcher({ teams }: { teams: TeamItem[] }) {
             />
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-medium">{activeTeam.name}</span>
+            <div className="flex items-center justify-start gap-1 truncate font-medium">
+              {activeTeam.name}{' '}
+              <Verify
+                size="15"
+                className="mt-1 text-[50px] text-green-500 dark:text-green-500"
+                variant="Bulk"
+              />
+            </div>
             <span className="text-muted-foreground truncate text-xs">{activeTeam.plan}</span>
           </div>
-          <ShieldTick
-            className="text-[50px] text-green-500 dark:text-green-500"
-            variant="Bulk"
-          />{' '}
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>
