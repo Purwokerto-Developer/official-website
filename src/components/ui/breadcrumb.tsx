@@ -62,9 +62,9 @@ function BreadcrumbPage({ className, ...props }: React.ComponentProps<'span'>) {
   );
 }
 
-function BreadcrumbSeparator({ children, className, ...props }: React.ComponentProps<'li'>) {
+function BreadcrumbSeparator({ children, className, ...props }: React.ComponentProps<'div'>) {
   return (
-    <li
+    <div
       data-slot="breadcrumb-separator"
       role="presentation"
       aria-hidden="true"
@@ -72,7 +72,7 @@ function BreadcrumbSeparator({ children, className, ...props }: React.ComponentP
       {...props}
     >
       {children ?? <ChevronRight />}
-    </li>
+    </div>
   );
 }
 

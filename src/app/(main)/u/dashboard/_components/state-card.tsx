@@ -32,7 +32,7 @@ export const StateCard = ({ state }: { state: DashboardState }) => {
           >
             <state.icon size={22} variant="Bulk" />
           </div>
-          <CardTitle className="text-base font-semibold capitalize">{title}</CardTitle>
+          <CardTitle className="text-xs font-semibold capitalize md:text-base">{title}</CardTitle>
         </div>
       </CardHeader>
 
@@ -48,7 +48,7 @@ export const StateCard = ({ state }: { state: DashboardState }) => {
       </CardContent>
 
       <CardFooter className="justify-center">
-        <CardDescription className="text-center">{description}</CardDescription>
+        <CardDescription className="hidden text-center md:block">{description}</CardDescription>
       </CardFooter>
     </Card>
   );

@@ -1,5 +1,6 @@
 /* eslint-disable react/no-unknown-property */
 'use client';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { Environment, Lightformer, useGLTF, useTexture, Text } from '@react-three/drei';
 import { Canvas, extend, useFrame } from '@react-three/fiber';
 import {
@@ -134,7 +135,8 @@ function Band({ maxSpeed = 50, minSpeed = 0, user }: BandProps) {
     }
     return false;
   });
-
+  const isTablet = useMediaQuery('(max-width: 1080px)');
+  const isMobile = useMediaQuery('(max-width: 640px)');
   useEffect(() => {
     const handleResize = (): void => {
       setIsSmall(window.innerWidth < 1024);
@@ -332,7 +334,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, user }: BandProps) {
           useMap
           map={texture}
           repeat={[-2.5, 1]}
-          lineWidth={1.5}
+          lineWidth={isMobile ? 0.85 : isTablet ? 0.48 : 1.5}
         />
       </mesh>
     </>

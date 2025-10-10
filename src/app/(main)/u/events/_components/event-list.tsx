@@ -13,6 +13,7 @@ import {
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 
 export interface EventListItem {
   id: number | string;
@@ -179,56 +180,58 @@ export const EventList: React.FC<EventListProps> = ({ items }) => {
       {/* Event Grid */}
       <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
         {paginatedItems.map((item) => (
-          <Card key={item.id} className="bg-muted relative rounded-xl p-0">
-            <div className="flex h-full flex-col">
-              {/* Image */}
-              <div className="bg-background relative flex h-48 flex-1 items-center justify-center rounded-t-xl">
-                {item.image ? (
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    height={96}
-                    width={96}
-                    className="h-24 w-24 object-contain"
-                  />
-                ) : (
-                  <div className="flex h-72 w-24 items-center justify-center rounded-md">
-                    <Gallery size="100" color="#FF8A65" variant="Bulk" />
+          <Link href={`events/detail/${item.id}`} key={item.id}>
+            <Card className="bg-muted relative rounded-xl p-0">
+              <div className="flex h-full flex-col">
+                {/* Image */}
+                <div className="bg-background relative flex h-48 flex-1 items-center justify-center rounded-t-xl">
+                  {item.image ? (
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      height={96}
+                      width={96}
+                      className="h-24 w-24 object-contain"
+                    />
+                  ) : (
+                    <div className="flex h-72 w-24 items-center justify-center rounded-md">
+                      <Gallery size="100" color="#FF8A65" variant="Bulk" />
+                    </div>
+                  )}
+                  <div className="absolute top-4 right-4 flex items-center gap-1">
+                    <Badge
+                      className="rounded-full"
+                      variant={item.type === 'online' ? 'green' : 'yellow'}
+                    >
+                      {item.type}
+                    </Badge>
                   </div>
-                )}
-                <div className="absolute top-4 right-4 flex items-center gap-1">
-                  <Badge
-                    className="rounded-full"
-                    variant={item.type === 'online' ? 'green' : 'yellow'}
-                  >
-                    {item.type}
-                  </Badge>
                 </div>
+
+                {/* Content */}
+                <CardContent className="px-4 pt-4 pb-2">
+                  <div className="text-muted-foreground mb-1 flex items-center gap-2 text-xs">
+                    <span className="font-medium">{item.creator}</span>
+                    <Verify size={20} className="text-blue-500" variant="Bulk" />
+                  </div>
+                  <div className="mb-2 truncate text-base font-semibold">{item.title}</div>
+                  <Separator className="mb-2" />
+
+                  {/* Info */}
+                  <div className="flex justify-between text-xs">
+                    <div>
+                      <div className="text-muted-foreground">LOCATION</div>
+                      <div className="font-bold">{item.location ?? 'Unknown'}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">DATE</div>
+                      <div className="font-bold">{item.date ?? 'Unknown'}</div>
+                    </div>
+                  </div>
+                </CardContent>
               </div>
-
-              {/* Content */}
-              <CardContent className="px-4 pt-4 pb-2">
-                <div className="text-muted-foreground mb-1 flex items-center gap-2 text-xs">
-                  <span className="font-medium">{item.creator}</span>
-                  <Verify size={20} className="text-blue-500" variant="Bulk" />
-                </div>
-                <div className="mb-2 truncate text-base font-semibold">{item.title}</div>
-                <Separator className="mb-2" />
-
-                {/* Info */}
-                <div className="flex justify-between text-xs">
-                  <div>
-                    <div className="text-muted-foreground">LOCATION</div>
-                    <div className="font-bold">{item.location ?? 'Unknown'}</div>
-                  </div>
-                  <div>
-                    <div className="text-muted-foreground">DATE</div>
-                    <div className="font-bold">{item.date ?? 'Unknown'}</div>
-                  </div>
-                </div>
-              </CardContent>
-            </div>
-          </Card>
+            </Card>
+          </Link>
         ))}
       </div>
 

@@ -11,13 +11,12 @@ import {
 } from '@/components/ui/resizable-navbar';
 import { navItems } from '@/constants';
 import { cn } from '@/lib/utils';
+import { Session } from '@/types/better-auth';
+import { Category2, Login } from 'iconsax-reactjs';
 import Link from 'next/link';
 import { useState } from 'react';
 import { AnimatedThemeToggler } from './ui/animated-theme-toggler';
 import { buttonVariants } from './ui/button';
-import { Category2, Login } from 'iconsax-reactjs';
-import { useSession } from '@/lib/better-auth/auth-client';
-import { Session } from '@/types/better-auth';
 
 export default function NavbarSection({ session }: { session?: Session }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

@@ -1,13 +1,13 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import { Calendar, Location, Activity, TickCircle, ArrowRight2 } from 'iconsax-reactjs';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { useState, useEffect } from 'react';
 
 const activities = [
   {
@@ -42,25 +42,49 @@ const activities = [
   },
   {
     id: 4,
-    event: 'React Native Workshop for Beginners',
-    date: 'Fri, 5 July 2025',
+    event: 'Next.js Advanced Workshop',
+    date: 'Tue, 25 November 2025',
     status: 'online',
     eventStatus: 'Upcoming',
     registered: false,
     location: 'Zoom',
     image: '/img-logo.png',
   },
+  {
+    id: 5,
+    event: 'Purwokerto Tech Festival',
+    date: 'Fri, 10 December 2025',
+    status: 'offline',
+    eventStatus: 'Upcoming',
+    registered: false,
+    location: 'Auditorium Soedirman',
+    image: '/img-logo.png',
+  },
 ];
 
-// hanya tampilkan event upcoming
 const upcomingEvents = activities.filter((act) => act.eventStatus === 'Upcoming');
 
 const ActivityCard = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const visibleEvents = isMobile
+    ? upcomingEvents
+    : showAll
+      ? upcomingEvents
+      : upcomingEvents.slice(0, 3);
   const isEmpty = upcomingEvents.length === 0;
 
   return (
-    <Card className="h-[500px] w-full border">
-      <CardHeader>
+    <Card className="h-[500px] w-full overflow-hidden">
+      <CardHeader className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div className="flex items-center gap-2">
           <div className="rounded-lg bg-blue-50 p-2">
             <Activity className="text-primary size-[30px]" variant="Bulk" />
@@ -70,11 +94,17 @@ const ActivityCard = () => {
             <CardDescription>Event komunitas yang akan datang untuk kamu.</CardDescription>
           </div>
         </div>
+        {!isMobile && upcomingEvents.length > 4 && (
+          <div className="mt-6 flex justify-center">
+            <Button variant="outline" onClick={() => setShowAll(!showAll)}>
+              {showAll ? 'See Less' : 'See More'}
+            </Button>
+          </div>
+        )}
       </CardHeader>
 
-      <CardContent className="px-2">
+      <CardContent className="px-6">
         {isEmpty ? (
-          // 🌙 Empty State
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -94,84 +124,82 @@ const ActivityCard = () => {
             <Button className="mt-4">Lihat Semua Event</Button>
           </motion.div>
         ) : (
-          // 🪄 Animated Event List
-          <ScrollArea className="h-[380px] pr-3">
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={{
-                hidden: { opacity: 0 },
-                visible: {
-                  opacity: 1,
-                  transition: { staggerChildren: 0.08 },
-                },
-              }}
-              className="space-y-3"
-            >
-              {upcomingEvents.map((act) => (
-                <motion.div
-                  key={act.id}
-                  variants={{
-                    hidden: { opacity: 0, y: 10 },
-                    visible: { opacity: 1, y: 0 },
-                  }}
-                  transition={{ duration: 0.3, ease: 'easeOut' }}
-                >
-                  <Card className="flex flex-row items-center gap-4 rounded-xl p-4 shadow-sm transition-all hover:shadow-md">
-                    {/* Left: Image */}
-
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: { staggerChildren: 0.08 },
+              },
+            }}
+            className={cn('grid gap-2', isMobile ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3')}
+          >
+            {visibleEvents.map((act) => (
+              <motion.div
+                key={act.id}
+                variants={{
+                  hidden: { opacity: 0, y: 10 },
+                  visible: { opacity: 1, y: 0 },
+                }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+              >
+                {/* CARD */}
+                <Card className="flex flex-col overflow-hidden rounded-xl pt-0 pb-0 shadow-sm transition-all hover:shadow-md">
+                  <div className="relative h-40 w-full">
                     <Image
                       src={act.image}
-                      width={90}
-                      height={90}
                       alt={act.event}
-                      className="bg-primary/10 rounded-md object-cover object-center"
+                      fill
+                      className="bg-primary/10 object-cover"
                     />
+                  </div>
 
-                    {/* Middle: Details */}
-                    <div className="flex w-full flex-col space-y-2">
+                  <div className="flex flex-col justify-between px-4 pb-2">
+                    <div>
                       <Badge
                         className={cn(
-                          act.status.toLocaleLowerCase() === 'online'
-                            ? 'bg-green-100 text-green-500 dark:bg-green-900 dark:text-green-300'
+                          act.status === 'online'
+                            ? 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300'
                             : 'bg-slate-100 text-slate-500 dark:bg-slate-900 dark:text-slate-300',
                           'rounded-full capitalize',
                         )}
                       >
                         {act.status}
                       </Badge>
-                      <h3 className="line-clamp-1 text-sm leading-tight font-semibold">
+                      <h3 className="mt-2 line-clamp-1 text-base leading-tight font-semibold">
                         {act.event}
                       </h3>
-                      <div className="flex flex-wrap gap-x-4 text-xs text-gray-500">
+
+                      <div className="mt-2 flex flex-col gap-1 text-xs text-gray-500">
                         <div className="flex items-center gap-1">
-                          <Calendar size={14} variant="Bulk" /> {act.date}
+                          <Calendar size={14} variant="Bulk" />
+                          <span className="line-clamp-1">{act.date}</span>
                         </div>
+
                         <div className="flex items-center gap-1">
-                          <Location size={14} variant="Bulk" /> {act.location}
+                          <Location size={14} variant="Bulk" />
+                          <span className="line-clamp-1">{act.location}</span>
                         </div>
+
                         <div className="flex items-center gap-1">
                           <TickCircle
                             size={14}
                             variant={act.registered ? 'Bulk' : 'Linear'}
                             color={act.registered ? '#22c55e' : '#9ca3af'}
                           />
-                          {act.registered ? 'Registered' : 'Belum Register'}
+                          <span className="line-clamp-1">
+                            {act.registered ? 'Registered' : 'Belum Register'}
+                          </span>
                         </div>
                       </div>
                     </div>
-
-                    {/* Right: Button */}
-                    <div className="ml-auto flex flex-col items-end">
-                      <Button className="text-white">
-                        Detail Event <ArrowRight2 size="32" variant="Bulk" />
-                      </Button>
-                    </div>
-                  </Card>
-                </motion.div>
-              ))}
-            </motion.div>
-          </ScrollArea>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
         )}
       </CardContent>
     </Card>
