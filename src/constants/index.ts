@@ -1,5 +1,3 @@
-// Demo data for EventList component
-
 import { NavItem } from '@/types/sidebar';
 import {
   Calendar2,
@@ -11,6 +9,7 @@ import {
   Shop,
   CalendarRemove,
   CalendarTick,
+  CalendarAdd,
 } from 'iconsax-reactjs';
 export const navItems = [
   {
@@ -63,6 +62,17 @@ export const sidebarItems = {
       badge: { label: 'soon', variant: 'secondary' },
     },
     { title: 'Settings', url: '/u/settings', icon: Setting },
+  ] as NavItem[],
+  adminNav: [
+    {
+      title: 'Events',
+      url: '#',
+      icon: Calendar2,
+      items: [
+        { title: 'All Events', url: '/u/events/', icon: Calendar2 },
+        { title: 'Create events', url: '/u/events/create', icon: CalendarAdd },
+      ],
+    },
   ] as NavItem[],
 };
 

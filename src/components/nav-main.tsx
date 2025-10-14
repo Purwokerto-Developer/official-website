@@ -18,13 +18,17 @@ import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
-export function NavMain({ items }: { items: NavItem[] }) {
+export function NavMain({ items, label }: { items: NavItem[]; label?: string }) {
   const pathname = usePathname();
   const allowedVariants = ['default', 'secondary', 'destructive', 'outline', 'green', 'yellow'];
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      {label && (
+        <SidebarGroupLabel className="text-xs font-bold tracking-wide text-slate-500 uppercase">
+          {label}
+        </SidebarGroupLabel>
+      )}
       <SidebarMenu>
         {items.map((item) => {
           const hasSubItems = !!item.items?.length;
@@ -84,6 +88,17 @@ export function NavMain({ items }: { items: NavItem[] }) {
                                     subIsActive && 'text-primary',
                                   )}
                                 >
+                                  {subItem.icon && (
+                                    <subItem.icon
+                                      size="18"
+                                      variant={subIsActive ? 'Bold' : 'Bulk'}
+                                      className={cn(
+                                        subIsActive
+                                          ? 'text-primary dark:text-primary'
+                                          : 'text-slate-500 dark:text-slate-200',
+                                      )}
+                                    />
+                                  )}
                                   {subItem.title}
                                   {subItem.badge && (
                                     <Badge

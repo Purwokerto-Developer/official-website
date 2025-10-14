@@ -1,8 +1,6 @@
 'use client';
 
-import * as React from 'react';
 import { NavMain } from '@/components/nav-main';
-import { NavProjects } from '@/components/nav-projects';
 import { NavUser } from '@/components/nav-user';
 import { TeamSwitcher } from '@/components/team-switcher';
 import {
@@ -12,10 +10,11 @@ import {
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar';
+import * as React from 'react';
 
 import { sidebarItems } from '@/constants';
-import { auth } from '@/lib/better-auth/auth';
 import { Session } from '@/types/better-auth';
+import { Separator } from './ui/separator';
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   session?: Session;
@@ -34,7 +33,13 @@ export function AppSidebar({ session, ...props }: AppSidebarProps) {
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={sidebarItems.navMain} />
+        <NavMain items={sidebarItems.navMain} label="Main Navigation" />
+        {user.role === 'admin' && (
+          <>
+            <Separator />
+            <NavMain items={sidebarItems.adminNav} label="Admin Navigation" />
+          </>
+        )}
         {/* <NavProjects projects={sidebarItems.projects} /> */}
       </SidebarContent>
 

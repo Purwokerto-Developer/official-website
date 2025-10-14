@@ -1,6 +1,5 @@
 import { LoginForm } from '@/components/auth/login-form';
 import { getServerSession } from '@/lib/better-auth/get-session';
-import { GalleryVerticalEnd } from 'lucide-react';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
 

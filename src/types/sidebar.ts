@@ -6,8 +6,9 @@ export interface NavSubItem {
   url: string;
   badge?: {
     label: string;
-    variant?: string; // Make variant optional
+    variant?: string;
   };
+  icon?: Icon | LucideIcon;
 }
 
 export interface NavItem {
