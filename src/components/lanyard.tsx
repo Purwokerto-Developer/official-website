@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unknown-property */
 'use client';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Environment, Lightformer, useGLTF, useTexture, Text } from '@react-three/drei';
@@ -106,7 +105,6 @@ function Band({
   cardColor = '#2a5ad7',
   cardTexture,
 }: BandProps) {
-  // Using "any" for refs since the exact types depend on Rapier's internals
   const band = useRef<any>(null);
   const fixed = useRef<any>(null);
   const j1 = useRef<any>(null);
@@ -284,7 +282,6 @@ function Band({
                 metalness={0.8}
               />
             </mesh>
-            {/* Layer 2: motif PNG, transparan, di atas mesh warna dasar */}
             <mesh geometry={nodes.card.geometry}>
               <meshPhysicalMaterial
                 map={materials.base.map}
@@ -298,24 +295,38 @@ function Band({
                 metalness={0.8}
               />
             </mesh>
-            {/* Teks dinamis di atas tag/kartu dengan posisi Y otomatis naik jika baris bertambah */}
             {user &&
               (() => {
                 const name = user.firstName;
                 const username = user.username || '';
+
+                // Font dasar
                 let fontSize = 0.05;
                 const maxWidth = 0.45;
-                const estimatedLines = Math.ceil(name.length / 14);
-                if (estimatedLines > 2) fontSize = 0.04;
-                // Posisi Y dinaikkan agar tidak terlalu bawah, dan tetap rapi
-                const baseY = 0.23; // posisi email, lebih naik agar tepat di atas 'DEV'
-                const gapY = fontSize * 1.1; // jarak antar name dan email
-                const nameY = baseY + gapY;
+
+                // Estimasi jumlah baris pada nama (kasar)
+                const estimatedNameLines = Math.ceil(name.length / 14);
+                if (estimatedNameLines > 2) fontSize = 0.04;
+
+                // Ukur total tinggi blok teks (nama + username)
+                const nameHeight = fontSize * estimatedNameLines;
+                const usernameHeight = username ? fontSize * 0.7 : 0;
+                const gap = fontSize * 0.5;
+
+                const totalBlockHeight = nameHeight + gap + usernameHeight;
+
+                // Tentukan titik tengah vertikal (anchor blok)
+                const blockCenterY = 0.26; // titik acuan posisi (bisa kamu ubah naik/turun)
+                const startY = blockCenterY + totalBlockHeight / 2; // titik atas blok
+
+                // Posisi X sejajar
                 const x = -0.32;
+
                 return (
                   <>
+                    {/* Name */}
                     <Text
-                      position={[x, nameY, 0.06]}
+                      position={[x, startY, 0.06]}
                       fontSize={fontSize}
                       color="white"
                       anchorX="left"
@@ -325,10 +336,12 @@ function Band({
                     >
                       {name}
                     </Text>
+
+                    {/* Username */}
                     {username && (
                       <Text
-                        position={[x, baseY, 0.06]}
-                        fontSize={fontSize * 0.6}
+                        position={[x, startY - nameHeight - gap, 0.06]}
+                        fontSize={fontSize * 0.7}
                         color="white"
                         anchorX="left"
                         anchorY="top"
@@ -341,6 +354,7 @@ function Band({
                   </>
                 );
               })()}
+
             <mesh
               geometry={nodes.clip.geometry}
               material={materials.metal}

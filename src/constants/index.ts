@@ -10,6 +10,8 @@ import {
   CalendarRemove,
   CalendarTick,
   CalendarAdd,
+  Category,
+  AddCircle,
 } from 'iconsax-reactjs';
 export const navItems = [
   {
@@ -70,7 +72,8 @@ export const sidebarItems = {
       icon: Calendar2,
       items: [
         { title: 'All Events', url: '/u/events/', icon: Calendar2 },
-        { title: 'Create events', url: '/u/events/create', icon: CalendarAdd },
+        { title: 'Create events', url: '/u/events/create', icon: AddCircle },
+        { title: 'Event Categories', url: '/u/events/categories', icon: Category },
       ],
     },
   ] as NavItem[],
