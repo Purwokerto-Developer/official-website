@@ -29,6 +29,8 @@ interface LanyardProps {
     firstName: string;
     username?: string;
   };
+  cardColor?: string;
+  cardTexture?: any;
 }
 
 export default function Lanyard({
@@ -37,6 +39,8 @@ export default function Lanyard({
   fov = 20,
   transparent = true,
   user,
+  cardColor = '#2a5ad7',
+  cardTexture,
 }: LanyardProps) {
   return (
     <div className="relative z-0 flex h-screen w-full origin-center scale-100 transform items-center justify-center">
@@ -47,7 +51,7 @@ export default function Lanyard({
       >
         <ambientLight intensity={Math.PI} />
         <Physics gravity={gravity} timeStep={1 / 60}>
-          <Band user={user} />
+          <Band user={user} cardColor={cardColor} />
         </Physics>
         <Environment blur={0.75}>
           <Lightformer
@@ -91,9 +95,17 @@ interface BandProps {
     firstName: string;
     username?: string;
   };
+  cardColor?: string;
+  cardTexture?: any;
 }
 
-function Band({ maxSpeed = 50, minSpeed = 0, user }: BandProps) {
+function Band({
+  maxSpeed = 50,
+  minSpeed = 0,
+  user,
+  cardColor = '#2a5ad7',
+  cardTexture,
+}: BandProps) {
   // Using "any" for refs since the exact types depend on Rapier's internals
   const band = useRef<any>(null);
   const fixed = useRef<any>(null);
@@ -262,9 +274,24 @@ function Band({ maxSpeed = 50, minSpeed = 0, user }: BandProps) {
             }}
           >
             <mesh geometry={nodes.card.geometry}>
+              {/* Layer 1: base color */}
+              <meshPhysicalMaterial
+                color={cardColor}
+                map={cardTexture}
+                clearcoat={1}
+                clearcoatRoughness={0.15}
+                roughness={0.9}
+                metalness={0.8}
+              />
+            </mesh>
+            {/* Layer 2: motif PNG, transparan, di atas mesh warna dasar */}
+            <mesh geometry={nodes.card.geometry}>
               <meshPhysicalMaterial
                 map={materials.base.map}
                 map-anisotropy={16}
+                transparent={true}
+                opacity={1}
+                color={'#fff'}
                 clearcoat={1}
                 clearcoatRoughness={0.15}
                 roughness={0.9}
@@ -281,16 +308,14 @@ function Band({ maxSpeed = 50, minSpeed = 0, user }: BandProps) {
                 const estimatedLines = Math.ceil(name.length / 14);
                 if (estimatedLines > 2) fontSize = 0.04;
                 // Posisi Y dinaikkan agar tidak terlalu bawah, dan tetap rapi
-                const baseY = 0.35;
-                const lineHeight = fontSize * 1.2;
-                // Offset naik jika baris lebih dari 1
-                const y =
-                  baseY + (estimatedLines > 1 ? (lineHeight * (estimatedLines - 1)) / 2 : 0);
+                const baseY = 0.23; // posisi email, lebih naik agar tepat di atas 'DEV'
+                const gapY = fontSize * 1.1; // jarak antar name dan email
+                const nameY = baseY + gapY;
                 const x = -0.32;
                 return (
                   <>
                     <Text
-                      position={[x, y, 0.06]}
+                      position={[x, nameY, 0.06]}
                       fontSize={fontSize}
                       color="white"
                       anchorX="left"
@@ -302,9 +327,9 @@ function Band({ maxSpeed = 50, minSpeed = 0, user }: BandProps) {
                     </Text>
                     {username && (
                       <Text
-                        position={[x, y - lineHeight * 2.4, 0.06]}
+                        position={[x, baseY, 0.06]}
                         fontSize={fontSize * 0.6}
-                        color="#B0B0B0"
+                        color="white"
                         anchorX="left"
                         anchorY="top"
                         maxWidth={maxWidth}
