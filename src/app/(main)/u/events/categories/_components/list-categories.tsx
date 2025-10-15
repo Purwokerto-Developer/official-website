@@ -78,14 +78,17 @@ import {
 
 import { cn, formatDateID } from '@/lib/utils';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+import AddCategoryModal from './add-category-modal';
+import EditCategoryModal from './edit-category-modal';
+import { showToast } from '@/components/custom-toaster';
 import { DocumentFilter, Edit, ElementPlus, Layer, Trash } from 'iconsax-reactjs';
 
 type EventCategory = {
   id: string;
   name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
+  description: string | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
 };
 
 // Custom filter function for multi-column searching
@@ -97,86 +100,101 @@ const multiColumnFilterFn: FilterFn<EventCategory> = (row, columnId, filterValue
 
 // No status filter needed for event categories
 
-const columns: ColumnDef<EventCategory>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    size: 28,
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    header: 'Name',
-    accessorKey: 'name',
-    cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
-    size: 120,
-    filterFn: multiColumnFilterFn,
-    enableHiding: false,
-  },
-  {
-    header: 'Description',
-    accessorKey: 'description',
-    cell: ({ row }) => {
-      const desc = row.getValue('description') as string;
-      const maxLength = 40;
-      const isLong = desc.length > maxLength;
-      const displayText = isLong ? desc.slice(0, maxLength) + '...' : desc;
-      return isLong ? (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span className="block max-w-[220px] cursor-help overflow-hidden text-ellipsis whitespace-nowrap">
-              {displayText}
-            </span>
-          </TooltipTrigger>
-          <TooltipContent sideOffset={6} className="max-w-xs break-words">
-            {desc}
-          </TooltipContent>
-        </Tooltip>
-      ) : (
-        <span className="block max-w-[220px] overflow-hidden text-ellipsis whitespace-nowrap">
-          {desc}
-        </span>
-      );
-    },
-    size: 200,
-  },
-  {
-    header: 'Created At',
-    accessorKey: 'createdAt',
-    cell: ({ row }) => <div>{formatDateID(row.getValue('createdAt'), { weekday: 'long' })}</div>,
-    size: 100,
-  },
-  {
-    header: 'Updated At',
-    accessorKey: 'updatedAt',
-    cell: ({ row }) => <div>{formatDateID(row.getValue('updatedAt'), { weekday: 'long' })}</div>,
-    size: 100,
-  },
-  {
-    id: 'actions',
-    header: () => <span className="sr-only">Actions</span>,
-    cell: ({ row }) => <RowActions row={row} />,
-    size: 60,
-    enableHiding: false,
-  },
-];
+// columns must be inside ListCategories for refreshList scope
 
-export default function Component() {
+type ListCategoriesProps = {
+  categories: EventCategory[];
+};
+
+import { getCategories } from '@/action/event-action';
+
+export default function ListCategories({ categories }: ListCategoriesProps) {
+  // Custom filter function for multi-column searching
+  const multiColumnFilterFn: FilterFn<EventCategory> = (row, columnId, filterValue) => {
+    const searchableRowContent = `${row.original.name} ${row.original.description}`.toLowerCase();
+    const searchTerm = (filterValue ?? '').toLowerCase();
+    return searchableRowContent.includes(searchTerm);
+  };
+
+  const columns: ColumnDef<EventCategory>[] = [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      size: 28,
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      header: 'Name',
+      accessorKey: 'name',
+      cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
+      size: 120,
+      filterFn: multiColumnFilterFn,
+      enableHiding: false,
+    },
+    {
+      header: 'Description',
+      accessorKey: 'description',
+      cell: ({ row }) => {
+        const desc = row.getValue('description') as string;
+        const maxLength = 40;
+        const isLong = desc.length > maxLength;
+        const displayText = isLong ? desc.slice(0, maxLength) + '...' : desc;
+        return isLong ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="block max-w-[290px] cursor-help overflow-hidden text-ellipsis whitespace-nowrap">
+                {displayText}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent sideOffset={6} className="max-w-xs break-words">
+              {desc}
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          <span className="block max-w-[290px] overflow-hidden text-ellipsis whitespace-nowrap">
+            {desc}
+          </span>
+        );
+      },
+      size: 200,
+    },
+    {
+      header: 'Created At',
+      accessorKey: 'createdAt',
+      cell: ({ row }) => <div>{formatDateID(row.getValue('createdAt'), { weekday: 'long' })}</div>,
+      size: 100,
+    },
+    {
+      header: 'Updated At',
+      accessorKey: 'updatedAt',
+      cell: ({ row }) => <div>{formatDateID(row.getValue('updatedAt'), { weekday: 'long' })}</div>,
+      size: 100,
+    },
+    {
+      id: 'actions',
+      header: () => <span className="sr-only">Actions</span>,
+      cell: ({ row }) => <RowActions row={row} refreshList={refreshList} />,
+      size: 60,
+      enableHiding: false,
+    },
+  ];
   const id = useId();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -193,46 +211,15 @@ export default function Component() {
     },
   ]);
 
-  // Dummy data for event categories
-  const dummyCategories: EventCategory[] = [
-    {
-      id: '1a2b3c4d-1111-2222-3333-444455556666',
-      name: 'Workshop',
-      description: 'Events focused on hands-on learning and skill development.',
-      createdAt: '2025-10-01T09:00:00Z',
-      updatedAt: '2025-10-10T12:00:00Z',
-    },
-    {
-      id: '2b3c4d5e-7777-8888-9999-000011112222',
-      name: 'Seminar',
-      description: 'Educational events with expert speakers and discussions.',
-      createdAt: '2025-09-15T10:30:00Z',
-      updatedAt: '2025-10-12T14:00:00Z',
-    },
-    {
-      id: '3c4d5e6f-3333-4444-5555-666677778888',
-      name: 'Meetup',
-      description: 'Casual gatherings for networking and sharing ideas.',
-      createdAt: '2025-08-20T15:45:00Z',
-      updatedAt: '2025-10-13T16:00:00Z',
-    },
-    {
-      id: '4d5e6f7g-5555-6666-7777-888899990000',
-      name: 'Conference',
-      description: 'Large-scale events with multiple sessions and tracks.',
-      createdAt: '2025-07-10T08:00:00Z',
-      updatedAt: '2025-10-14T09:00:00Z',
-    },
-    {
-      id: '5e6f7g8h-9999-0000-1111-222233334444',
-      name: 'Hackathon',
-      description: 'Competitive coding events for rapid prototyping.',
-      createdAt: '2025-06-05T13:20:00Z',
-      updatedAt: '2025-10-14T10:00:00Z',
-    },
-  ];
+  const [data, setData] = useState<EventCategory[]>(categories);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const [data, setData] = useState<EventCategory[]>(dummyCategories);
+  const refreshList = async () => {
+    setRefreshing(true);
+    const newCategories = await getCategories();
+    setData(newCategories);
+    setRefreshing(false);
+  };
 
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows;
@@ -368,11 +355,8 @@ export default function Component() {
               </AlertDialogContent>
             </AlertDialog>
           )}
-          {/* Add user button */}
-          <Button className="ml-auto" variant="gradient_blue">
-            <ElementPlus variant="Bulk" className="text-white" />
-            Add user
-          </Button>
+          {/* Add category button with modal */}
+          <AddCategoryModal onSuccess={refreshList} />
         </div>
       </div>
 
@@ -562,33 +546,47 @@ export default function Component() {
       </div>
     </div>
   );
-}
 
-function RowActions({ row }: { row: Row<EventCategory> }) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <div className="flex justify-end">
-          <Button size="icon" variant="ghost" className="shadow-none" aria-label="Edit item">
-            <EllipsisIcon size={16} aria-hidden="true" />
-          </Button>
-        </div>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuGroup>
-          <DropdownMenuItem className="text-green-600 focus:text-green-600">
-            <Edit size="32" className="text-green-600" variant="Bulk" />
-            <span>Edit</span>
-            <DropdownMenuShortcut className="text-green-600">⌘E</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive focus:text-destructive">
-          <Trash size="32" className="text-destructive" variant="Bulk" />
-          <span>Delete</span>
-          <DropdownMenuShortcut className="text-destructive">⌘⌫</DropdownMenuShortcut>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+  function RowActions({ row, refreshList }: { row: Row<EventCategory>; refreshList: () => void }) {
+    const [editOpen, setEditOpen] = useState(false);
+    const category = row.original;
+    return (
+      <>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="flex justify-end">
+              <Button size="icon" variant="ghost" className="shadow-none" aria-label="Edit item">
+                <EllipsisIcon size={16} aria-hidden="true" />
+              </Button>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuGroup>
+              <DropdownMenuItem
+                className="text-green-600 focus:text-green-600"
+                onClick={() => setEditOpen(true)}
+              >
+                <Edit size="32" className="text-green-600" variant="Bulk" />
+                <span>Edit</span>
+                <DropdownMenuShortcut className="text-green-600">⌘E</DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="text-destructive focus:text-destructive">
+              <Trash size="32" className="text-destructive" variant="Bulk" />
+              <span>Delete</span>
+              <DropdownMenuShortcut className="text-destructive">⌘⌫</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <EditCategoryModal
+          initial={{ name: category.name, description: category.description || '' }}
+          id={category.id}
+          open={editOpen}
+          setOpen={setEditOpen}
+          onSuccess={refreshList}
+        />
+      </>
+    );
+  }
 }
