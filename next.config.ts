@@ -1,12 +1,20 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
   experimental: {
     authInterrupts: true,
   },
   images: {
-    remotePatterns: [new URL('https://lh3.googleusercontent.com/**')],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ik.imagekit.io',
+      },
+    ],
   },
   transpilePackages: ['three'],
 };

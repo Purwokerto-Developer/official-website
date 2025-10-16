@@ -25,13 +25,9 @@ import {
   ChevronUpIcon,
   CircleAlertIcon,
   CircleXIcon,
-  Columns3Icon,
   EllipsisIcon,
-  ListFilterIcon,
-  PlusIcon,
-  TrashIcon,
 } from 'lucide-react';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 
 import {
   AlertDialog,
@@ -76,23 +72,16 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { showToast } from '@/components/custom-toaster';
 import { cn, formatDateID } from '@/lib/utils';
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+import { DocumentFilter, Edit, Layer, Trash } from 'iconsax-reactjs';
 import AddCategoryModal from './add-category-modal';
 import EditCategoryModal from './edit-category-modal';
-import { showToast } from '@/components/custom-toaster';
-import { DocumentFilter, Edit, ElementPlus, Layer, Trash } from 'iconsax-reactjs';
-
-type EventCategory = {
-  id: string;
-  name: string;
-  description: string | null;
-  createdAt: string | Date;
-  updatedAt: string | Date;
-};
+import DeleteCategoryDialog from './delete-category-dialog';
 
 // Custom filter function for multi-column searching
-const multiColumnFilterFn: FilterFn<EventCategory> = (row, columnId, filterValue) => {
+const multiColumnFilterFn: FilterFn<Category> = (row, columnId, filterValue) => {
   const searchableRowContent = `${row.original.name} ${row.original.description}`.toLowerCase();
   const searchTerm = (filterValue ?? '').toLowerCase();
   return searchableRowContent.includes(searchTerm);
@@ -103,20 +92,21 @@ const multiColumnFilterFn: FilterFn<EventCategory> = (row, columnId, filterValue
 // columns must be inside ListCategories for refreshList scope
 
 type ListCategoriesProps = {
-  categories: EventCategory[];
+  categories: Category[];
 };
 
-import { getCategories } from '@/action/event-action';
+import { getCategories, deleteCategory } from '@/action/event-action';
+import { Category } from '@/types/categories-type';
 
 export default function ListCategories({ categories }: ListCategoriesProps) {
   // Custom filter function for multi-column searching
-  const multiColumnFilterFn: FilterFn<EventCategory> = (row, columnId, filterValue) => {
+  const multiColumnFilterFn: FilterFn<Category> = (row, columnId, filterValue) => {
     const searchableRowContent = `${row.original.name} ${row.original.description}`.toLowerCase();
     const searchTerm = (filterValue ?? '').toLowerCase();
     return searchableRowContent.includes(searchTerm);
   };
 
-  const columns: ColumnDef<EventCategory>[] = [
+  const columns: ColumnDef<Category>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -143,7 +133,7 @@ export default function ListCategories({ categories }: ListCategoriesProps) {
     {
       header: 'Name',
       accessorKey: 'name',
-      cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
+      cell: ({ row }) => <div className="font-medium capitalize">{row.getValue('name')}</div>,
       size: 120,
       filterFn: multiColumnFilterFn,
       enableHiding: false,
@@ -211,22 +201,30 @@ export default function ListCategories({ categories }: ListCategoriesProps) {
     },
   ]);
 
-  const [data, setData] = useState<EventCategory[]>(categories);
+  const [data, setData] = useState<Category[]>(categories);
   const [refreshing, setRefreshing] = useState(false);
 
   const refreshList = async () => {
     setRefreshing(true);
     const newCategories = await getCategories();
-    setData(newCategories);
+    setData(newCategories.data || []);
     setRefreshing(false);
   };
 
-  const handleDeleteRows = () => {
+  const handleDeleteRows = async () => {
     const selectedRows = table.getSelectedRowModel().rows;
-    const updatedData = data.filter(
-      (item) => !selectedRows.some((row) => row.original.id === item.id),
-    );
-    setData(updatedData);
+    if (selectedRows.length === 0) return;
+    let errorCount = 0;
+    for (const row of selectedRows) {
+      const res = await deleteCategory(row.original.id);
+      if (!res.success) errorCount++;
+    }
+    if (errorCount === 0) {
+      showToast('success', `${selectedRows.length} kategori berhasil dihapus`);
+    } else {
+      showToast('error', `${errorCount} kategori gagal dihapus`);
+    }
+    await refreshList();
     table.resetRowSelection();
   };
 
@@ -324,33 +322,45 @@ export default function ListCategories({ categories }: ListCategoriesProps) {
           {table.getSelectedRowModel().rows.length > 0 && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button className="ml-auto" variant="destructive">
-                  <Trash size="32" variant="Bulk" /> Delete
+                <Button
+                  className="bg-destructive ml-auto flex items-center gap-2 rounded-lg px-4 py-2 text-white shadow"
+                  variant="destructive"
+                >
+                  <Trash size="32" variant="Bulk" />
+                  <span className="font-semibold">Delete</span>
                   <span className="bg-background/50 -me-1 inline-flex h-5 max-h-full items-center rounded px-1 font-[inherit] text-[0.625rem] font-medium text-white">
                     {table.getSelectedRowModel().rows.length}
                   </span>
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
+              <AlertDialogContent className="bg-background rounded-xl border-0 shadow-xl">
                 <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
-                  <div
-                    className="flex size-9 shrink-0 items-center justify-center rounded-full border"
-                    aria-hidden="true"
-                  >
-                    <CircleAlertIcon className="opacity-80" size={16} />
+                  <div className="bg-destructive/10 flex size-9 shrink-0 items-center justify-center rounded-full border">
+                    <CircleAlertIcon className="text-destructive opacity-80" size={24} />
                   </div>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
+                    <AlertDialogTitle className="text-destructive text-lg font-bold">
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription className="text-muted-foreground">
                       This action cannot be undone. This will permanently delete{' '}
-                      {table.getSelectedRowModel().rows.length} selected{' '}
-                      {table.getSelectedRowModel().rows.length === 1 ? 'row' : 'rows'}.
+                      <span className="text-destructive font-semibold">
+                        {table.getSelectedRowModel().rows.length}
+                      </span>{' '}
+                      selected {table.getSelectedRowModel().rows.length === 1 ? 'row' : 'rows'}.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                 </div>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteRows}>Delete</AlertDialogAction>
+                <AlertDialogFooter className="mt-4 flex flex-row justify-center gap-2">
+                  <AlertDialogCancel className="rounded-lg border px-4 py-2">
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDeleteRows}
+                    className="bg-destructive hover:bg-destructive/90 rounded-lg px-4 py-2 font-semibold text-white shadow transition-colors"
+                  >
+                    Delete
+                  </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
@@ -547,7 +557,7 @@ export default function ListCategories({ categories }: ListCategoriesProps) {
     </div>
   );
 
-  function RowActions({ row, refreshList }: { row: Row<EventCategory>; refreshList: () => void }) {
+  function RowActions({ row, refreshList }: { row: Row<Category>; refreshList: () => void }) {
     const [editOpen, setEditOpen] = useState(false);
     const category = row.original;
     return (
@@ -572,11 +582,7 @@ export default function ListCategories({ categories }: ListCategoriesProps) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive focus:text-destructive">
-              <Trash size="32" className="text-destructive" variant="Bulk" />
-              <span>Delete</span>
-              <DropdownMenuShortcut className="text-destructive">⌘⌫</DropdownMenuShortcut>
-            </DropdownMenuItem>
+            <DeleteCategoryDialog id={category.id} name={category.name} onSuccess={refreshList} />
           </DropdownMenuContent>
         </DropdownMenu>
         <EditCategoryModal

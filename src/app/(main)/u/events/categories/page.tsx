@@ -14,11 +14,12 @@ const EventCategoryPage = async () => {
     return forbidden();
   }
   const categories = await getCategories();
+
   return (
     <Suspense
       fallback={<div className="text-muted-foreground py-10 text-center">Loading kategori...</div>}
     >
-      <ListCategories categories={categories} />
+      <ListCategories categories={categories?.data || []} />
     </Suspense>
   );
 };

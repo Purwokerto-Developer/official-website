@@ -11,14 +11,18 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Edit } from 'iconsax-reactjs';
+import { Edit, Send } from 'iconsax-reactjs';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useState, useEffect } from 'react';
+import { categoryInsertSchema } from '@/lib/zod';
 
-const categorySchema = z.object({
-  name: z.string().min(2, 'Nama minimal 2 karakter'),
-  description: z.string().min(5, 'Deskripsi minimal 5 karakter'),
+const categorySchema = categoryInsertSchema.extend({
+  name: z.string().min(2, 'Nama minimal 2 karakter').max(50, 'Nama maksimal 50 karakter'),
+  description: z
+    .string()
+    .min(5, 'Deskripsi minimal 5 karakter')
+    .max(255, 'Deskripsi maksimal 255 karakter'),
 });
 
 type CategoryFormValues = z.infer<typeof categorySchema>;
@@ -49,7 +53,7 @@ const EditCategoryModal = ({ initial, id, open, setOpen, onSuccess }: EditCatego
 
   const submitHandler = async (data: CategoryFormValues) => {
     setLoading(true);
-    const res = await editCategory({ id, ...data });
+    const res = await editCategory(id, { ...data });
     setLoading(false);
     if (res.success) {
       showToast('success', 'Kategori berhasil diupdate');
@@ -71,7 +75,13 @@ const EditCategoryModal = ({ initial, id, open, setOpen, onSuccess }: EditCatego
             <label htmlFor="name" className="mb-1 block text-sm font-medium">
               Nama Kategori
             </label>
-            <Input id="name" {...register('name')} autoFocus disabled={loading} />
+            <Input
+              id="name"
+              {...register('name')}
+              placeholder="category name"
+              autoFocus
+              disabled={loading}
+            />
             {errors.name && (
               <span className="mt-1 block text-xs text-red-500">{errors.name.message}</span>
             )}
@@ -80,20 +90,28 @@ const EditCategoryModal = ({ initial, id, open, setOpen, onSuccess }: EditCatego
             <label htmlFor="description" className="mb-1 block text-sm font-medium">
               Deskripsi
             </label>
-            <Textarea id="description" {...register('description')} disabled={loading} />
+            <Textarea
+              id="description"
+              placeholder="category description"
+              {...register('description')}
+              disabled={loading}
+            />
             {errors.description && (
               <span className="mt-1 block text-xs text-red-500">{errors.description.message}</span>
             )}
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" variant="gradient_blue" disabled={loading}>
               {loading ? (
                 <>
-                  <Edit className="mr-2 animate-spin" variant="Bulk" />
-                  Menyimpan...
+                  <Edit size="32" variant="Bulk" />
+                  Mengedit...
                 </>
               ) : (
-                'Update'
+                <>
+                  <Edit size="32" variant="Bulk" />
+                  Edit
+                </>
               )}
             </Button>
           </DialogFooter>

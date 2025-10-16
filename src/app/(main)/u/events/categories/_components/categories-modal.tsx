@@ -55,9 +55,9 @@ function CategoryForm({
       try {
         let res;
         if (mode === 'edit' && id) {
-          res = await editCategory({ id, name: data.name, description: data.description });
+          res = await editCategory(id, { ...data });
         } else {
-          res = await addCategory({ name: data.name, description: data.description });
+          res = await addCategory({ ...data });
         }
         if (res.success) {
           showToast(
