@@ -7,6 +7,6 @@ export function success<T>(data: T): QueryResult<T> {
   return { success: true, data };
 }
 
-export function fail(message: string): QueryResult<never> {
+export function fail<T = never>(message: string): QueryResult<T> {
   return { success: false, error: message };
 }

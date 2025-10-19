@@ -6,11 +6,14 @@ import { user } from '@/db/schema/auth-schema';
 export const events = pgTable('events', {
   id: uuid('id').defaultRandom().primaryKey(),
   title: text('title').notNull(),
+  slug: text('slug').notNull(),
   description: text('description'),
-  address: text('address').notNull(),
+  location_name: text('location_name').notNull(),
+  location_url: text('location_url'),
   start_time: timestamp('start_time', { withTimezone: true }).notNull(),
   event_type: text('event_type', { enum: ['online', 'offline'] }).notNull(),
   is_attendance_open: boolean('is_attendance_open').default(false).notNull(),
+  qr_token: text('qr_token'), // Secure token for QR code attendance
   image: text('image'),
   collaborator_id: text('collaborator_id').references(() => user.id),
   category_id: uuid('category_id').references(() => event_categories.id),

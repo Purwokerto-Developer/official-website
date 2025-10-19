@@ -43,6 +43,7 @@ interface FormInputProps<T extends FieldValues> {
   options?: Option[];
   previousImage?: string;
   className?: string; // Custom styling untuk setiap field
+  onChange?: (value: string) => void; // Custom onChange handler
 }
 
 export const FormInput = <T extends FieldValues>({
@@ -57,6 +58,7 @@ export const FormInput = <T extends FieldValues>({
   options = [],
   previousImage,
   className,
+  onChange,
 }: FormInputProps<T>) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -109,7 +111,14 @@ export const FormInput = <T extends FieldValues>({
 
       case FormFieldType.SELECT:
         return (
-          <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
+          <Select 
+            onValueChange={(value) => {
+              field.onChange(value);
+              onChange?.(value);
+            }} 
+            value={field.value} 
+            disabled={disabled}
+          >
             <SelectTrigger className={cn('w-full text-[#064061] hover:text-[#064061]', className)}>
               <SelectValue placeholder={placeholder || `${label || name}`} />
             </SelectTrigger>

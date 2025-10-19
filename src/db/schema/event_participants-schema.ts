@@ -14,4 +14,5 @@ export const event_participants = pgTable('event_participants', {
   qr_code: text('qr_code'),
   attendance_time: timestamp('attendance_time', { withTimezone: true }),
   joined_at: timestamp('joined_at').defaultNow(),
+  cancelled_at: timestamp('cancelled_at', { withTimezone: true }),
 });

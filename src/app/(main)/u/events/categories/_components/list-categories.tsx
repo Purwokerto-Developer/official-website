@@ -97,6 +97,7 @@ type ListCategoriesProps = {
 
 import { getCategories, deleteCategory } from '@/action/event-action';
 import { Category } from '@/types/categories-type';
+import EmptyState from '@/components/ui/empty-state';
 
 export default function ListCategories({ categories }: ListCategoriesProps) {
   // Custom filter function for multi-column searching
@@ -442,8 +443,12 @@ export default function ListCategories({ categories }: ListCategoriesProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                <TableCell colSpan={columns.length} className="h-40 text-center">
+                  <EmptyState
+                    title="No categories found"
+                    description="Try adding a new category or adjusting your filters."
+                    heightClassName="h-[160px]"
+                  />
                 </TableCell>
               </TableRow>
             )}

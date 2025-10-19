@@ -1,10 +1,9 @@
 'use client';
 
-import Image from 'next/image';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { TeamItem } from '@/types/sidebar';
-import { ChevronsUpDown } from 'lucide-react';
-import { ShieldTick, Verify } from 'iconsax-reactjs';
+import { Verify } from 'iconsax-reactjs';
+import Image from 'next/image';
 
 export function TeamSwitcher({ teams }: { teams: TeamItem[] }) {
   const activeTeam = teams[0];

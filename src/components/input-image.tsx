@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { AlertCircleIcon, ImageIcon, UploadIcon, XIcon } from 'lucide-react';
+import imageCompression from 'browser-image-compression';
+import Image from 'next/image';
 
 import { useFileUpload } from '@/hooks/use-file-upload';
 import { Button } from '@/components/ui/button';
@@ -19,6 +21,8 @@ export default function InputImage({
 }) {
   const maxSizeMB = 2;
   const maxSize = maxSizeMB * 1024 * 1024;
+  const [isCompressing, setIsCompressing] = React.useState(false);
+  
   const [
     { files, isDragging, errors },
     {
@@ -35,6 +39,42 @@ export default function InputImage({
     maxSize,
     multiple: false,
     initialFiles: value ? [value] : [],
+    onFilesAdded: async (addedFiles) => {
+      // Compress images after they're added
+      if (addedFiles.length > 0 && addedFiles[0].file instanceof File) {
+        const file = addedFiles[0].file;
+        if (file.type.startsWith('image/') && !file.type.includes('svg')) {
+          setIsCompressing(true);
+          try {
+            const compressedFile = await imageCompression(file, {
+              maxSizeMB: 1, // Compress to max 1MB
+              maxWidthOrHeight: 1920, // Max width/height
+              useWebWorker: true,
+              fileType: 'image/jpeg', // Convert to JPEG for better compression
+            });
+            
+            // Replace the file in the files array
+            const updatedFiles = [...files];
+            const fileIndex = updatedFiles.findIndex(f => f.id === addedFiles[0].id);
+            if (fileIndex !== -1) {
+              updatedFiles[fileIndex] = {
+                ...updatedFiles[fileIndex],
+                file: compressedFile,
+                preview: URL.createObjectURL(compressedFile),
+              };
+              // Update the parent form
+              if (onChange) {
+                onChange({ file: compressedFile, preview: URL.createObjectURL(compressedFile) });
+              }
+            }
+            setIsCompressing(false);
+          } catch (error) {
+            console.error('Image compression failed:', error);
+            setIsCompressing(false);
+          }
+        }
+      }
+    },
   });
 
   // Sync with parent form
@@ -65,10 +105,13 @@ export default function InputImage({
           />
           {previewUrl ? (
             <div className="absolute inset-0 flex items-center justify-center p-4">
-              <img
+              <Image
                 src={previewUrl}
                 alt={files[0]?.file?.name || 'Uploaded image'}
+                width={200}
+                height={200}
                 className="mx-auto max-h-full rounded object-contain"
+                sizes="200px"
               />
             </div>
           ) : (
@@ -79,19 +122,28 @@ export default function InputImage({
               >
                 <ImageIcon className="size-4 opacity-60" />
               </div>
-              <p className="mb-1.5 text-sm font-medium">Drop your image here</p>
-              <p className="text-muted-foreground text-xs">
-                SVG, PNG, JPG or GIF (max. {maxSizeMB}MB)
-              </p>
-              <Button
-                variant="outline"
-                className="mt-4"
-                onClick={openFileDialog}
-                disabled={disabled}
-              >
-                <UploadIcon className="-ms-1 size-4 opacity-60" aria-hidden="true" />
-                Select image
-              </Button>
+              {isCompressing ? (
+                <>
+                  <p className="mb-1.5 text-sm font-medium">Compressing image...</p>
+                  <p className="text-muted-foreground text-xs">Please wait</p>
+                </>
+              ) : (
+                <>
+                  <p className="mb-1.5 text-sm font-medium">Drop your image here</p>
+                  <p className="text-muted-foreground text-xs">
+                    SVG, PNG, JPG or GIF (max. {maxSizeMB}MB, auto-compressed)
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="mt-4"
+                    onClick={openFileDialog}
+                    disabled={disabled || isCompressing}
+                  >
+                    <UploadIcon className="-ms-1 size-4 opacity-60" aria-hidden="true" />
+                    Select image
+                  </Button>
+                </>
+              )}
             </div>
           )}
         </div>

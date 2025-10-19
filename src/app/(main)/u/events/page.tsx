@@ -1,7 +1,6 @@
 import React from 'react';
 import EventContent from './_components/event-content';
 import { getEvent } from '@/action/event-action';
-import { forbidden } from 'next/navigation';
 
 interface EventPageProps {
   searchParams: Promise<{
@@ -23,9 +22,10 @@ const EventPage = async ({ searchParams }: EventPageProps) => {
   const result = await getEvent(page, pageSize, search);
   const events = result.success ? (result.data ?? []) : [];
 
-  if (!events.length) return forbidden();
-
   return <EventContent events={events} page={page} pageSize={pageSize} />;
 };
+
+// Revalidate every 60 seconds for fresh event data
+export const revalidate = 60;
 
 export default EventPage;

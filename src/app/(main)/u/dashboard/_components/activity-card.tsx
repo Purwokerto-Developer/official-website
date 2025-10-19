@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Calendar, Location, Activity, TickCircle, ArrowRight2 } from 'iconsax-reactjs';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import EmptyState from '@/components/ui/empty-state';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -105,24 +106,12 @@ const ActivityCard = () => {
 
       <CardContent className="px-6">
         {isEmpty ? (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="flex h-[380px] flex-col items-center justify-center text-center"
-          >
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-blue-50">
-              <Image src={'/img-logo.png'} width={60} height={60} alt="Logo" />
-            </div>
-            <h2 className="mt-4 text-base font-semibold text-gray-800">
-              Tidak ada event mendatang
-            </h2>
-            <p className="mt-1 max-w-sm text-sm text-gray-500">
-              Saat ini belum ada event baru. Tetap pantau halaman komunitas untuk info event
-              selanjutnya!
-            </p>
-            <Button className="mt-4">Lihat Semua Event</Button>
-          </motion.div>
+          <EmptyState
+            title="Tidak ada event mendatang"
+            description="Saat ini belum ada event baru. Tetap pantau halaman komunitas untuk info event selanjutnya!"
+            actionLabel="Lihat Semua Event"
+            onAction={() => {}}
+          />
         ) : (
           <motion.div
             initial="hidden"

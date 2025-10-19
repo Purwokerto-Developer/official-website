@@ -71,7 +71,7 @@ export const sidebarItems = {
       url: '#',
       icon: Calendar2,
       items: [
-        { title: 'All Events', url: '/u/events/', icon: Calendar2 },
+        { title: 'Manage Events', url: '/u/events/manage-event', icon: Calendar2 },
         { title: 'Create events', url: '/u/events/create', icon: AddCircle },
         { title: 'Event Categories', url: '/u/events/categories', icon: Category },
       ],

@@ -1,8 +1,7 @@
-// components/event-list.tsx
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { formatDateID } from '@/lib/utils';
+import { formatDateID, slugify } from '@/lib/utils';
 import type { EventListItem } from '@/types/event-type';
 import { Gallery, Verify } from 'iconsax-reactjs';
 import Image from 'next/image';
@@ -12,9 +11,9 @@ interface EventListProps {
   item: EventListItem;
 }
 
-export const EventList: React.FC<EventListProps> = ({ item }) => {
+export const EventList = ({ item }: EventListProps) => {
   return (
-    <Link href={`events/detail/${item.id}`}>
+    <Link href={`/u/events/detail/${item.slug ?? slugify(item.title)}`}>
       <Card className="bg-muted relative rounded-xl p-0 transition-shadow hover:shadow-md">
         <div className="flex h-full flex-col">
           {/* Image */}
@@ -34,7 +33,7 @@ export const EventList: React.FC<EventListProps> = ({ item }) => {
             <div className="absolute top-4 right-4">
               <Badge
                 className="rounded-full"
-                variant={item.event_type === 'online' ? 'green' : 'yellow'}
+                variant={item.event_type === 'online' ? 'green' : 'secondary'}
               >
                 {item.event_type}
               </Badge>
@@ -43,20 +42,22 @@ export const EventList: React.FC<EventListProps> = ({ item }) => {
 
           {/* Content */}
           <CardContent className="px-4 pt-4 pb-2">
-            <div className="text-muted-foreground mb-1 flex items-center gap-2 text-xs">
+            <div className="text-muted-foreground mb-1 line-clamp-1 flex w-full items-center gap-2 text-sm">
               <span className="font-medium">{item.collaborator_name ?? 'Unknown'}</span>
-              <Verify size={20} className="text-blue-500" variant="Bulk" />
+              <Verify size={20} className="text-primary" variant="Bulk" />
             </div>
-            <div className="mb-2 truncate text-base font-semibold">{item.title}</div>
+            <div className="mb-2 line-clamp-1 w-full truncate text-base font-semibold">
+              {item.title}
+            </div>
             <Separator className="mb-2" />
             <div className="flex justify-between text-xs">
               <div>
                 <div className="text-muted-foreground">LOCATION</div>
-                <div className="line-clamp-1 w-11/12 font-bold">{item.address ?? 'Unknown'}</div>
+                <div className="line-clamp-1 w-12 font-bold">{item.location_name ?? 'Unknown'}</div>
               </div>
               <div>
                 <div className="text-muted-foreground">DATE</div>
-                <div className="font-bold">
+                <div className="line-clamp-1 w-full font-bold">
                   {formatDateID(item.start_time) ? formatDateID(item.start_time) : 'Unknown'}
                 </div>
               </div>

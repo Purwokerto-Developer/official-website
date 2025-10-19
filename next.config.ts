@@ -3,6 +3,9 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   experimental: {
     authInterrupts: true,
+    serverActions: {
+      bodySizeLimit: '10mb', // Increase body size limit for image uploads
+    },
   },
   images: {
     remotePatterns: [
