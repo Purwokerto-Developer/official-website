@@ -158,14 +158,16 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
       const result = await attendEventViaQR(qrData);
       if (result.success) {
         setUserStatus((prev) => ({ ...prev, hasAttended: true }));
+        // Toast hanya dipanggil sekali di sini
         showToast('success', 'Attendance confirmed via QR!');
-        router.refresh();
+        // Jangan langsung refresh, biarkan user melihat toast
+        setTimeout(() => router.refresh(), 1200);
       } else {
         // Handle already attended case gracefully
         if (result.error?.includes('already marked attendance')) {
           setUserStatus((prev) => ({ ...prev, hasAttended: true }));
           showToast('success', 'Attendance already recorded for this event');
-          router.refresh();
+          setTimeout(() => router.refresh(), 1200);
         } else {
           showToast('error', result.error || 'Failed to verify attendance');
         }
@@ -240,19 +242,21 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
               </div>
             </div>
 
-            {/* Alert */}
-            <div
-              className={`flex items-start gap-2 rounded-md border-none p-3 text-sm ${
-                data.is_attendance_open
-                  ? 'bg-green-600/10 text-green-600'
-                  : 'bg-yellow-600/10 text-yellow-600'
-              }`}
-            >
-              <InfoCircle size="18" className="mt-0.5" />
-              {data.is_attendance_open
-                ? 'Registration is open. Secure your spot now.'
-                : 'Registration is closed.'}
-            </div>
+            {/* Attendance Status Alert - hanya tampil jika user sudah join */}
+            {userStatus.isJoined && (
+              <div
+                className={`flex items-start gap-2 rounded-md border-none p-3 text-sm ${
+                  data.is_attendance_open
+                    ? 'bg-green-600/10 text-green-600'
+                    : 'bg-yellow-600/10 text-yellow-600'
+                }`}
+              >
+                <InfoCircle size="18" className="mt-0.5" />
+                {data.is_attendance_open
+                  ? 'Attendance is open. You can mark your attendance.'
+                  : 'Attendance is closed.'}
+              </div>
+            )}
 
             {/* Primary action buttons - differs for admin vs user */}
             {adminMode ? (
