@@ -1,8 +1,17 @@
-import React from 'react';
+import { getEventBySlug } from '@/action/event-action';
+import { notFound } from 'next/navigation';
 import DetailEventContent from '../_components/detail-event-content';
 
-const DetailEvent = () => {
-  return <DetailEventContent />;
+const DetailEvent = async ({ params }: { params: { slug: string } }) => {
+  const { slug } = params;
+  const response = await getEventBySlug(slug);
+  if (!response.success || !response.data) return notFound();
+
+  const event = response.data;
+  return <DetailEventContent data={event} />;
 };
+
+// Revalidate every 30 seconds for event details
+export const revalidate = 30;
 
 export default DetailEvent;

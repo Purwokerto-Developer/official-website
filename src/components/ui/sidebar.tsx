@@ -490,16 +490,17 @@ function SidebarMenuButton({
   const Comp = asChild ? Slot : 'button';
   const { isMobile, state } = useSidebar();
 
-  const button = (
-    <Comp
-      data-slot="sidebar-menu-button"
-      data-sidebar="menu-button"
-      data-size={size}
-      data-active={isActive}
-      className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
-      {...props}
-    />
-  );
+  // Ensure hydration consistency: always use same tag and props
+  const buttonProps = {
+    'data-slot': 'sidebar-menu-button',
+    'data-sidebar': 'menu-button',
+    'data-size': size,
+    'data-active': isActive,
+    className: cn(sidebarMenuButtonVariants({ variant, size }), className),
+    type: !asChild ? 'button' : undefined,
+    ...props,
+  };
+  const button = React.createElement(Comp, buttonProps);
 
   if (!tooltip) {
     return button;
@@ -582,9 +583,10 @@ function SidebarMenuSkeleton({
 }: React.ComponentProps<'div'> & {
   showIcon?: boolean;
 }) {
-  // Random width between 50 to 90%.
+  // Use a stable width to avoid hydration mismatch
   const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`;
+    // Use a hash-based approach for consistent server/client rendering
+    return '70%'; // Fixed width to avoid hydration issues
   }, []);
 
   return (

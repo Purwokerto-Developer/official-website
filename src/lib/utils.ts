@@ -19,3 +19,19 @@ export function formatDateID(date: Date | string, options?: Intl.DateTimeFormatO
     ...(options || {}),
   });
 }
+
+// Slug helpers
+export function slugify(input: string): string {
+  return input
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{Diacritic}+/gu, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+}
+
+export function deslugify(slug: string): string {
+  return decodeURIComponent(slug.replace(/-/g, ' ')).trim();
+}
