@@ -1,5 +1,5 @@
 import React from 'react';
-import { DetailEventHeader } from './detail-event-hrader';
+import { DetailEventHeader } from './detail-event-header';
 import { DetailEventJoin } from './detail-event-join';
 import { EventDetail } from '@/types/event-type';
 import { getServerSession } from '@/lib/better-auth/get-session';
