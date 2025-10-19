@@ -3,16 +3,16 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { EventDetail } from '@/types/event-type';
-import {
-  Airdrop,
-  Calendar,
-  Colorfilter,
-  InfoCircle,
-  Location,
-  WristClock
-} from 'iconsax-reactjs';
+import { Airdrop, Calendar, Colorfilter, InfoCircle, Location, WristClock } from 'iconsax-reactjs';
 import { useEffect, useMemo, useState } from 'react';
-import { joinEvent, setAttendanceOpen, checkUserEventStatus, cancelEventJoin, markAttendance, attendEventViaQR } from '@/action/event-action';
+import {
+  joinEvent,
+  setAttendanceOpen,
+  checkUserEventStatus,
+  cancelEventJoin,
+  markAttendance,
+  attendEventViaQR,
+} from '@/action/event-action';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -112,7 +112,7 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
     try {
       const result = await joinEvent(data.id);
       if (result.success) {
-        setUserStatus(prev => ({ ...prev, isJoined: true }));
+        setUserStatus((prev) => ({ ...prev, isJoined: true }));
       }
     } catch (error) {
       console.error('Failed to join event:', error);
@@ -126,7 +126,7 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
     try {
       const result = await cancelEventJoin(data.id);
       if (result.success) {
-        setUserStatus(prev => ({ ...prev, isJoined: false }));
+        setUserStatus((prev) => ({ ...prev, isJoined: false }));
       }
     } catch (error) {
       console.error('Failed to cancel join:', error);
@@ -140,7 +140,7 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
     try {
       const result = await markAttendance(data.id);
       if (result.success) {
-        setUserStatus(prev => ({ ...prev, hasAttended: true }));
+        setUserStatus((prev) => ({ ...prev, hasAttended: true }));
         showToast('success', 'Attendance marked successfully!');
       } else {
         showToast('error', result.error || 'Failed to mark attendance');
@@ -157,13 +157,13 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
     try {
       const result = await attendEventViaQR(qrData);
       if (result.success) {
-        setUserStatus(prev => ({ ...prev, hasAttended: true }));
+        setUserStatus((prev) => ({ ...prev, hasAttended: true }));
         showToast('success', 'Attendance confirmed via QR!');
         router.refresh();
       } else {
         // Handle already attended case gracefully
         if (result.error?.includes('already marked attendance')) {
-          setUserStatus(prev => ({ ...prev, hasAttended: true }));
+          setUserStatus((prev) => ({ ...prev, hasAttended: true }));
           showToast('success', 'Attendance already recorded for this event');
           router.refresh();
         } else {
@@ -179,9 +179,9 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
   };
 
   return (
-    <div className="flex w-full flex-col justify-between gap-8 md:flex-row">
+    <div className="flex w-full flex-col justify-between gap-8 md:flex-row md:gap-8 lg:gap-12 xl:gap-16">
       {/* Kiri – Banner */}
-      <div className="flex relative h-[700px] flex-1 items-center justify-center overflow-hidden rounded-2xl bg-slate-100 dark:bg-neutral-900">
+      <div className="relative flex h-64 flex-1 items-center justify-center overflow-hidden rounded-2xl bg-slate-100 sm:h-96 md:h-[700px] dark:bg-neutral-900">
         {/* event image */}
         <Image
           src={data.image ?? '/event-banner.jpg'}
@@ -194,7 +194,7 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
       </div>
 
       {/* Kanan – Detail & Status */}
-      <div className="w-6/12 space-y-6">
+      <div className="w-full space-y-6 md:w-6/12">
         {/* CARD STATUS */}
         <Card className="bg-card border-primary/20 rounded-2xl border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between">
@@ -204,7 +204,9 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
             </div>
             <div
               className={`rounded-full px-3 py-1 text-sm ${
-                data.is_attendance_open ? 'bg-green-600/10 text-green-600' : 'bg-red-600/10 text-red-600'
+                data.is_attendance_open
+                  ? 'bg-green-600/10 text-green-600'
+                  : 'bg-red-600/10 text-red-600'
               }`}
             >
               {data.is_attendance_open ? 'Open' : 'Closed'}
@@ -241,7 +243,9 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
             {/* Alert */}
             <div
               className={`flex items-start gap-2 rounded-md border-none p-3 text-sm ${
-                data.is_attendance_open ? 'bg-green-600/10 text-green-600' : 'bg-yellow-600/10 text-yellow-600'
+                data.is_attendance_open
+                  ? 'bg-green-600/10 text-green-600'
+                  : 'bg-yellow-600/10 text-yellow-600'
               }`}
             >
               <InfoCircle size="18" className="mt-0.5" />
@@ -265,7 +269,9 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
                 <AlertDialogContent className="bg-background rounded-xl border-0 shadow-xl">
                   <AlertDialogHeader>
                     <AlertDialogTitle>
-                      {data.is_attendance_open ? 'Close attendance session?' : 'Open attendance session?'}
+                      {data.is_attendance_open
+                        ? 'Close attendance session?'
+                        : 'Open attendance session?'}
                     </AlertDialogTitle>
                     <AlertDialogDescription>
                       {data.is_attendance_open
@@ -291,7 +297,6 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
               </AlertDialog>
             ) : (
               <div className="space-y-3">
-
                 {/* Action Buttons - Only show if not attended */}
                 {!userStatus.hasAttended && (
                   <div className="space-y-2">
@@ -302,7 +307,11 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
                         className="w-full rounded-full"
                         disabled={joining || new Date(data.start_time) < new Date()}
                       >
-                        {new Date(data.start_time) < new Date() ? 'Event Ended' : joining ? 'Joining...' : 'Join Event'}
+                        {new Date(data.start_time) < new Date()
+                          ? 'Event Ended'
+                          : joining
+                            ? 'Joining...'
+                            : 'Join Event'}
                       </Button>
                     ) : (
                       <div className="space-y-2">
@@ -319,7 +328,9 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
                                 {loading ? 'Cancelling...' : 'Cancel Join'}
                               </Button>
                               <Button
-                                onClick={() => window.open(`/u/events/attendance/${data.id}?mode=link`, '_blank')}
+                                onClick={() =>
+                                  window.open(`/u/events/attendance/${data.id}?mode=link`, '_blank')
+                                }
                                 variant="gradient_blue"
                                 className="flex-1 rounded-full"
                                 disabled={!data.is_attendance_open}
@@ -330,7 +341,9 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
                             <Alert className="border-blue-200 bg-blue-50 dark:border-blue-700 dark:bg-blue-950">
                               <InfoCircle size={16} className="text-blue-600 dark:text-blue-400" />
                               <AlertTitle className="text-blue-900 dark:text-blue-100">
-                                {data.is_attendance_open ? 'Attendance is Open' : 'Waiting for Attendance'}
+                                {data.is_attendance_open
+                                  ? 'Attendance is Open'
+                                  : 'Waiting for Attendance'}
                               </AlertTitle>
                               <AlertDescription className="text-blue-700 dark:text-blue-300">
                                 {data.is_attendance_open
@@ -366,7 +379,9 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
                             <Alert className="border-green-200 bg-green-50 dark:border-green-700 dark:bg-green-950">
                               <Scan size={16} className="text-green-600 dark:text-green-400" />
                               <AlertTitle className="text-green-900 dark:text-green-100">
-                                {data.is_attendance_open ? 'QR Scanner Ready' : 'Waiting for QR Code'}
+                                {data.is_attendance_open
+                                  ? 'QR Scanner Ready'
+                                  : 'Waiting for QR Code'}
                               </AlertTitle>
                               <AlertDescription className="text-green-700 dark:text-green-300">
                                 {data.is_attendance_open
@@ -386,7 +401,9 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
                   <div className="space-y-2">
                     <Alert className="border-green-200 bg-green-50 dark:border-green-700 dark:bg-green-950">
                       <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
-                      <AlertTitle className="text-green-900 dark:text-green-100">Attendance Confirmed</AlertTitle>
+                      <AlertTitle className="text-green-900 dark:text-green-100">
+                        Attendance Confirmed
+                      </AlertTitle>
                       <AlertDescription className="text-green-700 dark:text-green-300">
                         You have successfully attended this event. Thank you for participating!
                       </AlertDescription>
@@ -430,12 +447,14 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
                     href={data.location_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-muted-foreground text-sm underline underline-offset-4 hover:text-primary"
+                    className="text-muted-foreground hover:text-primary text-sm underline underline-offset-4"
                   >
                     {data.location_name}
                   </a>
                 ) : (
-                  <span className={`text-sm ${new Date(data.start_time) <= new Date() ? 'text-muted-foreground/60' : 'text-muted-foreground'}`}>
+                  <span
+                    className={`text-sm ${new Date(data.start_time) <= new Date() ? 'text-muted-foreground/60' : 'text-muted-foreground'}`}
+                  >
                     {data.location_name}
                     {new Date(data.start_time) <= new Date() && (
                       <span className="ml-1 text-xs text-red-500">(Event Expired)</span>
@@ -464,8 +483,6 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
               </div>
               <p className="text-muted-foreground text-sm">{formattedTime}</p>
             </div>
-
-           
 
             {/* Collaborator */}
             <div className="flex items-center justify-between gap-2">

@@ -21,23 +21,22 @@ export const DetailEventHeader = ({ data }: DetailEventHeaderProps) => {
         sizes="(max-width: 768px) 100vw, 1200px"
       />
       <div className="absolute bottom-0 left-0 z-20 flex flex-col gap-4 p-6 text-white">
-        <h1 className="text-3xl font-bold w-9/12">{data.title}</h1>
+        <h1 className="line-clamp-3 w-9/12 text-base font-bold md:text-3xl">{data.title}</h1>
         <div className="flex items-center gap-8">
           <div className="capitalize">
             <p>Collaborator</p>
             <div className="flex items-center gap-2">
               <UserOctagon size="20" variant="Bulk" />
-              <span className="font-semibold">{data.collaborator_name || '-'}</span>
+              <span className="line-clamp-1 font-semibold">{data.collaborator_name || '-'}</span>
             </div>
           </div>
           <div className="capitalize">
             <p>Category</p>
             <div className="flex items-center gap-2">
               <Colorfilter size="20" variant="Bulk" />
-              <span className="font-semibold">{data.category_name || '-'}</span>
+              <span className="line-clamp-1 font-semibold">{data.category_name || '-'}</span>
             </div>
           </div>
-          
         </div>
       </div>
     </div>
