@@ -32,7 +32,7 @@ export default function QRScannerModal({
       const timer = setTimeout(() => {
         initializeScanner();
       }, 100);
-      
+
       return () => clearTimeout(timer);
     }
 
@@ -46,7 +46,7 @@ export default function QRScannerModal({
   const initializeScanner = async () => {
     try {
       setCameraError(null);
-      
+
       // Check if DOM element exists before initializing
       const qrReaderElement = document.getElementById('qr-reader');
       if (!qrReaderElement) {
@@ -54,25 +54,24 @@ export default function QRScannerModal({
         setCameraError('Scanner initialization failed. Please try again.');
         return;
       }
-      
+
       const html5QrCode = new Html5Qrcode('qr-reader');
       scannerRef.current = html5QrCode;
 
       await html5QrCode.start(
-        { facingMode: 'environment' }, // Use back camera
+        { facingMode: 'environment' },
         {
           fps: 10,
           qrbox: { width: 250, height: 250 },
         },
         async (decodedText) => {
-          // QR Code detected
           setScanning(false);
           setProcessing(true);
 
           try {
             // Validate QR data
             const qrData = JSON.parse(decodedText);
-            
+
             if (qrData.eventId !== eventId) {
               showToast('error', 'This QR code is for a different event');
               setProcessing(false);
@@ -81,10 +80,10 @@ export default function QRScannerModal({
 
             // Call the attendance action
             await onScanSuccess(decodedText);
-            
+
             setSuccess(true);
             setProcessing(false);
-            
+
             // Close modal after 2 seconds
             setTimeout(() => {
               handleClose();
@@ -96,12 +95,11 @@ export default function QRScannerModal({
             setScanning(true);
           }
         },
-        (errorMessage) => {
-          // Scanning in progress (not an error)
+        () => {
           if (!scanning) {
             setScanning(true);
           }
-        }
+        },
       );
     } catch (error) {
       console.error('Failed to initialize scanner:', error);
@@ -144,15 +142,15 @@ export default function QRScannerModal({
         <div className="space-y-4">
           {/* Camera Preview */}
           <div className="relative">
-            <div 
-              id="qr-reader" 
-              className="w-full rounded-lg overflow-hidden border-2 border-gray-200 dark:border-gray-700"
+            <div
+              id="qr-reader"
+              className="w-full overflow-hidden rounded-lg border-2 border-gray-200 dark:border-gray-700"
             />
-            
+
             {/* Scanning Overlay */}
             {scanning && !processing && !success && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg">
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg">
+              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/20">
+                <div className="rounded-lg bg-white p-4 shadow-lg dark:bg-gray-800">
                   <div className="flex items-center gap-2 text-blue-600">
                     <Scan className="animate-pulse" size={24} />
                     <span className="font-medium">Scanning...</span>
@@ -163,9 +161,9 @@ export default function QRScannerModal({
 
             {/* Processing Overlay */}
             {processing && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-lg">
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg text-center">
-                  <Loader2 className="animate-spin mx-auto mb-2 text-blue-600" size={32} />
+              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/60">
+                <div className="rounded-lg bg-white p-6 text-center shadow-lg dark:bg-gray-800">
+                  <Loader2 className="mx-auto mb-2 animate-spin text-blue-600" size={32} />
                   <p className="font-medium">Verifying attendance...</p>
                   <p className="text-sm text-gray-500">Please wait</p>
                 </div>
@@ -174,10 +172,10 @@ export default function QRScannerModal({
 
             {/* Success Overlay */}
             {success && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-lg">
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg text-center">
+              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/60">
+                <div className="rounded-lg bg-white p-6 text-center shadow-lg dark:bg-gray-800">
                   <CheckCircle className="mx-auto mb-2 text-green-600" size={48} />
-                  <p className="font-bold text-green-600 text-lg">Attendance Confirmed!</p>
+                  <p className="text-lg font-bold text-green-600">Attendance Confirmed!</p>
                   <p className="text-sm text-gray-500">Closing...</p>
                 </div>
               </div>
@@ -185,10 +183,10 @@ export default function QRScannerModal({
 
             {/* Error State */}
             {cameraError && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-lg">
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg text-center max-w-xs">
+              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/60">
+                <div className="max-w-xs rounded-lg bg-white p-6 text-center shadow-lg dark:bg-gray-800">
                   <X className="mx-auto mb-2 text-red-600" size={48} />
-                  <p className="font-medium text-red-600 mb-2">Camera Error</p>
+                  <p className="mb-2 font-medium text-red-600">Camera Error</p>
                   <p className="text-sm text-gray-600">{cameraError}</p>
                 </div>
               </div>
@@ -197,7 +195,7 @@ export default function QRScannerModal({
 
           {/* Instructions */}
           {!processing && !success && !cameraError && (
-            <div className="text-center space-y-2">
+            <div className="space-y-2 text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Point your camera at the QR code displayed by the admin
               </p>
@@ -210,11 +208,7 @@ export default function QRScannerModal({
           {/* Cancel Button */}
           {!processing && !success && (
             <div className="flex justify-center">
-              <Button
-                onClick={handleClose}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
+              <Button onClick={handleClose} variant="outline" className="flex items-center gap-2">
                 <X size={16} />
                 Cancel
               </Button>
@@ -225,4 +219,3 @@ export default function QRScannerModal({
     </Dialog>
   );
 }
-

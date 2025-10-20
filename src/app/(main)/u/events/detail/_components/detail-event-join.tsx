@@ -135,24 +135,6 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
     }
   };
 
-  const handleAttend = async () => {
-    setLoading(true);
-    try {
-      const result = await markAttendance(data.id);
-      if (result.success) {
-        setUserStatus((prev) => ({ ...prev, hasAttended: true }));
-        showToast('success', 'Attendance marked successfully!');
-      } else {
-        showToast('error', result.error || 'Failed to mark attendance');
-      }
-    } catch (error) {
-      console.error('Failed to mark attendance:', error);
-      showToast('error', 'Failed to mark attendance');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleQRScan = async (qrData: string) => {
     try {
       const result = await attendEventViaQR(qrData);
@@ -321,27 +303,16 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
                       <div className="space-y-2">
                         {/* Online Event - Show attendance link button */}
                         {data.event_type === 'online' && (
-                          <div className="space-y-2">
-                            <div className="flex gap-2">
-                              <Button
-                                onClick={handleCancelJoin}
-                                variant="outline"
-                                className="flex-1 rounded-full"
-                                disabled={loading || new Date(data.start_time) < new Date()}
-                              >
-                                {loading ? 'Cancelling...' : 'Cancel Join'}
-                              </Button>
-                              <Button
-                                onClick={() =>
-                                  window.open(`/u/events/attendance/${data.id}?mode=link`, '_blank')
-                                }
-                                variant="gradient_blue"
-                                className="flex-1 rounded-full"
-                                disabled={!data.is_attendance_open}
-                              >
-                                {data.is_attendance_open ? 'Mark Attendance' : 'Attendance Closed'}
-                              </Button>
-                            </div>
+                          <div className="space-y-4">
+                            <Button
+                              onClick={handleCancelJoin}
+                              variant="outline"
+                              className="w-full flex-1 rounded-full"
+                              disabled={loading || new Date(data.start_time) < new Date()}
+                            >
+                              {loading ? 'Cancelling...' : 'Cancel Join'}
+                            </Button>
+
                             <Alert className="border-blue-200 bg-blue-50 dark:border-blue-700 dark:bg-blue-950">
                               <InfoCircle size={16} className="text-blue-600 dark:text-blue-400" />
                               <AlertTitle className="text-blue-900 dark:text-blue-100">
@@ -351,7 +322,7 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
                               </AlertTitle>
                               <AlertDescription className="text-blue-700 dark:text-blue-300">
                                 {data.is_attendance_open
-                                  ? 'Click "Mark Attendance" to open the attendance page in a new tab.'
+                                  ? 'Admin will provide the attendance link shortly.'
                                   : 'Attendance will open soon. You will be able to mark attendance when ready.'}
                               </AlertDescription>
                             </Alert>
@@ -447,14 +418,14 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
               </div>
               {data.location_name ? (
                 data.location_url && new Date(data.start_time) > new Date() ? (
-                  <a
+                  <Link
                     href={data.location_url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-muted-foreground hover:text-primary text-sm underline underline-offset-4"
                   >
                     {data.location_name}
-                  </a>
+                  </Link>
                 ) : (
                   <span
                     className={`text-sm ${new Date(data.start_time) <= new Date() ? 'text-muted-foreground/60' : 'text-muted-foreground'}`}
@@ -496,8 +467,6 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
               </div>
               <p className="text-muted-foreground text-sm">{data.collaborator_name ?? '-'}</p>
             </div>
-
-            {/* Admin attendance controls moved to manage-event page */}
           </div>
         </div>
       </div>
