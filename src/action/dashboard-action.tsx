@@ -66,10 +66,7 @@ export type UpcomingEvent = {
   description?: string | null;
 };
 
-// Simple helper to fetch upcoming events for the dashboard
 export async function getUpcomingEvents(): Promise<UpcomingEvent[]> {
-  // NOTE: keep this simple — project may later fetch real fields from the events table.
-  // select explicit columns to avoid surprises from DB driver
   const rows = await db
     .select({
       id: events.id,
@@ -86,7 +83,6 @@ export async function getUpcomingEvents(): Promise<UpcomingEvent[]> {
   return rows.map((r: any, i: number) => ({
     id: r.id ?? i + 1,
     title: r.title ?? 'Untitled Event',
-    // Use locale string for display (client components expect readable string)
     date: r.start_time
       ? r.start_time instanceof Date
         ? r.start_time.toLocaleString()
