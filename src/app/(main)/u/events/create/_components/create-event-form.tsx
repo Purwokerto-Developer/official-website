@@ -1,65 +1,78 @@
 'use client';
 
 import { createEventWithImage } from '@/action/event-action';
+import { showToast } from '@/components/custom-toaster';
 import { FormInput } from '@/components/form-input';
+import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
+import { useFormOptions } from '@/lib/swr';
+import { slugify } from '@/lib/utils';
 import { FormFieldType } from '@/types/form-field-type';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Additem } from 'iconsax-reactjs';
+import { useRouter } from 'next/navigation';
 import { useMemo, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import AddCategoryModal from '../../categories/_components/add-category-modal';
-import { Button } from '@/components/ui/button';
-import { Additem } from 'iconsax-reactjs';
-import { DatePicker, TimePicker } from '@/components/ui/date-picker';
-import { showToast } from '@/components/custom-toaster';
-import { slugify } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
-import { useFormOptions } from '@/lib/swr';
 
-const eventSchema = z.object({
-  title: z
-    .string()
-    .min(5, 'Title must be at least 5 characters')
-    .max(100, 'Title max 100 characters'),
-  description: z
-    .string()
-    .min(10, 'Description must be at least 10 characters')
-    .max(1000, 'Description max 1000 characters'),
-  location_name: z.string().min(2, 'Location name is required'),
-  location_url: z.string().url('Invalid URL').optional().or(z.literal('')),
-  event_type: z.enum(['online', 'offline'], 'Event type is required'),
-  category_id: z.string().min(1, 'Category is required'),
-  collaborator_id: z.string().optional(),
-  image: z.custom<File>((val) => {
-    return val instanceof File && val.size > 0;
-  }, 'Image is required'),
-}).superRefine((val, ctx) => {
-  if (val.event_type === 'online') {
-    if (!val.location_name || val.location_name.trim().length < 2) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['location_name'],
-        message: 'Meeting name is required for online events',
-      });
+export const eventSchema = z
+  .object({
+    title: z
+      .string()
+      .min(5, { message: 'Title must be at least 5 characters' })
+      .max(100, { message: 'Title max 100 characters' }),
+    description: z
+      .string()
+      .min(10, { message: 'Description must be at least 10 characters' })
+      .max(1000, { message: 'Description max 1000 characters' }),
+    location_name: z.string().min(2, { message: 'Location name is required' }),
+    location_url: z.string().url({ message: 'Invalid URL' }).optional().or(z.literal('')),
+    event_type: z.enum(['online', 'offline'], {
+      message: 'Event type is required',
+    }),
+    category_id: z.string().min(1, { message: 'Category is required' }),
+    collaborator_id: z.string().optional(),
+    image: z
+      .any()
+      .refine((val) => val instanceof File && val.size > 0, { message: 'Image is required' }),
+
+    date: z.date({
+      error: (issue) =>
+        issue.input === undefined ? 'This field is required' : 'Invalid date format',
+    }),
+    time: z
+      .string({
+        error: (issue) => (issue.input === undefined ? 'This field is required' : 'Not a string'),
+      })
+      .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid time (HH:mm)'),
+  })
+  .superRefine((val, ctx) => {
+    if (val.event_type === 'online') {
+      if (!val.location_name || val.location_name.trim().length < 2) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['location_name'],
+          message: 'Meeting name is required for online events',
+        });
+      }
+      if (!val.location_url || val.location_url.trim().length === 0) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['location_url'],
+          message: 'Meeting link is required for online events',
+        });
+      }
+    } else if (val.event_type === 'offline') {
+      if (!val.location_name || val.location_name.trim().length < 2) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['location_name'],
+          message: 'Location name is required for offline events',
+        });
+      }
     }
-    if (!val.location_url || val.location_url.trim().length === 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['location_url'],
-        message: 'Meeting link is required for online events',
-      });
-    }
-  } else if (val.event_type === 'offline') {
-    if (!val.location_name || val.location_name.trim().length < 2) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['location_name'],
-        message: 'Location name is required for offline events',
-      });
-    }
-  }
-});
+  });
 
 type FormData = z.infer<typeof eventSchema>;
 
@@ -77,6 +90,8 @@ export default function CreateEventForm() {
       image: undefined,
       location_name: '',
       location_url: '',
+      date: undefined,
+      time: '',
     },
   });
 
@@ -85,31 +100,12 @@ export default function CreateEventForm() {
   const [isPending, startTransition] = useTransition();
   const eventType = form.watch('event_type');
 
-  // Clear fields when switching event type
-  const handleEventTypeChange = (newType: 'online' | 'offline') => {
-    if (newType === 'online') {
-      // Clear location fields for online events
-      form.setValue('location_name', '');
-      form.setValue('location_url', '');
-    } else {
-      // Clear location fields for offline events
-      form.setValue('location_name', '');
-      form.setValue('location_url', '');
-    }
-  };
-  
-  // Use SWR for data fetching
   const { categoryOptions, userOptions, isLoading: optionsLoading, refresh } = useFormOptions();
-  
-  // Fixed validation logic - no more infinite loop
+
   const isFormValid = useMemo(() => {
-    return form.formState.isValid && 
-      !!date && 
-      !!time &&
-      !!form.getValues('location_name');
+    return form.formState.isValid && !!date && !!time && !!form.getValues('location_name');
   }, [form.formState.isValid, date, time]);
 
-  // ✅ Submit pakai FormData langsung
   const onSubmit = async (data: FormData) => {
     const formData = new FormData();
     formData.append('title', data.title);
@@ -129,7 +125,8 @@ export default function CreateEventForm() {
         form.reset();
         setDate(new Date());
         setTime('08:00');
-        const created = Array.isArray(result.data) && result.data.length > 0 ? result.data[0] : null;
+        const created =
+          Array.isArray(result.data) && result.data.length > 0 ? result.data[0] : null;
         const slug = created?.title ? slugify(created.title) : slugify(data.title);
         router.push(`/u/events/detail/${slug}`);
       } else {
@@ -172,7 +169,7 @@ export default function CreateEventForm() {
             form={form}
             name="event_type"
             type={FormFieldType.SELECT}
-            className='dark:text-white'
+            className="dark:text-white"
             options={[
               { label: 'Online', value: 'online' },
               { label: 'Offline', value: 'offline' },
@@ -180,7 +177,6 @@ export default function CreateEventForm() {
             required
             onChange={(value) => {
               form.setValue('event_type', value as 'online' | 'offline');
-              handleEventTypeChange(value as 'online' | 'offline');
             }}
           />
 
@@ -188,7 +184,11 @@ export default function CreateEventForm() {
             <FormInput
               form={form}
               name="location_name"
-              placeholder={eventType === 'online' ? 'Meeting name (e.g. Google Meet Room)' : 'Location name (e.g. Gedung Soedirman)'}
+              placeholder={
+                eventType === 'online'
+                  ? 'Meeting name (e.g. Google Meet Room)'
+                  : 'Location name (e.g. Gedung Soedirman)'
+              }
               type={FormFieldType.TEXT}
               required
             />
@@ -202,8 +202,21 @@ export default function CreateEventForm() {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <DatePicker value={date} onChange={setDate} />
-            <TimePicker value={time} onChange={setTime} />
+            <FormInput
+              form={form}
+              name="date"
+              type={FormFieldType.DATE}
+              value={date}
+              onChange={setDate}
+            />
+
+            <FormInput
+              form={form}
+              name="time"
+              type={FormFieldType.TIME}
+              value={time}
+              onChange={setTime}
+            />
           </div>
 
           <FormInput
@@ -237,7 +250,7 @@ export default function CreateEventForm() {
           <FormInput form={form} name="image" type={FormFieldType.IMAGE} />
 
           {/* Mobile Button */}
-          <div className="fixed right-0 bottom-0 left-0 z-10 border-t bg-white/90 p-4 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:border-neutral-800 dark:bg-neutral-900/90 dark:supports-[backdrop-filter]:bg-neutral-900/60 md:hidden">
+          <div className="fixed right-0 bottom-0 left-0 z-10 border-t bg-white/90 p-4 backdrop-blur supports-[backdrop-filter]:bg-white/60 md:hidden dark:border-neutral-800 dark:bg-neutral-900/90 dark:supports-[backdrop-filter]:bg-neutral-900/60">
             <Button
               type="submit"
               disabled={!isFormValid || isPending}

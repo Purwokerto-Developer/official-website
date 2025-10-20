@@ -23,7 +23,7 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 export function AppSidebar({ session, ...props }: AppSidebarProps) {
   const user = session?.user;
 
-  if (!user) {
+  if (!user || !session) {
     return null;
   }
   return (

@@ -5,7 +5,7 @@ import { SimpleColorPicker } from '@/components/ui/simple-color-picker';
 import { Card } from '@/components/ui/card';
 import { Session } from '@/types/better-auth';
 import { useTheme } from 'next-themes';
-import React from 'react';
+import { useEffect, useState } from 'react';
 
 const ProfileCard = ({ session }: { session: Session }) => {
   const { resolvedTheme } = useTheme();
@@ -13,13 +13,12 @@ const ProfileCard = ({ session }: { session: Session }) => {
   const baseColor = resolvedTheme === 'dark' ? '#1F2038' : '#F1F5F9';
   const activeColor = resolvedTheme === 'dark' ? '#2930FF' : '#74d4ff';
 
-  const [cardColor, setCardColor] = React.useState('#2563EB'); // blue-600 default
-  // Sync with localStorage after mount
-  React.useEffect(() => {
+  const [cardColor, setCardColor] = useState('#2563EB');
+  useEffect(() => {
     const stored = typeof window !== 'undefined' ? localStorage.getItem('lanyardColor') : null;
     if (stored) setCardColor(stored);
   }, []);
-  React.useEffect(() => {
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('lanyardColor', cardColor);
     }

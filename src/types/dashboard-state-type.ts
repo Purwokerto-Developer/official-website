@@ -5,4 +5,5 @@ export type DashboardState = {
   description: string;
   icon: Icon;
   count: number;
+  status: string;
 };

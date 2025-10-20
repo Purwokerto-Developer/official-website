@@ -1,6 +1,7 @@
 import React from 'react';
 import { getEvent } from '@/action/event-action';
 import ManageEventContent from './_components/manage-event-content';
+import { isAdmin, isAuthenticated } from '@/lib/better-auth/get-session';
 
 interface ManageEventPageProps {
   searchParams: Promise<{
@@ -11,6 +12,9 @@ interface ManageEventPageProps {
 }
 
 const ManageEventPage = async ({ searchParams }: ManageEventPageProps) => {
+  await isAuthenticated();
+  await isAdmin();
+
   const params = await searchParams;
   const page = parseInt(params?.page ?? '') || 1;
   const pageSize = parseInt(params?.pageSize ?? '') || 10;
@@ -23,5 +27,3 @@ const ManageEventPage = async ({ searchParams }: ManageEventPageProps) => {
 };
 
 export default ManageEventPage;
-
-

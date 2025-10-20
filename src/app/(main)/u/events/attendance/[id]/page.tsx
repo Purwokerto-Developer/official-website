@@ -2,37 +2,36 @@ import React from 'react';
 import { getEventById } from '@/action/event-action';
 import { forbidden, notFound, redirect } from 'next/navigation';
 import AttendanceClient from '../_components/attendance-client';
-import { getServerSession } from '@/lib/better-auth/get-session';
+import { getServerSession, isAuthenticated } from '@/lib/better-auth/get-session';
 
 const AttendancePage = async ({
   params,
   searchParams,
 }: {
-  params: { id: string };
-  searchParams: { mode?: string };
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ mode?: string }>;
 }) => {
+  await isAuthenticated();
   const session = await getServerSession();
   const user = session?.user;
+  const id = (await params).id;
+  const mode = (await searchParams).mode ?? 'link';
 
-  // Check if user is authenticated
   if (!user) {
     return redirect('/login');
   }
 
-  const res = await getEventById(params.id);
+  const res = await getEventById(id);
   if (!res.success || !res.data) return notFound();
 
   const event = res.data;
-  const mode = searchParams?.mode ?? 'link';
 
   // Access control based on event type and mode
   if (event.event_type === 'online' && mode === 'qr') {
-    // Online events cannot use QR mode
     return notFound();
   }
 
   if (event.event_type === 'offline' && mode === 'link') {
-    // Offline events cannot use link mode
     return notFound();
   }
 
@@ -43,7 +42,7 @@ const AttendancePage = async ({
 
   return (
     <div className="mx-auto min-h-screen w-full max-w-7xl items-center justify-center px-4 py-10">
-      <AttendanceClient eventId={params.id} mode={mode as any} detailEvent={event} />
+      <AttendanceClient eventId={id} mode={mode as 'link' | 'qr'} detailEvent={event} />
     </div>
   );
 };
