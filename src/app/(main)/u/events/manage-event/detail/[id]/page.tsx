@@ -1,15 +1,13 @@
-import React from 'react';
 import { getEventById, getEventParticipants } from '@/action/event-action';
-import { forbidden } from 'next/navigation';
-import ManageEventDetail from '../_components/manage-event-detail';
-import ManageEventParticipants from '../_components/manage-event-participants';
+import { notFound } from 'next/navigation';
 import AreaChart from '../_components/area-chart';
 import DonutChart from '../_components/donut-chart';
+import ManageEventDetail from '../_components/manage-event-detail';
+import ManageEventParticipants from '../_components/manage-event-participants';
 
 const ManageEventDetailPage = async ({ params }: { params: { id: string } }) => {
   const res = await getEventById(params.id);
-  if (!res.success || !res.data) return forbidden();
-  // Server-side counts for charts/state
+  if (!res.success || !res.data) return notFound();
   const participants = await getEventParticipants(res.data.id);
   const rows = participants.success && Array.isArray(participants.data) ? participants.data : [];
   const total = rows.length;
@@ -23,20 +21,22 @@ const ManageEventDetailPage = async ({ params }: { params: { id: string } }) => 
         {/* Summary state above charts */}
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           <div className="rounded-lg border p-3">
-            <div className="text-neutral-500 text-sm">Registered</div>
+            <div className="text-sm text-neutral-500">Registered</div>
             <div className="text-xl font-bold">{total}</div>
           </div>
           <div className="rounded-lg border p-3">
-            <div className="text-neutral-500 text-sm">Attended</div>
+            <div className="text-sm text-neutral-500">Attended</div>
             <div className="text-xl font-bold">{attended}</div>
           </div>
           <div className="rounded-lg border p-3">
-            <div className="text-neutral-500 text-sm">Absent</div>
+            <div className="text-sm text-neutral-500">Absent</div>
             <div className="text-xl font-bold">{notAttended}</div>
           </div>
           <div className="rounded-lg border p-3">
-            <div className="text-neutral-500 text-sm">Attendance Rate</div>
-            <div className="text-xl font-bold">{total ? Math.round((attended / total) * 100) : 0}%</div>
+            <div className="text-sm text-neutral-500">Attendance Rate</div>
+            <div className="text-xl font-bold">
+              {total ? Math.round((attended / total) * 100) : 0}%
+            </div>
           </div>
         </div>
 
@@ -65,5 +65,3 @@ const ManageEventDetailPage = async ({ params }: { params: { id: string } }) => 
 };
 
 export default ManageEventDetailPage;
-
-

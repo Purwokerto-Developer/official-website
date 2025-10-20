@@ -1,19 +1,11 @@
 import { AppSidebar } from '@/components/app-sidebar';
+import { DynamicBreadcrumb } from '@/components/dynamic-breadcrumb';
 import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { getServerSession } from '@/lib/better-auth/get-session';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { DynamicBreadcrumb } from '@/components/dynamic-breadcrumb';
 
 export const metadata: Metadata = {
   title: 'Purwokerto Dev',
@@ -25,18 +17,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession();
-  if (!session) {
-    redirect('/login');
-  }
+  const sessionData = await getServerSession();
 
-  const user = session?.user;
-  if (!user) {
+  if (!sessionData.user || !sessionData.session) {
     redirect('/login');
   }
   return (
     <SidebarProvider>
-      <AppSidebar session={session} />
+      <AppSidebar session={sessionData} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">

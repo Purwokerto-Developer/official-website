@@ -1,14 +1,17 @@
+import React from 'react';
 import { cn } from '@/lib/utils';
 import CountUp from '@/components/count-up';
 import {
   Card,
-  CardContent,
+  CardAction,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { DashboardState } from '@/types/dashboard-state-type';
+import { Badge } from '@/components/ui/badge';
+import { Chart } from 'iconsax-reactjs';
 
 const accentColors: Record<string, string> = {
   'Total Events': 'bg-blue-100 text-blue-600',
@@ -18,38 +21,39 @@ const accentColors: Record<string, string> = {
 };
 
 export const StateCard = ({ state }: { state: DashboardState }) => {
-  const { title, description, count } = state;
+  const { title, description, count, icon, status } = state;
 
   return (
-    <Card className="cursor-default transition-all hover:scale-[1.02] hover:shadow-md">
-      <CardHeader className="pb-2">
-        <div className="flex w-full items-center justify-between gap-2">
-          <div
-            className={cn(
-              'rounded-lg p-2',
-              accentColors[title] || 'bg-accent text-accent-foreground',
-            )}
-          >
-            <state.icon size={22} variant="Bulk" />
+    <>
+      <Card className="@container/card">
+        <CardHeader>
+          <CardDescription>{title}</CardDescription>
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+            <CountUp
+              from={0}
+              to={count}
+              separator=","
+              direction="up"
+              duration={0.8}
+              className="text-foreground text-4xl font-extrabold tracking-tight"
+            />
+          </CardTitle>
+          <CardAction>
+            <Badge
+              variant="outline"
+              className={cn(accentColors[title] || 'bg-accent text-accent-foreground')}
+            >
+              {icon && React.createElement(icon, { className: 'size-4', variant: 'Bulk' })} {status}
+            </Badge>
+          </CardAction>
+        </CardHeader>
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium">
+            Data terbaru <Chart className="size-4" variant="Bulk" />
           </div>
-          <CardTitle className="text-xs font-semibold capitalize md:text-base">{title}</CardTitle>
-        </div>
-      </CardHeader>
-
-      <CardContent className="pt-0 text-center">
-        <CountUp
-          from={0}
-          to={count}
-          separator=","
-          direction="up"
-          duration={0.8}
-          className="text-foreground text-4xl font-extrabold tracking-tight"
-        />
-      </CardContent>
-
-      <CardFooter className="justify-center">
-        <CardDescription className="hidden text-center md:block">{description}</CardDescription>
-      </CardFooter>
-    </Card>
+          <div className="text-muted-foreground">{description}</div>
+        </CardFooter>
+      </Card>
+    </>
   );
 };

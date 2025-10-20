@@ -43,7 +43,8 @@ interface FormInputProps<T extends FieldValues> {
   options?: Option[];
   previousImage?: string;
   className?: string; // Custom styling untuk setiap field
-  onChange?: (value: string) => void; // Custom onChange handler
+  onChange?: (value: any) => void; // Custom onChange handler
+  value?: any;
 }
 
 export const FormInput = <T extends FieldValues>({
@@ -59,6 +60,7 @@ export const FormInput = <T extends FieldValues>({
   previousImage,
   className,
   onChange,
+  value,
 }: FormInputProps<T>) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -111,12 +113,12 @@ export const FormInput = <T extends FieldValues>({
 
       case FormFieldType.SELECT:
         return (
-          <Select 
+          <Select
             onValueChange={(value) => {
               field.onChange(value);
               onChange?.(value);
-            }} 
-            value={field.value} 
+            }}
+            value={field.value}
             disabled={disabled}
           >
             <SelectTrigger className={cn('w-full text-[#064061] hover:text-[#064061]', className)}>
@@ -204,22 +206,28 @@ export const FormInput = <T extends FieldValues>({
       case FormFieldType.DATE:
         return (
           <DatePicker
-            value={field.value}
-            onChange={field.onChange}
-            disabled={disabled}
-            className={cn('w-full', className)}
-          />
-        );
-      case FormFieldType.TIME:
-        return (
-          <TimePicker
-            value={field.value}
-            onChange={field.onChange}
+            value={value ?? field.value} // prioritas ke value prop jika ada
+            onChange={(newValue) => {
+              field.onChange(newValue);
+              onChange?.(newValue); // biar state eksternal ikut berubah
+            }}
             disabled={disabled}
             className={cn('w-full', className)}
           />
         );
 
+      case FormFieldType.TIME:
+        return (
+          <TimePicker
+            value={value ?? field.value}
+            onChange={(newValue) => {
+              field.onChange(newValue);
+              onChange?.(newValue);
+            }}
+            disabled={disabled}
+            className={cn('w-full', className)}
+          />
+        );
       default:
         return null;
     }
