@@ -1,22 +1,14 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { EventDetail } from '@/types/event-type';
-import { Airdrop, Calendar, Colorfilter, InfoCircle, Location, WristClock } from 'iconsax-reactjs';
-import { useEffect, useMemo, useState } from 'react';
 import {
+  attendEventViaQR,
+  cancelEventJoin,
+  checkUserEventStatus,
   joinEvent,
   setAttendanceOpen,
-  checkUserEventStatus,
-  cancelEventJoin,
-  markAttendance,
-  attendEventViaQR,
 } from '@/action/event-action';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { getServerSession } from '@/lib/better-auth/get-session';
+import { showToast } from '@/components/custom-toaster';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,10 +20,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle, XCircle, Scan } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { EventDetail } from '@/types/event-type';
+import { Airdrop, Calendar, Colorfilter, InfoCircle, Location, WristClock } from 'iconsax-reactjs';
+import { CheckCircle, Scan } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 import QRScannerModal from './qr-scanner-modal';
-import { showToast } from '@/components/custom-toaster';
 
 type DetailEventJoinProps = {
   data: EventDetail;

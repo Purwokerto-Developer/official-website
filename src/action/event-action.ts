@@ -16,7 +16,15 @@ import { getServerSession } from '@/lib/better-auth/get-session';
 import { event_participants } from '@/db/schema/event_participants-schema';
 
 export type Event = z.infer<typeof eventInsertSchema>;
-
+export type EventParticipantRow = {
+  id: string;
+  email: string;
+  name: string | null;
+  image: string | null;
+  status: 'registered' | 'attended' | 'cancelled';
+  joined_at: Date | null;
+  attendance_time: Date | null;
+};
 const imagekit = new ImageKit({
   publicKey: process.env.IMAGEKIT_PUBLIC_KEY!,
   privateKey: process.env.IMAGEKIT_PRIVATE_KEY!,
@@ -231,7 +239,9 @@ export async function getCategories(): Promise<QueryResult<Category[]>> {
   }
 }
 
-export async function deleteEvent(id: string): Promise<QueryResult<InferSelectModel<typeof events>[]>> {
+export async function deleteEvent(
+  id: string,
+): Promise<QueryResult<InferSelectModel<typeof events>[]>> {
   try {
     const result = await db.delete(events).where(eq(events.id, id)).returning();
     return success(result);
@@ -315,14 +325,20 @@ export async function setAttendanceOpen(
   }
 }
 
-export async function joinEvent(eventId: string): Promise<QueryResult<InferSelectModel<typeof event_participants>[]>> {
+export async function joinEvent(
+  eventId: string,
+): Promise<QueryResult<InferSelectModel<typeof event_participants>[]>> {
   try {
     const session = await getServerSession();
     const userId = session?.user?.id;
     if (!userId) return fail('Not authenticated');
 
     // Ensure event date not passed
-    const [evt] = await db.select({ id: events.id, start_time: events.start_time }).from(events).where(eq(events.id, eventId)).limit(1);
+    const [evt] = await db
+      .select({ id: events.id, start_time: events.start_time })
+      .from(events)
+      .where(eq(events.id, eventId))
+      .limit(1);
     if (!evt) return fail('Event not found');
     if (new Date(evt.start_time) < new Date()) return fail('Event Ended');
 
@@ -338,18 +354,9 @@ export async function joinEvent(eventId: string): Promise<QueryResult<InferSelec
   }
 }
 
-
-export type EventParticipantRow = {
-  id: string;
-  email: string;
-  name: string | null;
-  image: string | null;
-  status: 'registered' | 'attended' | 'cancelled';
-  joined_at: Date | null;
-  attendance_time: Date | null;
-};
-
-export async function getEventParticipants(eventId: string): Promise<QueryResult<EventParticipantRow[]>> {
+export async function getEventParticipants(
+  eventId: string,
+): Promise<QueryResult<EventParticipantRow[]>> {
   try {
     const rows = await db
       .select({
@@ -372,7 +379,9 @@ export async function getEventParticipants(eventId: string): Promise<QueryResult
   }
 }
 
-export async function checkUserEventStatus(eventId: string): Promise<QueryResult<{ isJoined: boolean; hasAttended: boolean }>> {
+export async function checkUserEventStatus(
+  eventId: string,
+): Promise<QueryResult<{ isJoined: boolean; hasAttended: boolean }>> {
   try {
     const session = await getServerSession();
     const userId = session?.user?.id;
@@ -396,7 +405,9 @@ export async function checkUserEventStatus(eventId: string): Promise<QueryResult
   }
 }
 
-export async function cancelEventJoin(eventId: string): Promise<QueryResult<InferSelectModel<typeof event_participants>[]>> {
+export async function cancelEventJoin(
+  eventId: string,
+): Promise<QueryResult<InferSelectModel<typeof event_participants>[]>> {
   try {
     const session = await getServerSession();
     const userId = session?.user?.id;
@@ -407,7 +418,7 @@ export async function cancelEventJoin(eventId: string): Promise<QueryResult<Infe
       .set({ status: 'cancelled', cancelled_at: new Date() })
       .where(and(eq(event_participants.event_id, eventId), eq(event_participants.user_id, userId)))
       .returning();
-    
+
     return success(updated);
   } catch (error) {
     console.error('❌ Cancel event join failed:', error);
@@ -415,14 +426,20 @@ export async function cancelEventJoin(eventId: string): Promise<QueryResult<Infe
   }
 }
 
-export async function markAttendance(eventId: string): Promise<QueryResult<InferSelectModel<typeof event_participants>[]>> {
+export async function markAttendance(
+  eventId: string,
+): Promise<QueryResult<InferSelectModel<typeof event_participants>[]>> {
   try {
     const session = await getServerSession();
     const userId = session?.user?.id;
     if (!userId) return fail('Not authenticated');
 
     // Check if attendance is open
-    const [evt] = await db.select({ is_attendance_open: events.is_attendance_open }).from(events).where(eq(events.id, eventId)).limit(1);
+    const [evt] = await db
+      .select({ is_attendance_open: events.is_attendance_open })
+      .from(events)
+      .where(eq(events.id, eventId))
+      .limit(1);
     if (!evt?.is_attendance_open) return fail('Attendance is not open');
 
     // Check current participant status before updating
@@ -433,7 +450,7 @@ export async function markAttendance(eventId: string): Promise<QueryResult<Infer
       .limit(1);
 
     if (!participant) return fail('You must join the event first');
-    
+
     // Check if already attended - return friendly message instead of error
     if (participant.status === 'attended') {
       return fail('You have already marked attendance for this event');
@@ -444,7 +461,7 @@ export async function markAttendance(eventId: string): Promise<QueryResult<Infer
       .set({ status: 'attended', attendance_time: new Date() })
       .where(and(eq(event_participants.event_id, eventId), eq(event_participants.user_id, userId)))
       .returning();
-    
+
     return success(updated);
   } catch (error) {
     console.error('❌ Mark attendance failed:', error);
@@ -452,25 +469,9 @@ export async function markAttendance(eventId: string): Promise<QueryResult<Infer
   }
 }
 
-export async function getUsers(): Promise<QueryResult<{ id: string; name: string; email: string }[]>> {
-  try {
-    const result = await db
-      .select({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      })
-      .from(user)
-      .orderBy(asc(user.name));
-
-    return success(result);
-  } catch (error) {
-    console.error('❌ Get users failed:', error);
-    return fail(error instanceof Error ? error.message : 'Failed to fetch users');
-  }
-}
-
-export async function attendEventViaQR(qrDataString: string): Promise<QueryResult<InferSelectModel<typeof event_participants>[]>> {
+export async function attendEventViaQR(
+  qrDataString: string,
+): Promise<QueryResult<InferSelectModel<typeof event_participants>[]>> {
   try {
     const session = await getServerSession();
     const userId = session?.user?.id;
@@ -507,7 +508,7 @@ export async function attendEventViaQR(qrDataString: string): Promise<QueryResul
       .limit(1);
 
     if (!participant) return fail('You must join the event first');
-    
+
     // Check if already attended - return friendly message instead of error
     if (participant.status === 'attended') {
       return fail('You have already marked attendance for this event');

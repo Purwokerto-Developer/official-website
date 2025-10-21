@@ -40,7 +40,7 @@ export function AppSidebar({ session, ...props }: AppSidebarProps) {
             <NavMain items={sidebarItems.adminNav} label="Admin Navigation" />
           </>
         )}
-        {/* <NavProjects projects={sidebarItems.projects} /> */}
+        s{' '}
       </SidebarContent>
 
       <SidebarFooter>

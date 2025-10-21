@@ -1,5 +1,6 @@
 import useSWR from 'swr';
-import { getCategories, getUsers } from '@/action/event-action';
+import { getCategories } from '@/action/event-action';
+import { getUsers } from '@/action/user-action';
 
 // Generic fetcher function for SWR
 export const fetcher = async (key: string, fetchFn: () => Promise<any>) => {
@@ -21,7 +22,7 @@ export const useCategories = () => {
       revalidateOnFocus: false,
       revalidateOnReconnect: true,
       dedupingInterval: 60000, // Cache for 1 minute
-    }
+    },
   );
 
   return {
@@ -33,15 +34,11 @@ export const useCategories = () => {
 };
 
 export const useUsers = () => {
-  const { data, error, isLoading, mutate } = useSWR(
-    'users',
-    () => fetcher('users', getUsers),
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: true,
-      dedupingInterval: 60000, // Cache for 1 minute
-    }
-  );
+  const { data, error, isLoading, mutate } = useSWR('users', () => fetcher('users', getUsers), {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: true,
+    dedupingInterval: 60000, // Cache for 1 minute
+  });
 
   return {
     users: data || [],
@@ -53,7 +50,12 @@ export const useUsers = () => {
 
 // Combined hook for form options
 export const useFormOptions = () => {
-  const { categories, isLoading: categoriesLoading, error: categoriesError, refresh: refreshCategories } = useCategories();
+  const {
+    categories,
+    isLoading: categoriesLoading,
+    error: categoriesError,
+    refresh: refreshCategories,
+  } = useCategories();
   const { users, isLoading: usersLoading, error: usersError, refresh: refreshUsers } = useUsers();
 
   const categoryOptions = categories.map((c: any) => ({ label: c.name, value: c.id }));
