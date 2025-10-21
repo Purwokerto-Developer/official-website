@@ -1,18 +1,6 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { EventListItem } from '@/types/event-type';
-import { motion } from 'framer-motion';
-import { ArrowDown2, ArrowUp2, Edit2, SearchNormal, Sort, Trash } from 'iconsax-reactjs';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useState } from 'react';
-import EmptyState from '@/components/ui/empty-state';
 import { deleteEvent } from '@/action/event-action';
-import { formatDateID, slugify } from '@/lib/utils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +12,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import EmptyState from '@/components/ui/empty-state';
+import { Input } from '@/components/ui/input';
+import { formatDateID } from '@/lib/utils';
+import { EventListItem } from '@/types/event-type';
+import { Edit2, SearchNormal, Trash } from 'iconsax-reactjs';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useState } from 'react';
 
 interface ManageEventContentProps {
   events: EventListItem[];
@@ -31,7 +30,11 @@ interface ManageEventContentProps {
   pageSize: number;
 }
 
-export default function ManageEventContent({ events = [], page, pageSize }: ManageEventContentProps) {
+export default function ManageEventContent({
+  events = [],
+  page,
+  pageSize,
+}: ManageEventContentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -88,7 +91,11 @@ export default function ManageEventContent({ events = [], page, pageSize }: Mana
           placeholder="Search events"
           className="bg-transparent px-2 py-1 text-sm text-neutral-700 placeholder:text-neutral-400 focus-visible:ring-0 dark:text-neutral-200 dark:placeholder:text-neutral-500"
         />
-        <Button type="submit" variant="gradient_blue" className="rounded-md px-3 py-1 text-sm font-medium">
+        <Button
+          type="submit"
+          variant="gradient_blue"
+          className="rounded-md px-3 py-1 text-sm font-medium"
+        >
           <SearchNormal size="18" className="text-white" variant="Bulk" />
           <span className="ml-1 hidden sm:inline">Search</span>
         </Button>
@@ -121,8 +128,12 @@ export default function ManageEventContent({ events = [], page, pageSize }: Mana
                   )}
                 </div>
                 <div className="px-4 pt-4 pb-3">
-                  <div className="mb-1 line-clamp-1 w-full truncate text-base font-semibold">{item.title}</div>
-                  <div className="mb-2 text-xs text-neutral-500">{formatDateID(item.start_time)}</div>
+                  <div className="mb-1 line-clamp-1 w-full truncate text-base font-semibold">
+                    {item.title}
+                  </div>
+                  <div className="mb-2 text-xs text-neutral-500">
+                    {formatDateID(item.start_time)}
+                  </div>
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <Link href={`/u/events/manage-event/edit/${item.id}`}>
@@ -151,7 +162,8 @@ export default function ManageEventContent({ events = [], page, pageSize }: Mana
                         <AlertDialogHeader>
                           <AlertDialogTitle>Delete this event?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            "{item.title}" will be permanently deleted. This action cannot be undone.
+                            "{item.title}" will be permanently deleted. This action cannot be
+                            undone.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -180,5 +192,3 @@ export default function ManageEventContent({ events = [], page, pageSize }: Mana
     </div>
   );
 }
-
-
