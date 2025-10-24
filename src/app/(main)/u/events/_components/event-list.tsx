@@ -58,7 +58,7 @@ export const EventList = ({ item }: EventListProps) => {
               <div>
                 <div className="text-muted-foreground">DATE</div>
                 <div className="line-clamp-1 w-full font-bold">
-                  {formatDateID(item.start_time) ? formatDateID(item.start_time) : 'Unknown'}
+                  {item.start_time ? formatDateID(item.start_time) : 'Unknown'}
                 </div>
               </div>
             </div>

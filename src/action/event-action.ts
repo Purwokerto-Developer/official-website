@@ -5,15 +5,15 @@ import { success, fail, QueryResult } from '@/lib/return-helper';
 import { events } from '@/db/schema/event-schema';
 import { event_categories } from '@/db/schema/event_categories-schema';
 import { user } from '../../auth-schema';
-import { eventInsertSchema, categoryInsertSchema } from '@/lib/zod';
-import { Category } from '@/types/categories-type';
+import { categoryInsertSchema } from '@/lib/zod';
+import { eventInsertSchema, EventType } from '@/db/zod/events';
 import { asc, eq, ilike, or, and, getTableColumns, type InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import ImageKit from 'imagekit';
-import type { EventDetail } from '@/types/event-type';
 import { deslugify, slugify } from '@/lib/utils';
 import { getServerSession } from '@/lib/better-auth/get-session';
 import { event_participants } from '@/db/schema/event_participants-schema';
+import { Category } from '@/types/categories-type';
 
 export type Event = z.infer<typeof eventInsertSchema>;
 export type EventParticipantRow = {
@@ -35,6 +35,22 @@ type EventWithRelations = InferSelectModel<typeof events> & {
   category_name: string | null;
   collaborator_name: string | null;
 };
+
+function formDataToObject(formData: FormData) {
+  const obj: Record<string, any> = {};
+  for (const [key, value] of formData.entries()) {
+    // Skip files/blobs when building object for zod validation; image/file are
+    // handled separately by upload logic. Use duck-typing to avoid referring to
+    // DOM types (File/Blob) which may not exist in the runtime typechecker.
+    const v = value as any;
+    if (v && typeof v === 'object' && (('size' in v && 'name' in v) || 'arrayBuffer' in v))
+      continue;
+    obj[key] = value;
+  }
+  return obj;
+}
+
+const serverEventSchema = eventInsertSchema.omit({ slug: true });
 
 export async function getEvent(
   page = 1,
@@ -75,7 +91,7 @@ export async function getEvent(
   }
 }
 
-export async function getEventById(id: string): Promise<QueryResult<EventDetail>> {
+export async function getEventById(id: string): Promise<QueryResult<EventType>> {
   try {
     const result = await db
       .select({
@@ -90,17 +106,17 @@ export async function getEventById(id: string): Promise<QueryResult<EventDetail>
       .limit(1);
 
     if (!result || result.length === 0) {
-      return fail<EventDetail>(`Event with ID ${id} not found`);
+      return fail<EventType>(`Event with ID ${id} not found`);
     }
 
-    return success<EventDetail>(result[0] as EventDetail);
+    return success<EventType>(result[0] as EventType);
   } catch (error) {
     console.error('❌ Get event by ID failed:', error);
     return fail(error instanceof Error ? error.message : 'Failed to fetch event by ID');
   }
 }
 
-export async function getEventBySlug(slug: string): Promise<QueryResult<EventDetail>> {
+export async function getEventBySlug(slug: string): Promise<QueryResult<EventType>> {
   try {
     const title = deslugify(slug);
     const result = await db
@@ -116,10 +132,10 @@ export async function getEventBySlug(slug: string): Promise<QueryResult<EventDet
       .limit(1);
 
     if (!result || result.length === 0) {
-      return fail<EventDetail>(`Event with slug ${slug} not found`);
+      return fail<EventType>(`Event with slug ${slug} not found`);
     }
 
-    return success<EventDetail>(result[0] as EventDetail);
+    return success<EventType>(result[0] as EventType);
   } catch (error) {
     console.error('❌ Get event by slug failed:', error);
     return fail(error instanceof Error ? error.message : 'Failed to fetch event by slug');
@@ -131,58 +147,47 @@ export async function createEventWithImage(
 ): Promise<QueryResult<InferSelectModel<typeof events>[]>> {
   try {
     const image = formData.get('image');
-    if (!image) throw new Error('Image file is required');
 
-    let fileName = 'event-image';
-    let buffer: Buffer;
-    if (image instanceof File) {
-      buffer = Buffer.from(await image.arrayBuffer());
-      fileName = image.name || fileName;
-    } else {
-      throw new Error('Unsupported image type');
+    if (!(image instanceof File)) {
+      return fail('File gambar tidak valid');
     }
 
-    const title = formData.get('title') as string;
-    const description = formData.get('description') as string;
-    const location_name = formData.get('location_name') as string;
-    const location_url = (formData.get('location_url') as string) || null;
-    const event_type = formData.get('event_type') as 'online' | 'offline';
-    const category_id = formData.get('category_id') as string;
-    const collaborator_id = formData.get('collaborator_id') as string | null;
-    const start_time = new Date(formData.get('start_time') as string);
-
-    // Validate without slug; slug is generated server-side
-    const eventCreateServerSchema = eventInsertSchema.omit({ slug: true });
-    const parsed = eventCreateServerSchema.parse({
-      title,
-      description,
-      location_name,
-      event_type,
-      category_id,
-      collaborator_id,
-      start_time,
-      location_url,
+    const data = formDataToObject(formData);
+    // Convert start_time string (ISO) to Date for zod validation
+    const parsed = serverEventSchema.safeParse({
+      ...data,
+      start_time: data.start_time ? new Date(String(data.start_time)) : undefined,
     });
 
-    const uploadResponse = await imagekit.upload({
+    if (!parsed.success) {
+      const msg =
+        'Data event tidak valid: ' + parsed.error.issues.map((issue) => issue.message).join(', ');
+      return fail(msg);
+    }
+
+    const buffer = Buffer.from(await image.arrayBuffer());
+    const upload = await imagekit.upload({
       file: buffer,
-      fileName,
+      fileName: image.name || 'event-image',
       folder: '/events',
       useUniqueFileName: true,
     });
 
-    if (!uploadResponse.url) throw new Error('Image upload failed');
+    if (!upload.url) {
+      return fail('Upload gambar gagal');
+    }
 
     const result = await db
       .insert(events)
       .values({
-        ...parsed,
-        slug: slugify(parsed.title),
-        image: uploadResponse.url,
+        ...parsed.data,
+        slug: slugify(parsed.data.title),
+        image: upload.url,
+        image_file_id: (upload as any).fileId ?? (upload as any).file_id ?? undefined,
       })
       .returning();
 
-    return success(result);
+    return success(result as InferSelectModel<typeof events>[]);
   } catch (error) {
     console.error('❌ Create event failed:', error);
     return fail(error instanceof Error ? error.message : 'Failed to create event');
@@ -243,6 +248,22 @@ export async function deleteEvent(
   id: string,
 ): Promise<QueryResult<InferSelectModel<typeof events>[]>> {
   try {
+    // Try to remove image from ImageKit if we have a file id stored
+    const rows = await db
+      .select({ id: events.id, image_file_id: events.image_file_id })
+      .from(events)
+      .where(eq(events.id, id))
+      .limit(1);
+    const row = rows && rows.length > 0 ? rows[0] : null;
+    if (row && (row as any).image_file_id) {
+      try {
+        await imagekit.deleteFile((row as any).image_file_id);
+      } catch (err) {
+        // Log but don't block deletion if external delete fails
+        console.error('⚠️ Failed to delete image from ImageKit:', err);
+      }
+    }
+
     const result = await db.delete(events).where(eq(events.id, id)).returning();
     return success(result);
   } catch (error) {
@@ -256,25 +277,19 @@ export async function updateEventWithImage(
   formData: FormData,
 ): Promise<QueryResult<InferSelectModel<typeof events>[]>> {
   try {
-    const title = formData.get('title') as string;
-    const description = (formData.get('description') as string) ?? '';
-    const location_name = formData.get('location_name') as string;
-    const location_url = (formData.get('location_url') as string) || null;
-    const event_type = formData.get('event_type') as 'online' | 'offline';
-    const category_id = formData.get('category_id') as string;
-    const collaborator_id = (formData.get('collaborator_id') as string) || null;
-    const start_time = new Date(formData.get('start_time') as string);
-
-    const toValidate = eventInsertSchema.omit({ slug: true }).parse({
-      title,
-      description,
-      location_name,
-      event_type,
-      category_id,
-      collaborator_id,
-      start_time,
-      location_url,
+    const data = formDataToObject(formData);
+    const parsed = serverEventSchema.safeParse({
+      ...data,
+      start_time: data.start_time ? new Date(String(data.start_time)) : undefined,
     });
+
+    if (!parsed.success) {
+      const msg =
+        'Data event tidak valid: ' + parsed.error.issues.map((issue) => issue.message).join(', ');
+      return fail(msg);
+    }
+
+    const toValidate = parsed.data;
 
     const image = formData.get('image');
     let newImageUrl: string | undefined;
@@ -288,6 +303,9 @@ export async function updateEventWithImage(
       });
       if (!uploadResponse.url) throw new Error('Image upload failed');
       newImageUrl = uploadResponse.url;
+      // capture file id if available so we can delete it later
+      (toValidate as any).image_file_id =
+        (uploadResponse as any).fileId ?? (uploadResponse as any).file_id ?? undefined;
     }
 
     const result = await db
@@ -296,6 +314,7 @@ export async function updateEventWithImage(
         ...toValidate,
         slug: slugify(toValidate.title),
         image: newImageUrl ?? undefined,
+        image_file_id: (toValidate as any).image_file_id ?? undefined,
         updated_at: new Date(),
       })
       .where(eq(events.id, id))

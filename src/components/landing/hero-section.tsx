@@ -3,6 +3,7 @@ import DotGrid from '@/components/dot-grid';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 import dynamic from 'next/dynamic';
+import { Highlighter } from '../ui/highlighter';
 
 const HeroSection = () => {
   const { resolvedTheme } = useTheme();
@@ -37,8 +38,8 @@ const HeroSection = () => {
       </div>
 
       <div className="z-10 mt-60 flex w-full flex-col items-center justify-center gap-4">
-        <div className="w-fit cursor-pointer rounded-full border bg-gradient-to-tr from-slate-200/80 to-slate-100/80 px-2 py-3 text-center font-medium text-slate-800 opacity-80 backdrop-blur-lg transition-all duration-200 hover:scale-105 dark:bg-gradient-to-b dark:from-slate-900/80 dark:to-slate-700/80 dark:text-slate-300">
-          <span className="from-primary mr-4 rounded-full bg-gradient-to-b to-blue-700 p-2 text-sm text-white">
+        <div className="w-fit cursor-pointer rounded-full border bg-gradient-to-tr from-slate-200/80 to-slate-100/80 px-3 py-2 text-center text-sm font-medium text-slate-800 opacity-80 backdrop-blur-lg transition-all duration-200 hover:scale-105 sm:px-4 sm:py-3 sm:text-base dark:bg-gradient-to-b dark:from-slate-900/80 dark:to-slate-700/80 dark:text-slate-300">
+          <span className="from-primary mr-3 -ml-1 rounded-full bg-gradient-to-b to-blue-700 p-1.5 text-xs text-white sm:mr-4 sm:p-2 sm:text-sm">
             Hello 🎉
           </span>
           Welcome to the community
@@ -46,16 +47,19 @@ const HeroSection = () => {
 
         <h1
           className={cn(
-            `relative z-10 bg-clip-text text-center font-sans text-lg font-bold text-transparent capitalize md:text-7xl lg:text-[150px]`,
+            `relative z-10 bg-clip-text text-center font-sans text-5xl font-bold text-transparent capitalize md:text-7xl lg:text-[150px]`,
             textGradientClass,
           )}
         >
           Purwokerto<span className="font-light">Dev</span>
         </h1>
 
-        <p className="relative mx-auto mt-4 max-w-xl text-center text-xl text-slate-400 dark:text-white">
-          Komunitas Developer Purwokerto. Wadah Komunitas Developer Purwokerto untuk Berkreasi,
-          Terkoneksi, dan Berkolaborasi.
+        <p className="relative mx-auto mt-4 max-w-sm px-2 text-center leading-relaxed text-slate-500 md:max-w-xl md:px-0 lg:text-xl dark:text-white">
+          Komunitas{' '}
+          <Highlighter action="underline" color="#FF9800">
+            Developer Purwokerto
+          </Highlighter>{' '}
+          . Wadah Komunitas Developer Purwokerto untuk Berkreasi, Terkoneksi, dan Berkolaborasi.
         </p>
       </div>
     </section>

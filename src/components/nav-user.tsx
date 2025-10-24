@@ -31,7 +31,6 @@ export function NavUser({
   collapseIcon?: boolean;
 }) {
   const { isMobile } = useSidebar();
-  console.log(user.image);
 
   async function handleSignOut() {
     const { success } = await signOut();

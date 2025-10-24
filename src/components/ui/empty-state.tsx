@@ -2,7 +2,8 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { Button } from './button';
+import Link from 'next/link';
+import { Button, buttonVariants } from './button';
 import { cn } from '@/lib/utils';
 
 type EmptyStateProps = {
@@ -15,6 +16,7 @@ type EmptyStateProps = {
   iconSrc?: string;
   iconAlt?: string;
   iconNode?: React.ReactNode;
+  href?: string;
 };
 
 export function EmptyState({
@@ -27,13 +29,18 @@ export function EmptyState({
   iconSrc = '/img-logo.png',
   iconAlt = 'Logo',
   iconNode,
+  href,
 }: EmptyStateProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
-      className={cn('flex flex-col items-center justify-center text-center', heightClassName, className)}
+      className={cn(
+        'flex flex-col items-center justify-center text-center',
+        heightClassName,
+        className,
+      )}
     >
       <div className="flex h-20 w-20 items-center justify-center rounded-full bg-blue-50 dark:bg-sky-950">
         {iconNode ?? <Image src={iconSrc} width={60} height={60} alt={iconAlt} />}
@@ -43,14 +50,18 @@ export function EmptyState({
         <p className="mt-1 max-w-sm text-sm text-gray-500 dark:text-neutral-400">{description}</p>
       ) : null}
       {actionLabel ? (
-        <Button className="mt-4" onClick={onAction}>
-          {actionLabel}
-        </Button>
+        href ? (
+          <Link href={href} className={cn(buttonVariants({}), 'mt-4')}>
+            {actionLabel}
+          </Link>
+        ) : (
+          <Button className="mt-4" onClick={onAction}>
+            {actionLabel}
+          </Button>
+        )
       ) : null}
     </motion.div>
   );
 }
 
 export default EmptyState;
-
-

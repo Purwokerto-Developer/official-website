@@ -25,6 +25,7 @@ import { useRef } from 'react';
 import { ControllerRenderProps, FieldValues, Path, UseFormReturn } from 'react-hook-form';
 import InputImage from './input-image';
 import { DatePicker, TimePicker } from './ui/date-picker';
+import { DateTimePicker } from './ui/datetime-picker';
 
 interface Option {
   label: string;
@@ -121,16 +122,12 @@ export const FormInput = <T extends FieldValues>({
             value={field.value}
             disabled={disabled}
           >
-            <SelectTrigger className={cn('w-full text-[#064061] hover:text-[#064061]', className)}>
+            <SelectTrigger className={cn('w-full dark:text-neutral-400', className)}>
               <SelectValue placeholder={placeholder || `${label || name}`} />
             </SelectTrigger>
             <SelectContent>
               {options.map((opt) => (
-                <SelectItem
-                  className="text-[#064061] hover:text-[#064061]"
-                  key={opt.value}
-                  value={opt.value}
-                >
+                <SelectItem className="dark:text-neutral-400" key={opt.value} value={opt.value}>
                   {opt.label}
                 </SelectItem>
               ))}
@@ -197,35 +194,22 @@ export const FormInput = <T extends FieldValues>({
               if (file && typeof file === 'object' && file.file instanceof File) {
                 field.onChange(file.file);
               } else {
-                field.onChange('');
+                field.onChange(undefined);
               }
             }}
           />
         );
 
-      case FormFieldType.DATE:
+      case FormFieldType.DATETIME:
         return (
-          <DatePicker
-            value={value ?? field.value} // prioritas ke value prop jika ada
-            onChange={(newValue) => {
-              field.onChange(newValue);
-              onChange?.(newValue); // biar state eksternal ikut berubah
-            }}
-            disabled={disabled}
-            className={cn('w-full', className)}
-          />
-        );
-
-      case FormFieldType.TIME:
-        return (
-          <TimePicker
+          <DateTimePicker
             value={value ?? field.value}
             onChange={(newValue) => {
               field.onChange(newValue);
               onChange?.(newValue);
             }}
             disabled={disabled}
-            className={cn('w-full', className)}
+            placeholder={placeholder}
           />
         );
       default:

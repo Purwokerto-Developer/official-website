@@ -11,4 +11,5 @@ export enum FormFieldType {
   FILE = 'file',
   DATE = 'date',
   TIME = 'time',
+  DATETIME = 'datetime',
 }

@@ -15,6 +15,8 @@ export const events = pgTable('events', {
   is_attendance_open: boolean('is_attendance_open').default(false).notNull(),
   qr_token: text('qr_token'), // Secure token for QR code attendance
   image: text('image'),
+  // Store ImageKit file id for safe deletion
+  image_file_id: text('image_file_id'),
   collaborator_id: text('collaborator_id').references(() => user.id),
   category_id: uuid('category_id').references(() => event_categories.id),
   created_at: timestamp('created_at').defaultNow(),
