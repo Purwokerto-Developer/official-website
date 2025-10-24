@@ -116,7 +116,7 @@ export default function ManageEventContent({
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredEvents.map((item) => (
-            <Card key={item.id} className="relative overflow-hidden rounded-xl">
+            <Card key={item.id} className="relative overflow-hidden rounded-xl py-0">
               <CardContent className="p-0">
                 <div className="relative aspect-[4/5] w-full overflow-hidden rounded-t-xl">
                   {item.image ? (

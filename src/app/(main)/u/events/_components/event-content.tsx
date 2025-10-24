@@ -248,9 +248,11 @@ export default function EventContent({ events = [], page, pageSize }: EventConte
             description={
               query
                 ? `We couldn't find any events matching "${query}". Try another keyword or clear filters.`
-                : 'We couldn\'t find events that match your filters. Remove filters or try another search.'
+                : "We couldn't find events that match your filters. Remove filters or try another search."
             }
-            actionLabel={query || filter !== 'all' || sort !== 'latest' ? 'Reset filters' : undefined}
+            actionLabel={
+              query || filter !== 'all' || sort !== 'latest' ? 'Reset filters' : undefined
+            }
             onAction={
               query || filter !== 'all' || sort !== 'latest'
                 ? () => {

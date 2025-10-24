@@ -31,7 +31,6 @@ export function AppSidebar({ session, ...props }: AppSidebarProps) {
       <SidebarHeader>
         <TeamSwitcher teams={sidebarItems.teams} />
       </SidebarHeader>
-
       <SidebarContent>
         <NavMain items={sidebarItems.navMain} label="Main Navigation" />
         {user.role === 'admin' && (
@@ -40,9 +39,7 @@ export function AppSidebar({ session, ...props }: AppSidebarProps) {
             <NavMain items={sidebarItems.adminNav} label="Admin Navigation" />
           </>
         )}
-        s{' '}
       </SidebarContent>
-
       <SidebarFooter>
         <NavUser user={user} />
       </SidebarFooter>

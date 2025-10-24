@@ -61,7 +61,7 @@ const ActivityCard = ({ events }: { events: EventItem[] }) => {
               title="Tidak ada event mendatang"
               description="Saat ini belum ada event baru. Tetap pantau halaman komunitas untuk info event selanjutnya!"
               actionLabel="Lihat Semua Event"
-              onAction={() => {}}
+              href="/u/events"
             />
           </div>
         ) : (
@@ -116,44 +116,46 @@ const ActivityCard = ({ events }: { events: EventItem[] }) => {
           </div>
         )}
       </CardContent>
-      <CardFooter className="absolute bottom-4 left-0 z-40 w-full px-4 md:px-8">
-        <div className="mx-auto w-full max-w-5xl">
-          <div className="from-bg/95 flex flex-col gap-3 rounded-lg bg-gradient-to-t to-transparent p-4 backdrop-blur-lg md:flex-row md:items-center md:justify-between">
-            <div className="flex min-w-0 flex-1 flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <h3 className="truncate text-xl font-semibold">
-                  {visibleEvents[activeIndex]?.title}
-                </h3>
-                <Badge variant="green" className="ml-4">
-                  {visibleEvents[activeIndex]?.status ?? 'offline'}
-                </Badge>
-              </div>
+      {upcomingEvents.length > 0 && (
+        <CardFooter className="absolute bottom-4 left-0 z-40 w-full px-4 md:px-8">
+          <div className="mx-auto w-full max-w-5xl">
+            <div className="from-bg/95 flex flex-col gap-3 rounded-lg bg-gradient-to-t to-transparent p-4 backdrop-blur-lg md:flex-row md:items-center md:justify-between">
+              <div className="flex min-w-0 flex-1 flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <h3 className="truncate text-xl font-semibold">
+                    {visibleEvents[activeIndex]?.title}
+                  </h3>
+                  <Badge variant="green" className="ml-4">
+                    {visibleEvents[activeIndex]?.status ?? 'offline'}
+                  </Badge>
+                </div>
 
-              <div className="flex flex-wrap items-center gap-3 text-sm">
-                <div className="flex items-center gap-2">
-                  <Calendar className="size-4" variant="Bulk" />
-                  <span className="truncate">{visibleEvents[activeIndex]?.date}</span>
+                <div className="flex flex-wrap items-center gap-3 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="size-4" variant="Bulk" />
+                    <span className="truncate">{visibleEvents[activeIndex]?.date}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Location className="size-4" variant="Bulk" />
+                    <span className="truncate">{visibleEvents[activeIndex]?.location}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <TickCircle className="size-4" variant="Bulk" />
+                    <span>
+                      {visibleEvents[activeIndex]?.registered ? 'Terdaftar' : 'Belum Terdaftar'}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Location className="size-4" variant="Bulk" />
-                  <span className="truncate">{visibleEvents[activeIndex]?.location}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <TickCircle className="size-4" variant="Bulk" />
-                  <span>
-                    {visibleEvents[activeIndex]?.registered ? 'Terdaftar' : 'Belum Terdaftar'}
-                  </span>
-                </div>
-              </div>
 
-              <p className="mt-2 line-clamp-3 max-w-prose text-sm">
-                {visibleEvents[activeIndex]?.description ??
-                  'Deskripsi singkat event bisa ditaruh di sini jika tersedia.'}
-              </p>
+                <p className="mt-2 line-clamp-3 max-w-prose text-sm">
+                  {visibleEvents[activeIndex]?.description ??
+                    'Deskripsi singkat event bisa ditaruh di sini jika tersedia.'}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </CardFooter>
+        </CardFooter>
+      )}
 
       {/* Optional: show See More on desktop below footer */}
       {!isMobile && upcomingEvents.length > 4 && (

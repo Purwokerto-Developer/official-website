@@ -10,7 +10,7 @@ import { getServerSession } from '@/lib/better-auth/get-session';
 const LandingPage = async () => {
   const session = await getServerSession();
   return (
-    <div className="max-7xl relative mx-auto h-screen w-full overflow-hidden">
+    <div className="max-7xl relative mx-auto h-screen w-full">
       <NavbarSection session={session} />
       <HeroSection />
       <AboutSection />

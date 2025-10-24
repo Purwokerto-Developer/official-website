@@ -60,7 +60,11 @@ export const AnimatedThemeToggler = ({ className }: Props) => {
     <button
       ref={buttonRef}
       onClick={toggleTheme}
-      className={cn(buttonVariants({ variant: 'secondary', size: 'icon' }), className)}
+      className={cn(
+        buttonVariants({ variant: 'secondary', size: 'icon' }),
+        className,
+        'bg-transparent backdrop-blur-md',
+      )}
       aria-label="Toggle theme"
     >
       {mounted ? (

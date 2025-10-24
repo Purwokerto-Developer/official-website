@@ -1,7 +1,7 @@
 import React from 'react';
 
 const BlogSection = () => {
-  return <div>BlogSection</div>;
+  return <div className="h-screen min-h-screen">BlogSection hallo</div>;
 };
 
 export default BlogSection;
