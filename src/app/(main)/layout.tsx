@@ -6,7 +6,6 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
 import { getServerSession } from '@/lib/better-auth/get-session';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-export const revalidate = 1;
 export const metadata: Metadata = {
   title: 'Purwokerto Dev',
   description: 'Community for developer in Purwokerto',

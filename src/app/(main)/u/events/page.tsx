@@ -2,8 +2,6 @@ import React from 'react';
 import EventContent from './_components/event-content';
 import { getEvent } from '@/action/event-action';
 
-export const revalidate = 60;
-
 interface EventPageProps {
   searchParams: Promise<{
     page?: string;
