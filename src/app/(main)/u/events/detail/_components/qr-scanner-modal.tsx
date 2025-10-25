@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import checkAuthenticated from '@/lib/session-check';
+import buildLoginUrl from '@/lib/redirect-with-next';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Html5Qrcode } from 'html5-qrcode';
 import { Scan, X, Loader2, CheckCircle } from 'lucide-react';
-import { showToast } from '@/components/custom-toaster';
 
 interface QRScannerModalProps {
   open: boolean;
@@ -20,15 +22,18 @@ export default function QRScannerModal({
   onScanSuccess,
   eventId,
 }: QRScannerModalProps) {
+  const router = useRouter();
   const [scanning, setScanning] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
-  const scannerRef = useRef<Html5Qrcode | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [scanLineTop, setScanLineTop] = useState(20); // percent
+  const scanLineRef = useRef<number | null>(null);
+
+  const scannerRef = useRef<Html5Qrcode | null>(null);
 
   useEffect(() => {
     if (open && !scannerRef.current) {
-      // Add small delay to ensure DOM is ready
       const timer = setTimeout(() => {
         initializeScanner();
       }, 100);
@@ -43,14 +48,31 @@ export default function QRScannerModal({
     };
   }, [open]);
 
+  useEffect(() => {
+    // animate a simple scan-line while scanning
+    if (scanning && !processing && !success) {
+      scanLineRef.current = window.setInterval(() => {
+        setScanLineTop((t) => (t >= 80 ? 20 : t + 12));
+      }, 300);
+    } else if (scanLineRef.current) {
+      window.clearInterval(scanLineRef.current);
+      scanLineRef.current = null;
+    }
+
+    return () => {
+      if (scanLineRef.current) {
+        window.clearInterval(scanLineRef.current);
+        scanLineRef.current = null;
+      }
+    };
+  }, [scanning, processing, success]);
+
   const initializeScanner = async () => {
     try {
       setCameraError(null);
 
-      // Check if DOM element exists before initializing
       const qrReaderElement = document.getElementById('qr-reader');
       if (!qrReaderElement) {
-        console.error('QR reader element not found in DOM');
         setCameraError('Scanner initialization failed. Please try again.');
         return;
       }
@@ -73,26 +95,56 @@ export default function QRScannerModal({
             const qrData = JSON.parse(decodedText);
 
             if (qrData.eventId !== eventId) {
-              showToast('error', 'This QR code is for a different event');
+              // show inline error instead of toast to avoid duplicates
+              setCameraError('This QR code is for a different event.');
               setProcessing(false);
+              // allow scanning again
+              setTimeout(() => {
+                setCameraError(null);
+                setScanning(true);
+              }, 1500);
               return;
             }
 
-            // Call the attendance action
+            // Auth pre-check: ensure user still authenticated before proceeding
+            const authenticated = await checkAuthenticated();
+            if (!authenticated) {
+              setProcessing(false);
+
+              // stop scanner and redirect to login with next intent
+              if (scannerRef.current) {
+                try {
+                  await scannerRef.current.stop();
+                  scannerRef.current.clear();
+                  scannerRef.current = null;
+                } catch (err) {
+                  console.error('Error stopping scanner during redirect:', err);
+                }
+              }
+
+              router.push(buildLoginUrl(`/u/events/${eventId}`, 'attend'));
+              return;
+            }
+
+            // Call the attendance action (parent handles success/error toasts)
             await onScanSuccess(decodedText);
 
             setSuccess(true);
             setProcessing(false);
 
-            // Close modal after 2 seconds
+            // Close modal after short delay
             setTimeout(() => {
               handleClose();
-            }, 2000);
+            }, 1500);
           } catch (error) {
             console.error('QR scan error:', error);
-            showToast('error', 'Invalid QR code format');
+            setCameraError('Invalid QR code format.');
             setProcessing(false);
-            setScanning(true);
+            // resume scanning after short delay
+            setTimeout(() => {
+              setCameraError(null);
+              setScanning(true);
+            }, 1200);
           }
         },
         () => {
@@ -104,7 +156,6 @@ export default function QRScannerModal({
     } catch (error) {
       console.error('Failed to initialize scanner:', error);
       setCameraError('Failed to access camera. Please check permissions.');
-      showToast('error', 'Camera access denied');
     }
   };
 
@@ -117,6 +168,10 @@ export default function QRScannerModal({
       } catch (error) {
         console.error('Error stopping scanner:', error);
       }
+    }
+    if (scanLineRef.current) {
+      window.clearInterval(scanLineRef.current);
+      scanLineRef.current = null;
     }
   };
 
@@ -144,17 +199,24 @@ export default function QRScannerModal({
           <div className="relative">
             <div
               id="qr-reader"
-              className="w-full overflow-hidden rounded-lg border-2 border-gray-200 dark:border-gray-700"
+              className="h-64 w-full overflow-hidden rounded-lg border-2 border-gray-200 bg-black dark:border-gray-700"
             />
 
-            {/* Scanning Overlay */}
-            {scanning && !processing && !success && (
-              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/20">
-                <div className="rounded-lg bg-white p-4 shadow-lg dark:bg-gray-800">
-                  <div className="flex items-center gap-2 text-blue-600">
-                    <Scan className="animate-pulse" size={24} />
-                    <span className="font-medium">Scanning...</span>
-                  </div>
+            {/* Animated Scanning Overlay (pulsing frame + moving scan-line) */}
+            {scanning && !processing && !success && !cameraError && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="absolute inset-0 rounded-lg border-2 border-dashed border-blue-400 opacity-80" />
+                <div
+                  className="absolute right-2 left-2 h-0.5 rounded bg-gradient-to-r from-transparent via-blue-400 to-transparent opacity-90"
+                  style={{
+                    top: `${scanLineTop}%`,
+                    transition: 'top 300ms linear',
+                    boxShadow: '0 0 12px rgba(59,130,246,0.6)',
+                  }}
+                />
+                <div className="z-10 flex flex-col items-center gap-2">
+                  <Scan className="animate-pulse text-blue-400" size={28} />
+                  <span className="text-sm font-medium text-white/90">Scanning...</span>
                 </div>
               </div>
             )}
@@ -181,12 +243,12 @@ export default function QRScannerModal({
               </div>
             )}
 
-            {/* Error State */}
+            {/* Error Overlay (inline) */}
             {cameraError && (
               <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/60">
                 <div className="max-w-xs rounded-lg bg-white p-6 text-center shadow-lg dark:bg-gray-800">
-                  <X className="mx-auto mb-2 text-red-600" size={48} />
-                  <p className="mb-2 font-medium text-red-600">Camera Error</p>
+                  <X className="mx-auto mb-2 text-red-600" size={40} />
+                  <p className="mb-2 font-medium text-red-600">Error</p>
                   <p className="text-sm text-gray-600">{cameraError}</p>
                 </div>
               </div>

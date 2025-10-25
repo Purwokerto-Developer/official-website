@@ -7,16 +7,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import EmptyState from '@/components/ui/empty-state';
 import { Input } from '@/components/ui/input';
 import type { EventListItem } from '@/types/event-type';
 import { motion } from 'framer-motion';
 import { ArrowDown2, ArrowUp2, SearchNormal, Sort } from 'iconsax-reactjs';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useState } from 'react';
 import { EventList } from './event-list';
-import EmptyState from '@/components/ui/empty-state';
 
 interface EventContentProps {
   events: EventListItem[];
@@ -48,18 +47,6 @@ export default function EventContent({ events = [], page, pageSize }: EventConte
     const timeB = new Date(b.start_time).getTime();
     return sort === 'latest' ? timeB - timeA : timeA - timeB;
   });
-
-  // Stats
-  const total = filteredEvents.length;
-  const online = filteredEvents.filter((e) => e.event_type === 'online').length;
-  const offline = filteredEvents.filter((e) => e.event_type === 'offline').length;
-  const stats = {
-    stats: [
-      { label: 'Total', value: total },
-      { label: 'Online', value: online },
-      { label: 'Offline', value: offline },
-    ],
-  };
 
   // State for UI label
   const [filterLabel, setFilterLabel] = useState(
@@ -104,46 +91,6 @@ export default function EventContent({ events = [], page, pageSize }: EventConte
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-8">
-      <header className="mb-8 rounded-2xl border border-neutral-200 bg-white px-5 py-6 shadow-sm dark:border-neutral-700 dark:bg-neutral-900">
-        <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-          {/* Left: logo + title */}
-          <div className="flex items-center gap-4">
-            <div className="relative h-24 w-24 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 p-2 dark:border-neutral-700 dark:bg-neutral-800">
-              <Image
-                src="/img-logo.png"
-                alt="logo"
-                fill
-                sizes="96px"
-                style={{ objectFit: 'cover' }}
-              />
-            </div>
-            <div className="flex flex-col">
-              <h1 className="text-2xl leading-tight font-extrabold text-neutral-800 dark:text-white">
-                Event Collections
-              </h1>
-              <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-                Discover upcoming events and join the community.
-              </p>
-            </div>
-          </div>
-
-          {/* Right: stats */}
-          <div className="flex flex-wrap justify-center gap-3 md:justify-end">
-            {stats.stats.map((item, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-2 rounded-lg border border-neutral-100 bg-neutral-50 px-4 py-2 shadow-sm dark:border-neutral-700 dark:bg-neutral-800"
-              >
-                <span className="text-sm text-neutral-500 dark:text-neutral-400">{item.label}</span>
-                <span className="rounded-md bg-white px-3 py-1 text-sm font-semibold text-sky-600 shadow-sm dark:bg-neutral-900 dark:text-sky-400">
-                  {item.value}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </header>
-
       {/* TOOLBAR: clean, minimal, dark-mode friendly */}
       <nav className="mb-8 flex w-full flex-col gap-3 md:flex-row md:items-center md:justify-between">
         {/* Search bar */}

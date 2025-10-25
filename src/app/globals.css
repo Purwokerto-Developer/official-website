@@ -157,4 +157,13 @@
       var(--background) 100%
     );
   }
+
+  /* Hide scrollbars but keep scrolling functional */
+  .hide-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
 }

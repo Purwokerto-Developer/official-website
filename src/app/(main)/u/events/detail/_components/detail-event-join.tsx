@@ -7,8 +7,7 @@ import {
   joinEvent,
   setAttendanceOpen,
 } from '@/action/event-action';
-import { showToast, TestToastButton } from '@/components/custom-toaster';
-import { toast } from 'react-hot-toast';
+import { showToast } from '@/components/custom-toaster';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   AlertDialog,
@@ -23,6 +22,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import ConfirmModal from '@/components/ui/confirm-modal';
 import { EventDetail } from '@/types/event-type';
 import { Airdrop, Calendar, Colorfilter, InfoCircle, Location, WristClock } from 'iconsax-reactjs';
 import { CheckCircle, Scan } from 'lucide-react';
@@ -30,6 +30,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'react-hot-toast';
 import QRScannerModal from './qr-scanner-modal';
 
 type DetailEventJoinProps = {
@@ -312,31 +313,43 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
                 {!userStatus.hasAttended && (
                   <div className="space-y-2">
                     {!userStatus.isJoined ? (
-                      <Button
-                        onClick={handleJoin}
-                        variant="gradient_blue"
-                        className="w-full rounded-full"
-                        disabled={joining || new Date(data.start_time) < new Date()}
+                      <ConfirmModal
+                        title="Join this event?"
+                        description="Are you sure you want to join this event?"
+                        confirmText={joining ? 'Joining...' : 'Join'}
+                        onConfirm={handleJoin}
                       >
-                        {new Date(data.start_time) < new Date()
-                          ? 'Event Ended'
-                          : joining
-                            ? 'Joining...'
-                            : 'Join Event'}
-                      </Button>
+                        <Button
+                          variant="gradient_blue"
+                          className="w-full rounded-full"
+                          disabled={joining || new Date(data.start_time) < new Date()}
+                        >
+                          {new Date(data.start_time) < new Date()
+                            ? 'Event Ended'
+                            : joining
+                              ? 'Joining...'
+                              : 'Join Event'}
+                        </Button>
+                      </ConfirmModal>
                     ) : (
                       <div className="space-y-2">
                         {/* Online Event - Show attendance link button */}
                         {data.event_type === 'online' && (
                           <div className="space-y-4">
-                            <Button
-                              onClick={handleCancelJoin}
-                              variant="outline"
-                              className="w-full flex-1 rounded-full"
-                              disabled={loading || new Date(data.start_time) < new Date()}
+                            <ConfirmModal
+                              title="Cancel join?"
+                              description="Are you sure you want to cancel your participation?"
+                              confirmText={loading ? 'Cancelling...' : 'Cancel'}
+                              onConfirm={handleCancelJoin}
                             >
-                              {loading ? 'Cancelling...' : 'Cancel Join'}
-                            </Button>
+                              <Button
+                                variant="outline"
+                                className="w-full flex-1 rounded-full"
+                                disabled={loading || new Date(data.start_time) < new Date()}
+                              >
+                                {loading ? 'Cancelling...' : 'Cancel Join'}
+                              </Button>
+                            </ConfirmModal>
 
                             <Alert className="border-blue-200 bg-blue-50 dark:border-blue-700 dark:bg-blue-950">
                               <InfoCircle size={16} className="text-blue-600 dark:text-blue-400" />
@@ -358,14 +371,20 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
                         {data.event_type === 'offline' && (
                           <div className="space-y-2">
                             <div className="flex gap-2">
-                              <Button
-                                onClick={handleCancelJoin}
-                                variant="outline"
-                                className="flex-1 rounded-full"
-                                disabled={loading || new Date(data.start_time) < new Date()}
+                              <ConfirmModal
+                                title="Cancel join?"
+                                description="Are you sure you want to cancel your participation?"
+                                confirmText={loading ? 'Cancelling...' : 'Cancel'}
+                                onConfirm={handleCancelJoin}
                               >
-                                {loading ? 'Cancelling...' : 'Cancel Join'}
-                              </Button>
+                                <Button
+                                  variant="outline"
+                                  className="flex-1 rounded-full"
+                                  disabled={loading || new Date(data.start_time) < new Date()}
+                                >
+                                  {loading ? 'Cancelling...' : 'Cancel Join'}
+                                </Button>
+                              </ConfirmModal>
                               <Button
                                 onClick={() => setScannerOpen(true)}
                                 variant="gradient_blue"

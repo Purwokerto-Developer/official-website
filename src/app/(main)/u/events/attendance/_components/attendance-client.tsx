@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useRef, useMemo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { markAttendance } from '@/action/event-action';
 import { showToast } from '@/components/custom-toaster';
@@ -25,6 +26,8 @@ type Props = { eventId: string; mode?: 'link' | 'qr'; detailEvent?: EventDetail 
 export default function AttendanceClient({ eventId, mode = 'link', detailEvent }: Props) {
   const [isPending, startTransition] = useTransition();
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showJoinLink, setShowJoinLink] = useState(false);
   const qrRef = useRef<HTMLDivElement>(null);
 
   const handleAttend = () => {
@@ -33,14 +36,39 @@ export default function AttendanceClient({ eventId, mode = 'link', detailEvent }
       const res = await markAttendance(eventId);
       if (res.success) {
         setStatus('success');
+        setErrorMessage(null);
+        setShowJoinLink(false);
         showToast('success', 'Attendance recorded');
       } else {
-        if (res.error?.includes('already marked attendance')) {
+        const errText = (res.error || '').toString();
+        const low = errText.toLowerCase();
+
+        // detect "not joined" server messages and show a join link
+        const needsJoin =
+          /not.*join/i.test(errText) ||
+          /not joined/i.test(low) ||
+          /must join/i.test(low) ||
+          /join the event/i.test(low) ||
+          /not registered/i.test(low);
+
+        if (needsJoin) {
+          setStatus('error');
+          setErrorMessage(errText || 'You must join the event before marking attendance.');
+          setShowJoinLink(true);
+          showToast('error', errText || 'You must join the event before marking attendance.');
+        } else if (
+          errText.includes('already marked') ||
+          errText.includes('already marked attendance')
+        ) {
           setStatus('success');
+          setErrorMessage(null);
+          setShowJoinLink(false);
           showToast('success', 'Attendance already recorded for this event');
         } else {
           setStatus('error');
-          showToast('error', res.error || 'Failed to attend');
+          setErrorMessage(errText || 'Failed to attend');
+          setShowJoinLink(false);
+          showToast('error', errText || 'Failed to attend');
         }
       }
     });
@@ -99,10 +127,10 @@ export default function AttendanceClient({ eventId, mode = 'link', detailEvent }
   }, [detailEvent?.start_time]);
 
   return (
-    <div className="flex min-h-screen items-start justify-center pt-16 pb-10">
+    <div className="flex min-h-screen items-start justify-center pt-16 pb-10 lg:pt-0 lg:pb-0">
       <div className="w-full max-w-lg space-y-8 p-4 md:p-6">
         {/* Event Info Card */}
-        {detailEvent && (
+        {detailEvent && mode === 'link' && (
           <Card className="overflow-hidden py-0 shadow-2xl shadow-gray-200/50 dark:shadow-neutral-900/50">
             <div className="relative aspect-[3/1.5] w-full">
               <Image
@@ -215,9 +243,24 @@ export default function AttendanceClient({ eventId, mode = 'link', detailEvent }
                   </div>
                 )}
                 {status === 'error' && (
-                  <div className="mt-4 flex items-center justify-center gap-2 rounded-lg bg-red-50/50 p-3 text-sm font-semibold text-red-600 dark:bg-red-900/20 dark:text-red-400">
-                    <CloseCircle size={20} variant="Bulk" />
-                    <span>Failed to record attendance. Please try again.</span>
+                  <div className="mt-4 flex flex-col items-center justify-center gap-2 rounded-lg bg-red-50/50 p-3 text-sm font-semibold text-red-600 dark:bg-red-900/20 dark:text-red-400">
+                    <div className="flex items-center gap-2">
+                      <CloseCircle size={20} variant="Bulk" />
+                      <span>
+                        {errorMessage || 'Failed to record attendance. Please try again.'}
+                      </span>
+                    </div>
+
+                    {showJoinLink && (
+                      <div>
+                        <Link
+                          href={`/u/events/detail/${detailEvent?.slug ?? eventId}`}
+                          className="bg-primary mt-2 inline-flex items-center gap-2 rounded-md px-3 py-1 text-xs font-semibold text-white hover:bg-indigo-500"
+                        >
+                          Join the event
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -233,7 +276,7 @@ export default function AttendanceClient({ eventId, mode = 'link', detailEvent }
               Scan this QR code to open the attendance page.
             </p>
 
-            <div className="flex justify-center rounded-2xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-3 dark:from-indigo-900/20 dark:to-purple-900/20">
+            <div className="bg-primary/10 flex justify-center rounded-2xl py-5">
               <div
                 ref={qrRef}
                 className="relative rounded-xl bg-white p-4 shadow-xl shadow-neutral-200/50 transition-all duration-300 hover:scale-[1.02] dark:shadow-neutral-900/50"
@@ -243,13 +286,16 @@ export default function AttendanceClient({ eventId, mode = 'link', detailEvent }
                   size={256}
                   level="H"
                   bgColor="#FFFFFF"
-                  fgColor="#1E3A8A"
-                  style={{ height: 'auto', maxWidth: '100%', width: '100%', borderRadius: '8px' }}
+                  fgColor="#5A96F3"
+                  style={{ height: 'auto', maxWidth: '100%', width: '100%', borderRadius: 8 }}
                   viewBox="0 0 256 256"
                 />
-                {/* Logo/Icon di tengah QR Code */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-white p-1.5 shadow-md">
-                  <TickCircle size={32} variant="Bulk" className="text-indigo-600" />
+
+                {/* App logo centered on top of QR */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white p-1.5 shadow-md">
+                  <div className="relative h-12 w-12">
+                    <Image src="/img-logo.png" alt="App logo" fill className="object-contain" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -258,7 +304,7 @@ export default function AttendanceClient({ eventId, mode = 'link', detailEvent }
               onClick={downloadQRCode}
               variant="outline"
               size="lg"
-              className="mx-auto flex items-center gap-2 rounded-xl border-2 border-indigo-400 text-indigo-600 hover:bg-indigo-50 dark:border-indigo-600 dark:text-indigo-400 dark:hover:bg-neutral-700"
+              className="border-primary text-primary dark:border-primary dark:text-primary mx-auto flex items-center gap-2 rounded-xl border-2 hover:bg-indigo-50 dark:hover:bg-neutral-700"
             >
               <ExportSquare size={20} variant="Bulk" />
               Download QR Code

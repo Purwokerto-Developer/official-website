@@ -1,5 +1,6 @@
 'use client';
 import { signInGithub, signInGoogle } from '@/lib/better-auth/auth-client';
+import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -7,12 +8,15 @@ import { cn } from '@/lib/utils';
 type SocialProvider = 'google' | 'github';
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
+  const searchParams = useSearchParams();
+
   const handleSignInSocial = async (type: SocialProvider) => {
     try {
+      const next = searchParams?.get('next') ?? '/u/dashboard';
       if (type === 'google') {
-        await signInGoogle();
+        await signInGoogle(next);
       } else {
-        await signInGithub();
+        await signInGithub(next);
       }
     } catch (error) {
       console.error(`Error signing in with ${type}:`, error);

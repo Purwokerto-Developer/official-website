@@ -5,8 +5,9 @@ import DonutChart from '../_components/donut-chart';
 import ManageEventDetail from '../_components/manage-event-detail';
 import ManageEventParticipants from '../_components/manage-event-participants';
 
-const ManageEventDetailPage = async ({ params }: { params: { id: string } }) => {
-  const res = await getEventById(params.id);
+const ManageEventDetailPage = async ({ params }: { params: Promise<{ id: string }> }) => {
+  const param = (await params).id;
+  const res = await getEventById(param);
   if (!res.success || !res.data) return notFound();
   const participants = await getEventParticipants(res.data.id);
   const rows = participants.success && Array.isArray(participants.data) ? participants.data : [];
