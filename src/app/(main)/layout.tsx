@@ -19,7 +19,7 @@ export default async function RootLayout({
 }>) {
   const sessionData = await getServerSession();
 
-  if (!sessionData.user || !sessionData.session) {
+  if (!sessionData) {
     redirect('/login');
   }
   return (
