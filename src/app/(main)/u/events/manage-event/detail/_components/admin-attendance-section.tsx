@@ -8,6 +8,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { showToast } from '@/components/custom-toaster';
 import QRCode from 'react-qr-code';
+import Image from 'next/image';
 import { generateQRToken } from '@/action/event-action';
 import { createQRData } from '@/lib/qr-utils';
 
@@ -51,9 +52,12 @@ export default function AdminAttendanceSection({
     }
   };
 
-  // Generate attendance URL based on event type
-  const attendanceUrl = `${window.location.origin}/u/events/attendance/${eventId}?mode=${eventType === 'offline' ? 'qr' : 'link'}`;
-  
+  // Generate attendance URL based on event type (only on client)
+  const attendanceUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/u/events/attendance/${eventId}?mode=${eventType === 'offline' ? 'qr' : 'link'}`
+      : '';
+
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(attendanceUrl);
@@ -72,7 +76,7 @@ export default function AdminAttendanceSection({
 
   const downloadQRCode = () => {
     if (!qrRef.current) return;
-    
+
     const svg = qrRef.current.querySelector('svg');
     if (!svg) return;
 
@@ -81,31 +85,31 @@ export default function AdminAttendanceSection({
     if (!ctx) return;
 
     const svgData = new XMLSerializer().serializeToString(svg);
-    const img = new Image();
-    
+    const img = new window.Image();
+
     img.onload = () => {
       canvas.width = img.width;
       canvas.height = img.height;
       ctx.fillStyle = 'white';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0);
-      
+
       const link = document.createElement('a');
       link.download = `attendance-qr-${eventTitle.replace(/\s+/g, '-').toLowerCase()}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
       showToast('success', 'QR code downloaded!');
     };
-    
+
     img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
   };
 
   return (
     <div className="space-y-6">
       {/* Quick Actions Card */}
-      <Card className='dark:bg-background'>
+      <Card className="dark:bg-background">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 ">
+          <CardTitle className="flex items-center gap-2">
             <Users size={20} />
             Attendance Management - {eventType === 'offline' ? 'QR Code' : 'Link Sharing'}
           </CardTitle>
@@ -123,9 +127,7 @@ export default function AdminAttendanceSection({
           {eventType === 'online' && (
             <div className="space-y-3">
               <div className="space-y-2">
-                <label className="text-sm font-medium ">
-                  Online Attendance URL
-                </label>
+                <label className="text-sm font-medium">Online Attendance URL</label>
                 <p className="text-xs text-blue-600 dark:text-blue-400">
                   Share this link with participants via email, chat, or notification
                 </p>
@@ -153,9 +155,7 @@ export default function AdminAttendanceSection({
           {eventType === 'offline' && qrData && (
             <div className="space-y-3">
               <div className="space-y-2">
-                <label className="text-sm font-medium ">
-                  QR Code for Attendance
-                </label>
+                <label className="text-sm font-medium">QR Code for Attendance</label>
                 <p className="text-xs text-blue-600 dark:text-blue-400">
                   Display this QR code at the venue for participants to scan
                 </p>
@@ -163,16 +163,26 @@ export default function AdminAttendanceSection({
 
               {/* QR Code Display */}
               <div className="flex justify-center">
-                <div 
+                <div
                   ref={qrRef}
-                  className="bg-white p-6 rounded-lg border-2 border-gray-200"
+                  className="relative rounded-lg border-2 border-gray-200 bg-white p-3 shadow-xl"
                 >
                   <QRCode
                     value={qrData}
                     size={256}
-                    style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                    level="H"
+                    bgColor="#FFFFFF"
+                    fgColor="#5A96F3"
+                    style={{ height: 'auto', maxWidth: '100%', width: '100%', borderRadius: 8 }}
                     viewBox={`0 0 256 256`}
                   />
+
+                  {/* App logo centered on top of QR */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white p-1.5 shadow-md">
+                    <div className="relative h-10 w-10">
+                      <Image src="/img-logo.png" alt="App logo" fill className="object-contain" />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -200,16 +210,16 @@ export default function AdminAttendanceSection({
           )}
 
           {/* Full Attendance Page Link */}
-          <div className="flex items-center justify-between rounded-lg border border-blue-200 bg-white p-3 dark:bg-gray-900 dark:border-blue-900">
+          <div className="flex items-center justify-between rounded-lg border border-blue-200 bg-white p-3 dark:border-blue-900 dark:bg-gray-900">
             <div>
-              <p className="text-sm font-medium ">
-                Full Attendance Management
-              </p>
+              <p className="text-sm font-medium">Full Attendance Management</p>
               <p className="text-xs text-blue-600 dark:text-blue-400">
                 View detailed attendance list and manage participants
               </p>
             </div>
-            <Link href={`/u/events/attendance/${eventId}?mode=${eventType === 'offline' ? 'qr' : 'link'}`}>
+            <Link
+              href={`/u/events/attendance/${eventId}?mode=${eventType === 'offline' ? 'qr' : 'link'}`}
+            >
               <Button
                 size="sm"
                 variant="outline"
@@ -224,11 +234,9 @@ export default function AdminAttendanceSection({
       </Card>
 
       {/* Instructions Card */}
-      <Card className='dark:bg-background'>
+      <Card className="dark:bg-background">
         <CardHeader>
-          <CardTitle className="text-sm ">
-            How to use this attendance system:
-          </CardTitle>
+          <CardTitle className="text-sm">How to use this attendance system:</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
           {eventType === 'online' ? (

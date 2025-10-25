@@ -1,12 +1,17 @@
 import { LoginForm } from '@/components/auth/login-form';
 import { getServerSession } from '@/lib/better-auth/get-session';
+import { isSafeInternalPath } from '@/lib/redirect-with-next';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
 
-const LoginPage = async () => {
+const LoginPage = async ({ searchParams }: { searchParams?: { next?: string } }) => {
   const session = await getServerSession();
+  const next = searchParams?.next;
 
   if (session) {
+    if (next && isSafeInternalPath(next)) {
+      redirect(next);
+    }
     redirect('/u/dashboard');
   }
   return (

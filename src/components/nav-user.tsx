@@ -20,6 +20,7 @@ import { auth } from '@/lib/better-auth/auth';
 import { signOut } from '@/lib/better-auth/auth-client';
 import { LogoutCurve, Scroll, SmsNotification, Verify } from 'iconsax-reactjs';
 import { showToast } from './custom-toaster';
+import { useRouter } from 'next/navigation';
 
 type Session = typeof auth.$Infer.Session;
 
@@ -31,6 +32,7 @@ export function NavUser({
   collapseIcon?: boolean;
 }) {
   const { isMobile } = useSidebar();
+  const router = useRouter();
 
   async function handleSignOut() {
     const { success } = await signOut();

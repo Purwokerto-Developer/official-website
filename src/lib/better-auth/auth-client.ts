@@ -13,11 +13,11 @@ export const authClient = createAuthClient({
 export const { useSession } = authClient;
 
 // google sign in
-export const signInGoogle = async () => {
+export const signInGoogle = async (callbackURL: string = '/u/dashboard') => {
   const { url } = await auth.api.signInSocial({
     body: {
       provider: 'google',
-      callbackURL: '/u/dashboard',
+      callbackURL,
     },
   });
 
@@ -27,11 +27,11 @@ export const signInGoogle = async () => {
 };
 
 // github sign in
-export const signInGithub = async () => {
+export const signInGithub = async (callbackURL: string = '/u/dashboard') => {
   const { url } = await auth.api.signInSocial({
     body: {
       provider: 'github',
-      callbackURL: '/u/dashboard',
+      callbackURL,
     },
   });
   if (url) {
@@ -41,6 +41,8 @@ export const signInGithub = async () => {
 
 export const signOut = async () => {
   const result = await auth.api.signOut({ headers: await headers() });
-
+  if (result.success) {
+    redirect('/login');
+  }
   return result;
 };

@@ -11,12 +11,14 @@ export default function ManageEventDetail({ data }: Props) {
       <DetailEventContent data={data} adminMode />
 
       {/* Admin Quick Actions for Attendance Management */}
-      <AdminAttendanceSection
-        eventId={data.id}
-        eventType={data.event_type}
-        isAttendanceOpen={data.is_attendance_open}
-        eventTitle={data.title}
-      />
+      {data.is_attendance_open && (
+        <AdminAttendanceSection
+          eventId={data.id}
+          eventType={data.event_type}
+          isAttendanceOpen={data.is_attendance_open}
+          eventTitle={data.title}
+        />
+      )}
     </div>
   );
 }
