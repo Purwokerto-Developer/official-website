@@ -7,7 +7,8 @@ import {
   joinEvent,
   setAttendanceOpen,
 } from '@/action/event-action';
-import { showToast } from '@/components/custom-toaster';
+import { showToast, TestToastButton } from '@/components/custom-toaster';
+import { toast } from 'react-hot-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   AlertDialog,
@@ -120,13 +121,16 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
   };
 
   const handleCancelJoin = async () => {
+    showToast('loading', 'Cancelling...');
     setLoading(true);
     try {
       const result = await cancelEventJoin(data.id);
       if (result.success) {
         setUserStatus((prev) => ({ ...prev, isJoined: false }));
+        showToast('success', 'You are cancelled!');
       }
     } catch (error) {
+      showToast('error', 'Failed to cancel this event!');
       console.error('Failed to cancel join:', error);
     } finally {
       setLoading(false);
@@ -157,6 +161,32 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
       console.error('QR scan failed:', error);
       showToast('error', 'Failed to process QR code');
       // Don't throw error - handle gracefully
+    }
+  };
+
+  const handleToggleAttendance = async () => {
+    const newOpen = !data.is_attendance_open;
+    showToast('loading', newOpen ? 'Opening attendance... (3s)' : 'Closing attendance... (3s)');
+    setJoining(true);
+    try {
+      const result = await setAttendanceOpen(data.id, newOpen);
+      try {
+        toast.dismiss('loading');
+      } catch {}
+      if (result.success) {
+        showToast('success', newOpen ? 'Attendance opened' : 'Attendance closed');
+      } else {
+        showToast('error', result.error || 'Failed to change attendance state');
+      }
+    } catch (err) {
+      try {
+        toast.dismiss('loading');
+      } catch {}
+      showToast('error', 'Failed to change attendance state');
+      console.error('Failed to toggle attendance:', err);
+    } finally {
+      setJoining(false);
+      router.refresh();
     }
   };
 
@@ -191,10 +221,9 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
                   : 'bg-red-600/10 text-red-600'
               }`}
             >
-              {data.is_attendance_open ? 'Open' : 'Closed'}
+              {data.is_attendance_open ? 'Attendance Open' : 'Attendance Closed'}
             </div>
           </CardHeader>
-
           <CardContent className="space-y-6">
             {/* Countdown */}
             <div>
@@ -243,7 +272,7 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
-                    variant="gradient_blue"
+                    variant={data.is_attendance_open ? 'gradient_destructive' : 'gradient_blue'}
                     className="mt-3 w-full rounded-full"
                     disabled={joining}
                   >
@@ -268,10 +297,8 @@ export const DetailEventJoin = ({ data, adminMode, userRole }: DetailEventJoinPr
                     <AlertDialogAction
                       className="bg-primary hover:bg-primary/90"
                       onClick={async () => {
-                        setJoining(true);
-                        await setAttendanceOpen(data.id, !data.is_attendance_open);
-                        setJoining(false);
-                        router.refresh();
+                        // Delegate to helper for cleanliness
+                        await handleToggleAttendance();
                       }}
                     >
                       Confirm
