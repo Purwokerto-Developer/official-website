@@ -148,8 +148,14 @@ export async function createEventWithImage(
   try {
     const image = formData.get('image');
 
+    const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
+
     if (!(image instanceof File)) {
       return fail('File gambar tidak valid');
+    }
+
+    if (typeof image.size === 'number' && image.size > MAX_IMAGE_BYTES) {
+      return fail(`File gambar terlalu besar. Maksimum ${MAX_IMAGE_BYTES / (1024 * 1024)}MB`);
     }
 
     const data = formDataToObject(formData);
@@ -294,6 +300,11 @@ export async function updateEventWithImage(
     const image = formData.get('image');
     let newImageUrl: string | undefined;
     if (image && image instanceof File) {
+      const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
+      if (typeof image.size === 'number' && image.size > MAX_IMAGE_BYTES) {
+        return fail(`File gambar terlalu besar. Maksimum ${MAX_IMAGE_BYTES / (1024 * 1024)}MB`);
+      }
+
       const buffer = Buffer.from(await image.arrayBuffer());
       const uploadResponse = await imagekit.upload({
         file: buffer,

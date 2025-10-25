@@ -19,10 +19,10 @@ export default function InputImage({
   previousImage?: string;
   disabled?: boolean;
 }) {
-  const maxSizeMB = 2;
+  const maxSizeMB = 5; // allow up to 5 MB per image
   const maxSize = maxSizeMB * 1024 * 1024;
   const [isCompressing, setIsCompressing] = React.useState(false);
-  
+
   const [
     { files, isDragging, errors },
     {
@@ -52,10 +52,10 @@ export default function InputImage({
               useWebWorker: true,
               fileType: 'image/jpeg', // Convert to JPEG for better compression
             });
-            
+
             // Replace the file in the files array
             const updatedFiles = [...files];
-            const fileIndex = updatedFiles.findIndex(f => f.id === addedFiles[0].id);
+            const fileIndex = updatedFiles.findIndex((f) => f.id === addedFiles[0].id);
             if (fileIndex !== -1) {
               updatedFiles[fileIndex] = {
                 ...updatedFiles[fileIndex],

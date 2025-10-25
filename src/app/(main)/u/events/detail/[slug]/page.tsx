@@ -11,7 +11,6 @@ const DetailEvent = async ({ params }: { params: { slug: string } }) => {
   return <DetailEventContent data={event} />;
 };
 
-// Revalidate every 30 seconds for event details
 export const revalidate = 30;
 
 export default DetailEvent;
