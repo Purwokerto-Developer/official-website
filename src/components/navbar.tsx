@@ -1,84 +1,108 @@
-"use client";
+'use client';
 import {
+  MobileNav,
+  MobileNavHeader,
+  MobileNavMenu,
+  MobileNavToggle,
   Navbar,
+  NavbarLogo,
   NavBody,
   NavItems,
-  MobileNav,
-  NavbarLogo,
-  NavbarButton,
-  MobileNavHeader,
-  MobileNavToggle,
-  MobileNavMenu,
-} from "@/components/ui/resizable-navbar";
-import { navItems } from "@/constants";
-import { useState } from "react";
-import { ThemeMode } from "./button-mode";
-import Link from "next/link";
-import { buttonVariants } from "./ui/button";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/resizable-navbar';
+import { navItems } from '@/constants';
+import { cn } from '@/lib/utils';
+import { Session } from '@/types/better-auth';
+import { Category2, Login } from 'iconsax-reactjs';
+import Link from 'next/link';
+import { useState } from 'react';
+import { AnimatedThemeToggler } from './ui/animated-theme-toggler';
+import { buttonVariants } from './ui/button';
 
-export default function NavbarSection() {
- 
-
+export default function NavbarSection({ session }: { session?: Session }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="relative">
-      <Navbar>
-        {/* Desktop Navigation */}
-        <NavBody>
-          <NavbarLogo />
-          <NavItems items={navItems} />
-          <div className="flex items-center gap-2" style={{ position: "relative", zIndex: 50 }}>
-            <ThemeMode />
-            <Link href="/login" className={cn(buttonVariants({}),"dark:text-white font-semibold")}>Login</Link>
-          </div>
-        </NavBody>
+    <Navbar>
+      {/* Desktop Navigation */}
+      <NavBody>
+        <NavbarLogo />
+        <NavItems items={navItems} />
+        <div className="flex items-center gap-2" style={{ position: 'relative', zIndex: 50 }}>
+          <AnimatedThemeToggler />
+          {!session ? (
+            <Link
+              href="/login"
+              className={cn(
+                buttonVariants({}),
+                'rounded-full bg-gradient-to-r from-sky-500 via-blue-500 to-blue-600 px-5 text-white transition-transform duration-200 hover:scale-105',
+              )}
+            >
+              <Login size="32" className="text-white" variant="Bulk" /> Login
+            </Link>
+          ) : (
+            <Link
+              href="/u/dashboard"
+              className={cn(
+                buttonVariants({}),
+                'rounded-full bg-gradient-to-r from-sky-500 via-blue-500 to-blue-600 px-5 text-white transition-transform duration-200 hover:scale-105',
+              )}
+            >
+              <Category2 size="32" className="text-white" variant="Bulk" /> Dashboard
+            </Link>
+          )}
+        </div>
+      </NavBody>
 
-        {/* Mobile Navigation */}
-        <MobileNav>
-          <MobileNavHeader>
-            <NavbarLogo />
-            <div className="flex justify-center items-center gap-4">
-                          <ThemeMode />
+      {/* Mobile Navigation */}
+      <MobileNav>
+        <MobileNavHeader>
+          <NavbarLogo />
+          <div className="flex items-center justify-center gap-4">
+            <AnimatedThemeToggler />
 
             <MobileNavToggle
               isOpen={isMobileMenuOpen}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             />
-            </div>
-          </MobileNavHeader>
+          </div>
+        </MobileNavHeader>
 
-          <MobileNavMenu
-            isOpen={isMobileMenuOpen}
-            onClose={() => setIsMobileMenuOpen(false)}
-          >
-            {navItems.map((item, idx) => (
-              <a
-                key={`mobile-link-${idx}`}
-                href={item.link}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="relative text-neutral-600 dark:text-neutral-300"
+        <MobileNavMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)}>
+          {navItems.map((item, idx) => (
+            <a
+              key={`mobile-link-${idx}`}
+              href={item.link}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="relative text-neutral-600 dark:text-neutral-300"
+            >
+              <span className="block">{item.name}</span>
+            </a>
+          ))}
+          <div className="flex w-full gap-4">
+            {!session ? (
+              <Link
+                href="/login"
+                className={cn(
+                  buttonVariants({}),
+                  'rounded-full bg-gradient-to-r from-sky-500 via-blue-500 to-blue-600 px-5 text-white transition-transform duration-200 hover:scale-105',
+                )}
               >
-                <span className="block">{item.name}</span>
-              </a>
-            ))}
-            <div className="flex w-full  gap-4">
-
-              <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
+                <Login size="32" className="text-white" variant="Bulk" /> Login
+              </Link>
+            ) : (
+              <Link
+                href="/u/dashboard"
+                className={cn(
+                  buttonVariants({}),
+                  'rounded-full bg-gradient-to-r from-sky-500 via-blue-500 to-blue-600 px-5 text-white transition-transform duration-200 hover:scale-105',
+                )}
               >
-                Login
-              </NavbarButton>
-          
-            </div>
-          </MobileNavMenu>
-        </MobileNav>
-      </Navbar>
-      {/* Navbar */}
-    </div>
+                <Category2 size="32" className="text-white" variant="Bulk" /> Dashboard
+              </Link>
+            )}
+          </div>
+        </MobileNavMenu>
+      </MobileNav>
+    </Navbar>
   );
 }
-
