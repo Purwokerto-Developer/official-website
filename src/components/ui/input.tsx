@@ -11,15 +11,9 @@ function Input({
   readOnly,
   ...props
 }: React.ComponentProps<'input'>) {
-  // Normalize value/defaultValue so the input has a predictable initial value.
   const normalizedValue = value ?? defaultValue ?? '';
 
-  // If an onChange handler is provided or the input is explicitly readOnly,
-  // render the input as a controlled component (pass `value`). If no
-  // onChange is provided and the input isn't readOnly, render it as an
-  // uncontrolled input by passing `defaultValue` to avoid React's warning
-  // about providing `value` without `onChange`.
-  const shouldBeControlled = typeof onChange === 'function' || readOnly === true;
+  const shouldBeControlled = value !== undefined || readOnly === true;
 
   return (
     <input
