@@ -1,10 +1,6 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "builds": [{ "src": "package.json", "use": "@vercel/next" }],
-  "scripts": {
-    "build": "bun run build",
-    "start": "node .next/standalone/server.js"
-  },
   "installCommand": "bun install",
   "buildCommand": "next build && mkdir -p .next/standalone/.next && cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/",
   "outputDirectory": ".next",
