@@ -3,7 +3,7 @@ import { DynamicBreadcrumb } from '@/components/dynamic-breadcrumb';
 import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { getServerSession } from '@/lib/better-auth/get-session';
+import { getServerSession, isAuthenticated } from '@/lib/better-auth/get-session';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 export const metadata: Metadata = {
@@ -16,14 +16,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const sessionData = await getServerSession();
+  await isAuthenticated();
 
-  if (!sessionData) {
-    redirect('/login');
-  }
   return (
     <SidebarProvider>
-      <AppSidebar session={sessionData} />
+      <AppSidebar />
       {/* Make the inset full viewport height and let the children area scroll */}
       <SidebarInset>
         <div className="relative flex max-h-[95vh] min-h-[95vh] flex-col overflow-hidden">

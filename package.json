@@ -12,7 +12,8 @@
     "db:migrate": "tsx ./src/db/migrate.ts",
     "db:push": "drizzle-kit push",
     "p": "prettier --write .",
-    "studio": "drizzle-kit studio"
+    "studio": "drizzle-kit studio",
+    "standalone": "node .next/standalone/server.js"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -34,7 +35,6 @@
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.3.0",
     "@react-three/rapier": "^2.1.0",
-    "@sentry/nextjs": "^10",
     "@tabler/icons-react": "^3.35.0",
     "@tanstack/react-table": "^8.21.3",
     "@vercel/speed-insights": "^1.2.0",

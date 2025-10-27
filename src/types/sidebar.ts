@@ -1,6 +1,4 @@
-import { Icon } from 'iconsax-reactjs';
-import { type LucideIcon } from 'lucide-react';
-
+// Icons are represented by string keys in constants so the data remains serializable
 export interface NavSubItem {
   title: string;
   url: string;
@@ -8,13 +6,15 @@ export interface NavSubItem {
     label: string;
     variant?: string;
   };
-  icon?: Icon | LucideIcon;
+  // icon is a string key referencing an icon component on the client
+  icon?: string;
 }
 
 export interface NavItem {
   title: string;
   url: string;
-  icon?: Icon;
+  // icon is a string key referencing an icon component on the client
+  icon?: string;
   isActive?: boolean;
   badge?: {
     label: string;
@@ -32,7 +32,8 @@ export interface TeamItem {
 export interface ProjectItem {
   name: string;
   url: string;
-  icon: LucideIcon;
+  // icon is a string key referencing an icon component on the client
+  icon: string;
 }
 
 export interface SidebarItems {

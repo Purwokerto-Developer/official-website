@@ -1,5 +1,8 @@
+'use client';
+
 import { editCategory } from '@/action/event-action';
 import { showToast } from '@/components/custom-toaster';
+import { FormInput } from '@/components/form-input';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -8,24 +11,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Form } from '@/components/ui/form';
+import { CategoryFormInput, categoryFormSchema } from '@/db/zod/categories';
+import { FormFieldType } from '@/types/form-field-type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Edit, Send } from 'iconsax-reactjs';
+import { useEffect, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { useState, useEffect } from 'react';
-import { categoryInsertSchema } from '@/lib/zod';
-
-const categorySchema = categoryInsertSchema.extend({
-  name: z.string().min(2, 'Nama minimal 2 karakter').max(50, 'Nama maksimal 50 karakter'),
-  description: z
-    .string()
-    .min(5, 'Deskripsi minimal 5 karakter')
-    .max(255, 'Deskripsi maksimal 255 karakter'),
-});
-
-type CategoryFormValues = z.infer<typeof categorySchema>;
 
 type EditCategoryModalProps = {
   initial: { name: string; description: string };
@@ -36,32 +28,30 @@ type EditCategoryModalProps = {
 };
 
 const EditCategoryModal = ({ initial, id, open, setOpen, onSuccess }: EditCategoryModalProps) => {
-  const [loading, setLoading] = useState(false);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<CategoryFormValues>({
-    resolver: zodResolver(categorySchema),
+  const [isPending, startTransition] = useTransition();
+
+  const form = useForm<CategoryFormInput>({
+    resolver: zodResolver(categoryFormSchema),
+    mode: 'onChange',
     defaultValues: initial,
   });
 
   useEffect(() => {
-    reset(initial);
-  }, [initial, reset]);
+    form.reset(initial);
+  }, [initial]);
 
-  const submitHandler = async (data: CategoryFormValues) => {
-    setLoading(true);
-    const res = await editCategory(id, { ...data });
-    setLoading(false);
-    if (res.success) {
-      showToast('success', 'Kategori berhasil diupdate');
-      setOpen(false);
-      if (onSuccess) onSuccess();
-    } else {
-      showToast('error', res.error || 'Gagal mengupdate kategori');
-    }
+  const submitHandler = (data: CategoryFormInput) => {
+    startTransition(async () => {
+      const res = await editCategory(id, data);
+      if (res.success) {
+        showToast('success', 'Kategori berhasil diupdate');
+        form.reset(data);
+        setOpen(false);
+        if (onSuccess) onSuccess();
+      } else {
+        showToast('error', res.error || 'Gagal mengupdate kategori');
+      }
+    });
   };
 
   return (
@@ -70,52 +60,43 @@ const EditCategoryModal = ({ initial, id, open, setOpen, onSuccess }: EditCatego
         <DialogHeader>
           <DialogTitle>Edit Kategori Event</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
-          <div>
-            <label htmlFor="name" className="mb-1 block text-sm font-medium">
-              Nama Kategori
-            </label>
-            <Input
-              id="name"
-              {...register('name')}
-              placeholder="category name"
-              autoFocus
-              disabled={loading}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(submitHandler)} className="space-y-4">
+            <FormInput
+              form={form}
+              name="name"
+              type={FormFieldType.TEXT}
+              placeholder="Nama Kategori"
+              required
             />
-            {errors.name && (
-              <span className="mt-1 block text-xs text-red-500">{errors.name.message}</span>
-            )}
-          </div>
-          <div>
-            <label htmlFor="description" className="mb-1 block text-sm font-medium">
-              Deskripsi
-            </label>
-            <Textarea
-              id="description"
-              placeholder="category description"
-              {...register('description')}
-              disabled={loading}
+
+            <FormInput
+              form={form}
+              name="description"
+              type={FormFieldType.TEXTAREA}
+              placeholder="Deskripsi"
+              required
             />
-            {errors.description && (
-              <span className="mt-1 block text-xs text-red-500">{errors.description.message}</span>
-            )}
-          </div>
-          <DialogFooter>
-            <Button type="submit" variant="gradient_blue" disabled={loading}>
-              {loading ? (
-                <>
-                  <Edit size="32" variant="Bulk" />
-                  Mengedit...
-                </>
-              ) : (
-                <>
-                  <Edit size="32" variant="Bulk" />
-                  Edit
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </form>
+
+            <DialogFooter>
+              <Button
+                type="submit"
+                variant="gradient_blue"
+                disabled={isPending || !form.formState.isValid}
+              >
+                {isPending ? (
+                  <>
+                    <Send size="32" variant="Bulk" /> Mengedit...
+                  </>
+                ) : (
+                  <>
+                    <Edit size="32" variant="Bulk" /> Edit
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

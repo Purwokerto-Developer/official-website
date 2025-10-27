@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/card';
 import { DashboardState } from '@/types/dashboard-state-type';
 import { Badge } from '@/components/ui/badge';
-import { Chart } from 'iconsax-reactjs';
+import { Chart, MoneySend, Calendar, DocumentText, Archive } from 'iconsax-reactjs';
 
 const accentColors: Record<string, string> = {
   'Total Events': 'bg-blue-100 text-blue-600',
@@ -22,6 +22,15 @@ const accentColors: Record<string, string> = {
 
 export const StateCard = ({ state }: { state: DashboardState }) => {
   const { title, description, count, icon, status } = state;
+
+  const ICONS: Record<string, React.ComponentType<any>> = {
+    MoneySend,
+    Calendar,
+    DocumentText,
+    Archive,
+  };
+
+  const IconComp = icon ? (ICONS[icon] ?? null) : null;
 
   return (
     <>
@@ -43,7 +52,9 @@ export const StateCard = ({ state }: { state: DashboardState }) => {
               variant="outline"
               className={cn(accentColors[title] || 'bg-accent text-accent-foreground')}
             >
-              {icon && React.createElement(icon, { className: 'size-4', variant: 'Bulk' })} {status}
+              {IconComp &&
+                React.createElement(IconComp as any, { className: 'size-4', variant: 'Bulk' })}{' '}
+              {status}
             </Badge>
           </CardAction>
         </CardHeader>

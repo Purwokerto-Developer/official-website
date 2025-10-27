@@ -5,20 +5,26 @@ import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import forbidden from '@/app/forbidden';
 
-export const getServerSession = cache(async () => {
-  return auth.api.getSession({ headers: await headers() });
-});
+export const getServerSession = async () => {
+  const h = await headers();
+  return auth.api.getSession({ headers: h });
+};
 
 export const isAuthenticated = cache(async () => {
-  const { user, session } = await getServerSession();
+  const result = await getServerSession();
+  const user = result?.user ?? null;
+  const session = result?.session ?? null;
   if (!user || !session) {
     return redirect('/login');
   }
+  return { user, session };
 });
 
 export const isAdmin = cache(async () => {
-  const { user } = await getServerSession();
-  if (user.role !== 'admin') {
+  const result = await getServerSession();
+  const user = result?.user ?? null;
+  if (!user || user.role !== 'admin') {
     return forbidden();
   }
+  return user;
 });
