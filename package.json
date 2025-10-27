@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
-    "start": "next start",
+    "start": "node .next/standalone/server.js echo 'standalone server started on port 3000'",
     "lint": "biome check",
     "format": "biome format --write",
     "db:generate": "drizzle-kit generate",
