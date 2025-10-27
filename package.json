@@ -13,7 +13,7 @@
     "db:push": "drizzle-kit push",
     "p": "prettier --write .",
     "studio": "drizzle-kit studio",
-    "standalone": "node .next/standalone/server.js"
+    "standalone": "cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/ && node .next/standalone/server.js"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -72,6 +72,7 @@
     "tailwind-merge": "^3.3.1",
     "three": "^0.180.0",
     "vaul": "^1.1.2",
+    "vercel": "^48.6.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
