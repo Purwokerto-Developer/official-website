@@ -5,10 +5,10 @@ import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import forbidden from '@/app/forbidden';
 
-export const getServerSession = async () => {
+export const getServerSession = cache(async () => {
   const h = await headers();
   return auth.api.getSession({ headers: h });
-};
+});
 
 export const isAuthenticated = cache(async () => {
   const result = await getServerSession();
