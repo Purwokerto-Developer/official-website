@@ -17,7 +17,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { auth } from '@/lib/better-auth/auth';
-import { signOut } from '@/lib/better-auth/auth-client';
+import { signOut } from '@/action/auth';
 import { LogoutCurve, Scroll, SmsNotification, Verify } from 'iconsax-reactjs';
 import { showToast } from './custom-toaster';
 import { useRouter } from 'next/navigation';

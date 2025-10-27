@@ -1,6 +1,18 @@
 'use client';
 
+import * as React from 'react';
 import { ChevronRight } from 'lucide-react';
+import {
+  AddCircle,
+  Calendar2,
+  Category,
+  DocumentText,
+  Gift,
+  Home2,
+  Personalcard,
+  Setting,
+  Shop,
+} from 'iconsax-reactjs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   SidebarGroup,
@@ -34,23 +46,36 @@ export function NavMain({ items, label }: { items: NavItem[]; label?: string }) 
           const hasSubItems = !!item.items?.length;
           const isActive = item.url === pathname;
 
+          const ICONS: Record<string, React.ComponentType<any>> = {
+            Home2,
+            Calendar2,
+            DocumentText,
+            Personalcard,
+            Gift,
+            Shop,
+            Setting,
+            AddCircle,
+            Category,
+          };
+
+          const Icon = typeof item.icon === 'string' ? (ICONS[item.icon] ?? null) : null;
+
           return (
             <SidebarMenuItem key={item.title}>
               {hasSubItems ? (
                 <Collapsible defaultOpen={isActive} className="group/collapsible">
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton tooltip={item.title}>
-                      {item.icon && (
-                        <item.icon
-                          size="20"
-                          variant={isActive ? 'Bold' : 'Bulk'}
-                          className={cn(
+                      {Icon &&
+                        React.createElement(Icon as any, {
+                          size: '20',
+                          variant: isActive ? 'Bold' : 'Bulk',
+                          className: cn(
                             isActive
                               ? 'text-primary dark:text-primary'
                               : 'text-slate-500 dark:text-slate-200',
-                          )}
-                        />
-                      )}
+                          ),
+                        })}
                       <span className="flex items-center gap-2">
                         {item.title}
                         {item.badge && (
@@ -78,27 +103,28 @@ export function NavMain({ items, label }: { items: NavItem[]; label?: string }) 
                     <SidebarMenuSub>
                       {item.items?.map((subItem) => {
                         const subIsActive = subItem.url === pathname;
+                        const SubIcon =
+                          typeof subItem.icon === 'string' ? (ICONS[subItem.icon] ?? null) : null;
                         return (
                           <SidebarMenuSubItem key={subItem.title}>
                             <SidebarMenuSubButton asChild>
-                              <Link href={subItem.url}>
+                              <Link href={subItem.url} className="text-lg">
                                 <span
                                   className={cn(
                                     'flex items-center gap-2',
                                     subIsActive && 'text-primary',
                                   )}
                                 >
-                                  {subItem.icon && (
-                                    <subItem.icon
-                                      size="18"
-                                      variant={subIsActive ? 'Bold' : 'Bulk'}
-                                      className={cn(
+                                  {SubIcon &&
+                                    React.createElement(SubIcon as any, {
+                                      size: '18',
+                                      variant: subIsActive ? 'Bold' : 'Bulk',
+                                      className: cn(
                                         subIsActive
                                           ? 'text-primary dark:text-primary'
                                           : 'text-slate-500 dark:text-slate-200',
-                                      )}
-                                    />
-                                  )}
+                                      ),
+                                    })}
                                   {subItem.title}
                                   {subItem.badge && (
                                     <Badge
@@ -135,17 +161,16 @@ export function NavMain({ items, label }: { items: NavItem[]; label?: string }) 
                         'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary font-bold',
                     )}
                   >
-                    {item.icon && (
-                      <item.icon
-                        size="20"
-                        variant={isActive ? 'Bold' : 'Bulk'}
-                        className={cn(
+                    {Icon &&
+                      React.createElement(Icon as any, {
+                        size: '20',
+                        variant: isActive ? 'Bold' : 'Bulk',
+                        className: cn(
                           isActive
                             ? 'text-primary dark:text-primary'
                             : 'text-slate-500 dark:text-slate-200',
-                        )}
-                      />
-                    )}
+                        ),
+                      })}
                     <span className="flex items-center gap-2">
                       {item.title}
                       {item.badge && (

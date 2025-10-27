@@ -1,10 +1,9 @@
 'use client';
-import DotGrid from '@/components/dot-grid';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 import dynamic from 'next/dynamic';
 import { Highlighter } from '../ui/highlighter';
-
+const DotGrid = dynamic(() => import('@/components/dot-grid'), { ssr: false, loading: () => null });
 const HeroSection = () => {
   const { resolvedTheme } = useTheme();
 

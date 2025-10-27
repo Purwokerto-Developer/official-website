@@ -5,23 +5,32 @@ import { showToast } from '@/components/custom-toaster';
 import { FormInput } from '@/components/form-input';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
+import { type EventFormInput, eventFormSchema } from '@/db/zod/events';
 import { useFormOptions } from '@/lib/swr';
 import { slugify } from '@/lib/utils';
 import { FormFieldType } from '@/types/form-field-type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Additem } from 'iconsax-reactjs';
 import { useRouter } from 'next/navigation';
-import { useTransition, useEffect } from 'react';
+import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import AddCategoryModal from '../../categories/_components/add-category-modal';
-import { type EventFormInput, eventFormSchema } from '@/db/zod/events';
 
 export default function CreateEventForm() {
   const router = useRouter();
   const form = useForm<EventFormInput>({
     resolver: zodResolver(eventFormSchema),
-    mode: 'onChange',
-    defaultValues: { ...eventFormSchema, event_type: 'online' },
+    defaultValues: {
+      title: '',
+      description: '',
+      location_name: '',
+      location_url: '',
+      event_type: 'online',
+      category_id: '',
+      collaborator_id: '',
+      start_time: undefined,
+      image: null,
+    },
   });
 
   const [isPending, startTransition] = useTransition();

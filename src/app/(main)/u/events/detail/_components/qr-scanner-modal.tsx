@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import checkAuthenticated from '@/lib/session-check';
+import { useSession } from '@/lib/better-auth/auth-client';
 import buildLoginUrl from '@/lib/redirect-with-next';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,7 @@ export default function QRScannerModal({
   eventId,
 }: QRScannerModalProps) {
   const router = useRouter();
+  const { data } = useSession();
   const [scanning, setScanning] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -107,8 +108,8 @@ export default function QRScannerModal({
             }
 
             // Auth pre-check: ensure user still authenticated before proceeding
-            const authenticated = await checkAuthenticated();
-            if (!authenticated) {
+            // useSession provides the client session data; if there's no user we redirect to login
+            if (!data?.user) {
               setProcessing(false);
 
               // stop scanner and redirect to login with next intent

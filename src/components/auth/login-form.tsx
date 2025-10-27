@@ -1,5 +1,5 @@
 'use client';
-import { signInGithub, signInGoogle } from '@/lib/better-auth/auth-client';
+import { signInGithub, signInGoogle } from '@/action/auth';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

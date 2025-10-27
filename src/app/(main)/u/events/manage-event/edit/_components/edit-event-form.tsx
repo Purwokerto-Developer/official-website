@@ -14,11 +14,10 @@ import { updateEventWithImage } from '@/action/event-action';
 import { slugify } from '@/lib/utils';
 import AddCategoryModal from '../../../categories/_components/add-category-modal';
 import { useFormOptions } from '@/lib/swr';
-import { eventFormSchema } from '@/db/zod/events';
+import { eventFormSchema, EventFormInput } from '@/db/zod/events';
 
-// ✅ Make image optional for edit
 const editSchema = eventFormSchema.omit({ image: true }).extend({ image: z.any().optional() });
-type FormData = z.infer<typeof editSchema>;
+type FormData = Omit<EventFormInput, 'image'> & { image?: any };
 
 type Props = {
   initial: any;
@@ -34,7 +33,6 @@ export default function EditEventForm({ initial, id }: Props) {
 
   const form = useForm<FormData>({
     resolver: zodResolver(editSchema),
-    mode: 'onChange',
     defaultValues: {
       title: initial.title,
       description: initial.description ?? '',
@@ -44,6 +42,7 @@ export default function EditEventForm({ initial, id }: Props) {
       location_name: initial.location_name ?? '',
       location_url: initial.location_url ?? '',
       start_time: initialStartTime,
+      image: initial?.image ?? null,
     },
   });
 
