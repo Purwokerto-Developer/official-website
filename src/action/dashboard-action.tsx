@@ -1,8 +1,8 @@
+// Use string keys for icons so the returned state is serializable
 import { DashboardState } from '@/types/dashboard-state-type';
 import { db } from '@/db';
 import { events } from '@/db/schema/event-schema';
 import { articles } from '@/db/schema/articles-schema';
-import { MoneySend, Calendar, DocumentText, Archive } from 'iconsax-reactjs';
 import { eq, lt, gt } from 'drizzle-orm';
 import { getServerSession } from '@/lib/better-auth/get-session';
 
@@ -26,28 +26,29 @@ export async function getDashboardStates(): Promise<DashboardState[]> {
     {
       title: 'Total Events',
       description: 'Jumlah seluruh event yang terdaftar.',
-      icon: MoneySend,
+      // use a string key for the icon to keep the returned data plain
+      icon: 'MoneySend',
       count: totalEvents.length,
       status: 'Aktif',
     },
     {
       title: 'Upcoming',
       description: 'Event yang akan datang dalam bulan ini.',
-      icon: Calendar,
+      icon: 'Calendar',
       count: upcomingEvents.length,
       status: upcomingEvents.length > 0 ? 'Ada Event' : 'Tidak Ada',
     },
     {
       title: 'My Articles',
       description: 'Artikel yang telah kamu publikasikan.',
-      icon: DocumentText,
+      icon: 'DocumentText',
       count: myArticles.length,
       status: myArticles.length > 0 ? 'Aktif' : 'Belum Ada',
     },
     {
       title: 'Past Events',
       description: 'Event yang sudah selesai.',
-      icon: Archive,
+      icon: 'Archive',
       count: pastEvents.length,
       status: pastEvents.length > 0 ? 'Sudah Selesai' : 'Belum Ada',
     },

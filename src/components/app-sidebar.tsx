@@ -15,15 +15,14 @@ import * as React from 'react';
 import { sidebarItems } from '@/constants';
 import { Session } from '@/types/better-auth';
 import { Separator } from './ui/separator';
+import { useSession } from '@/lib/better-auth/auth-client';
 
-interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  session?: Session;
-}
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data } = useSession();
 
-export function AppSidebar({ session, ...props }: AppSidebarProps) {
-  const user = session?.user;
+  const user = data?.user;
 
-  if (!user || !session) {
+  if (!user || !data) {
     return null;
   }
   return (
