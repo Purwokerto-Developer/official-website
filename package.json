@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
-    "start": "node .next/standalone/server.js echo 'standalone server started on port 3000'",
+    "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",
     "db:generate": "drizzle-kit generate",
@@ -72,7 +72,6 @@
     "tailwind-merge": "^3.3.1",
     "three": "^0.180.0",
     "vaul": "^1.1.2",
-    "vercel": "^48.6.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
