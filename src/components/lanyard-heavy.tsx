@@ -60,7 +60,7 @@ export default function HeavyLanyard({
   return (
     <div
       className="relative z-0 flex w-full items-center justify-center px-4"
-      style={{ height: isMobile ? 340 : 500 }}
+      style={{ height: 500 }}
     >
       <Canvas
         camera={{ position, fov }}

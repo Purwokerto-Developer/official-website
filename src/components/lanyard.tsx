@@ -5,7 +5,7 @@ import { useMediaQuery } from '@/hooks/use-media-query';
 
 const HeavyLanyard = dynamic(() => import('./lanyard-heavy'), {
   ssr: false,
-  loading: () => <div style={{ height: 420 }} className="w-full" />,
+  loading: () => <div style={{ height: 500 }} className="w-full" />,
 });
 
 type Props = {

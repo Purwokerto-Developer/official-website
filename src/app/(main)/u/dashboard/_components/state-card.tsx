@@ -4,6 +4,7 @@ import CountUp from '@/components/count-up';
 import {
   Card,
   CardAction,
+  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -37,17 +38,7 @@ export const StateCard = ({ state }: { state: DashboardState }) => {
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>{title}</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            <CountUp
-              from={0}
-              to={count}
-              separator=","
-              direction="up"
-              duration={0.8}
-              className="text-foreground text-4xl font-extrabold tracking-tight"
-            />
-          </CardTitle>
-          <CardAction>
+          <CardAction className="hidden md:block">
             <Badge
               variant="outline"
               className={cn(accentColors[title] || 'bg-accent text-accent-foreground')}
@@ -58,8 +49,18 @@ export const StateCard = ({ state }: { state: DashboardState }) => {
             </Badge>
           </CardAction>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
+        <CardContent className="py-0">
+          <CountUp
+            from={0}
+            to={count}
+            separator=","
+            direction="up"
+            duration={0.8}
+            className="text-foreground text-2xl font-extrabold tracking-tight md:text-4xl"
+          />
+        </CardContent>
+        <CardFooter className="flex-col items-start text-xs md:gap-1.5">
+          <div className="line-clamp-1 flex gap-2 text-xs font-medium md:text-sm">
             Data terbaru <Chart className="size-4" variant="Bulk" />
           </div>
           <div className="text-muted-foreground">{description}</div>
