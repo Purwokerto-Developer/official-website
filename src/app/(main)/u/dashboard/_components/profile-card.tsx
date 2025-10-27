@@ -80,6 +80,8 @@ const ProfileCard = ({ session }: { session?: Session | null }) => {
         <Lanyard
           position={[0, 0, 10]}
           gravity={[0, -40, 0]}
+          // force heavy lanyard even on mobile
+          simplified={false}
           cardColor={cardColor}
           user={{
             firstName: session.user.name || '',
