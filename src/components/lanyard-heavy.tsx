@@ -54,8 +54,14 @@ export default function HeavyLanyard({
     }
   }, []);
 
+  // detect mobile at wrapper level to adjust container height/padding
+  const isMobile = useMediaQuery('(max-width: 640px)');
+
   return (
-    <div className="relative z-0 flex w-full items-center justify-center" style={{ height: 500 }}>
+    <div
+      className="relative z-0 flex w-full items-center justify-center px-4"
+      style={{ height: isMobile ? 340 : 500 }}
+    >
       <Canvas
         camera={{ position, fov }}
         gl={{ alpha: transparent, antialias: false, powerPreference: 'high-performance' }}

@@ -119,7 +119,7 @@ const ActivityCard = ({ events }: { events: EventItem[] }) => {
       {upcomingEvents.length > 0 && (
         <CardFooter className="absolute bottom-4 left-0 z-40 w-full px-4 md:px-8">
           <div className="mx-auto w-full max-w-5xl">
-            <div className="from-bg/95 flex flex-col gap-3 rounded-lg bg-gradient-to-t to-transparent p-4 backdrop-blur-lg md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-col gap-3 rounded-lg bg-slate-900/50 to-transparent p-4 text-white backdrop-blur-lg md:flex-row md:items-center md:justify-between">
               <div className="flex min-w-0 flex-1 flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <h3 className="truncate text-xl font-semibold">
