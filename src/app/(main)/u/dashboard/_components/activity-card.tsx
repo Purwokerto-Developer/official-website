@@ -1,21 +1,18 @@
 'use client';
 
-import CardSwap, { Card as CardSwapContent } from '@/components/CardSwap';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import EmptyState from '@/components/ui/empty-state';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { Calendar, Location, TickCircle } from 'iconsax-reactjs';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { Calendar, Location } from 'iconsax-reactjs';
+import { joinEvent, cancelEventJoin } from '@/action/event-action';
+import { showToast } from '@/components/custom-toaster';
 
 type EventItem = {
   id: string | number;
   title?: string;
   date?: string;
-  status?: string;
-  eventStatus?: string;
   registered?: boolean;
   location?: string;
   image?: string | null;
@@ -23,148 +20,140 @@ type EventItem = {
 };
 
 const ActivityCard = ({ events }: { events: EventItem[] }) => {
-  const isMobile = useIsMobile();
-  const [showAll, setShowAll] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  const upcomingEvents = events ?? [];
-
-  const swapWidth = isMobile ? 360 : 520;
-  const swapHeight = isMobile ? 520 : 400;
-  const swapClassName = isMobile
-    ? '!translate-x-[45%] !translate-y-[40%] !scale-[1] '
-    : '!translate-x-[45%] lg:!translate-y-[40%] !scale-[1] h-full border-card';
-
-  const visibleEvents = isMobile
-    ? upcomingEvents
-    : showAll
-      ? upcomingEvents
-      : upcomingEvents.slice(0, 3);
-  const isEmpty = upcomingEvents.length === 0;
+  const [localEvents, setLocalEvents] = useState<EventItem[]>(events ?? []);
+  const [loadingMap, setLoadingMap] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    if (visibleEvents.length === 0) {
-      setActiveIndex(0);
-      return;
+    setLocalEvents(events ?? []);
+  }, [events]);
+
+  const handleJoin = async (id: string | number) => {
+    setLoadingMap((m) => ({ ...m, [id]: true }));
+    try {
+      const res = await joinEvent(String(id));
+      if (res.success) {
+        setLocalEvents((prev) => prev.map((e) => (e.id === id ? { ...e, registered: true } : e)));
+        showToast('success', 'Successfully joined the event');
+      } else {
+        showToast('error', res.error || 'Failed to join');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('error', 'Failed to join');
+    } finally {
+      setLoadingMap((m) => ({ ...m, [id]: false }));
     }
-    if (activeIndex >= visibleEvents.length) {
-      setActiveIndex(0);
+  };
+
+  const handleCancel = async (id: string | number) => {
+    setLoadingMap((m) => ({ ...m, [id]: true }));
+    try {
+      const res = await cancelEventJoin(String(id));
+      if (res.success) {
+        setLocalEvents((prev) => prev.map((e) => (e.id === id ? { ...e, registered: false } : e)));
+        showToast('success', 'Join cancelled');
+      } else {
+        showToast('error', res.error || 'Failed to cancel');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('error', 'Failed to cancel');
+    } finally {
+      setLoadingMap((m) => ({ ...m, [id]: false }));
     }
-  }, [visibleEvents, activeIndex]);
+  };
+
+  if (!localEvents || localEvents.length === 0) {
+    return (
+      <Card>
+        <CardContent>
+          <EmptyState
+            title="Tidak ada event mendatang"
+            description="Saat ini belum ada event baru. Tetap pantau halaman komunitas untuk info event selanjutnya!"
+            actionLabel="Lihat Semua Event"
+            href="/u/events"
+          />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <Card className="relative h-full w-full overflow-hidden py-0">
-      <CardContent className="relative h-[440px] p-0 pb-20">
-        {isEmpty ? (
-          <div className="p-6">
-            <EmptyState
-              title="Tidak ada event mendatang"
-              description="Saat ini belum ada event baru. Tetap pantau halaman komunitas untuk info event selanjutnya!"
-              actionLabel="Lihat Semua Event"
-              href="/u/events"
-            />
+    <Card>
+      <CardContent className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold">Upcoming events</h3>
+            <p className="text-muted-foreground text-sm">Events happening soon in your community</p>
           </div>
-        ) : (
-          <div className="relative h-full w-full">
-            <div className="flex h-full w-full flex-col md:flex-row">
-              {/* Left column: centered heading/subtitle (desktop) */}
-              <div className="hidden items-center justify-center md:flex md:w-1/2">
-                <div className="flex h-full flex-col items-start justify-center pl-8">
-                  <h2 className="text-foreground mb-2 text-3xl leading-tight font-bold">
-                    See what the next events
-                    <br />
-                    are coming up!
-                  </h2>
-                  <p className="text-muted-foreground text-base">Just look at it go!</p>
-                </div>
-              </div>
-
-              {/* Right column: CardSwap centered */}
-              <div className="flex w-full items-center justify-center md:w-1/2">
-                <div className="flex w-full max-w-[720px] items-center justify-center">
-                  <CardSwap
-                    cardDistance={30}
-                    verticalDistance={120}
-                    delay={5000}
-                    pauseOnHover={false}
-                    onCardClick={(i) => setActiveIndex(i)}
-                    onActiveChange={(i) => setActiveIndex(i)}
-                    width={swapWidth}
-                    height={swapHeight}
-                    className={swapClassName}
-                  >
-                    {visibleEvents.map((ev) => (
-                      <CardSwapContent key={ev.id} className="h-full overflow-hidden rounded-t-lg">
-                        {ev.image ? (
-                          <div className="relative h-full w-full">
-                            <Image
-                              src={ev.image as string}
-                              alt={String(ev.title ?? '')}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        ) : (
-                          <div className="flex h-full items-center justify-center">No image</div>
-                        )}
-                      </CardSwapContent>
-                    ))}
-                  </CardSwap>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </CardContent>
-      {upcomingEvents.length > 0 && (
-        <CardFooter className="absolute bottom-4 left-0 z-40 w-full px-4 md:px-8">
-          <div className="mx-auto w-full max-w-5xl">
-            <div className="flex flex-col gap-3 rounded-lg bg-slate-900/50 to-transparent p-4 text-white backdrop-blur-lg md:flex-row md:items-center md:justify-between">
-              <div className="flex min-w-0 flex-1 flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <h3 className="truncate text-xl font-semibold">
-                    {visibleEvents[activeIndex]?.title}
-                  </h3>
-                  <Badge variant="green" className="ml-4">
-                    {visibleEvents[activeIndex]?.status ?? 'offline'}
-                  </Badge>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="size-4" variant="Bulk" />
-                    <span className="truncate">{visibleEvents[activeIndex]?.date}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Location className="size-4" variant="Bulk" />
-                    <span className="truncate">{visibleEvents[activeIndex]?.location}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <TickCircle className="size-4" variant="Bulk" />
-                    <span>
-                      {visibleEvents[activeIndex]?.registered ? 'Terdaftar' : 'Belum Terdaftar'}
-                    </span>
-                  </div>
-                </div>
-
-                <p className="mt-2 line-clamp-3 max-w-prose text-sm">
-                  {visibleEvents[activeIndex]?.description ??
-                    'Deskripsi singkat event bisa ditaruh di sini jika tersedia.'}
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardFooter>
-      )}
-
-      {/* Optional: show See More on desktop below footer */}
-      {!isMobile && upcomingEvents.length > 4 && (
-        <div className="mt-4 flex justify-center">
-          <Button variant="outline" onClick={() => setShowAll(!showAll)}>
-            {showAll ? 'See Less' : 'See More'}
-          </Button>
+          <div className="text-muted-foreground text-sm">{localEvents.length} items</div>
         </div>
-      )}
+
+        <div className="grid gap-3">
+          {localEvents.map((ev) => (
+            <div key={String(ev.id)} className="flex items-center gap-4 rounded-md border p-3">
+              <div className="relative h-20 w-28 flex-shrink-0 overflow-hidden rounded-md bg-gray-100">
+                {ev.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={ev.image} alt={ev.title} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-sm text-gray-500">
+                    No image
+                  </div>
+                )}
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="truncate font-semibold">{ev.title}</div>
+                    <div className="text-muted-foreground mt-1 flex items-center gap-3 text-sm">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="size-4" variant="Bulk" />
+                        <span className="truncate">{ev.date}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Location className="size-4" variant="Bulk" />
+                        <span className="truncate">{ev.location}</span>
+                      </div>
+                    </div>
+                    <p className="text-muted-foreground mt-2 line-clamp-2 text-sm">
+                      {ev.description}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col items-end gap-2">
+                    {ev.registered ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleCancel(ev.id)}
+                        disabled={!!loadingMap[String(ev.id)]}
+                      >
+                        {loadingMap[String(ev.id)] ? '...' : 'Cancel'}
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        onClick={() => handleJoin(ev.id)}
+                        disabled={!!loadingMap[String(ev.id)]}
+                      >
+                        {loadingMap[String(ev.id)] ? '...' : 'Join'}
+                      </Button>
+                    )}
+                    <a
+                      href={`/u/events/${ev.id}`}
+                      className="text-muted-foreground text-xs hover:underline"
+                    >
+                      Details
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
     </Card>
   );
 };

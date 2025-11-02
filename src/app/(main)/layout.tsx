@@ -3,9 +3,8 @@ import { DynamicBreadcrumb } from '@/components/dynamic-breadcrumb';
 import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { getServerSession, isAuthenticated } from '@/lib/better-auth/get-session';
+import { isAuthenticated } from '@/lib/better-auth/get-session';
 import type { Metadata } from 'next';
-import { redirect } from 'next/navigation';
 export const metadata: Metadata = {
   title: 'Purwokerto Dev',
   description: 'Community for developer in Purwokerto',

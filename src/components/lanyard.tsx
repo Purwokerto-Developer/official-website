@@ -1,12 +1,6 @@
 'use client';
-import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import { useMediaQuery } from '@/hooks/use-media-query';
-
-const HeavyLanyard = dynamic(() => import('./lanyard-heavy'), {
-  ssr: false,
-  loading: () => <div style={{ height: 500 }} className="w-full" />,
-});
 
 type Props = {
   position?: [number, number, number];
@@ -81,5 +75,7 @@ export default function LanyardWrapper(props: Props) {
   if (shouldSimplify)
     return <Lightweight user={props.user} cardColor={props.cardColor} isMobile={isMobile} />;
 
-  return <HeavyLanyard {...props} />;
+  // Heavy lanyard removed to avoid loading large 3D/physics bundles on navigation.
+  // Always render the lightweight placeholder instead.
+  return <Lightweight user={props.user} cardColor={props.cardColor} isMobile={isMobile} />;
 }

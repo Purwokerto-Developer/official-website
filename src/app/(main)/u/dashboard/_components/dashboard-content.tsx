@@ -2,6 +2,7 @@ import { getDashboardStates, getUpcomingEvents } from '@/action/dashboard-action
 import { getServerSession } from '@/lib/better-auth/get-session';
 import ActivityCard from './activity-card';
 import ProfileCard from './profile-card';
+import EventChart from './event-chart';
 import { StateCard } from './state-card';
 
 const DashboardContent = async () => {
@@ -18,12 +19,21 @@ const DashboardContent = async () => {
           <StateCard key={index} state={state} />
         ))}
       </div>
-      <div className="mt-4 flex w-full flex-col gap-4 lg:flex-row">
-        <div className="w-full">
+      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-12">
+        <div className="col-span-8">
           <ActivityCard events={upcomingEvents} />
         </div>
-        <div className="w-full lg:w-5/12">
-          <ProfileCard session={session} />
+        <div className="col-span-4 flex flex-col gap-4">
+          <div>
+            <ProfileCard session={session} />
+          </div>
+
+          <div className="mt-0">
+            {/* Chart container: keep chart compact and bounded so it doesn't overflow h-screen */}
+            <div className="w-full max-w-full">
+              <EventChart events={upcomingEvents} />
+            </div>
+          </div>
         </div>
       </div>
     </div>

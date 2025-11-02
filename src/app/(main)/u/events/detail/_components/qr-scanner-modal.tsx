@@ -28,6 +28,10 @@ export default function QRScannerModal({
   const [processing, setProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [cameras, setCameras] = useState<Array<{ id: string; label: string }>>([]);
+  const [selectedCameraId, setSelectedCameraId] = useState<string | null>(null);
+  const [showManualInput, setShowManualInput] = useState(false);
+  const [manualCode, setManualCode] = useState('');
   const [scanLineTop, setScanLineTop] = useState(20); // percent
   const scanLineRef = useRef<number | null>(null);
 
@@ -81,11 +85,36 @@ export default function QRScannerModal({
       const html5QrCode = new Html5Qrcode('qr-reader');
       scannerRef.current = html5QrCode;
 
+      // fetch available cameras once
+      try {
+        const cams = await Html5Qrcode.getCameras();
+        setCameras(cams.map((c: any) => ({ id: c.id, label: c.label || c.id })));
+        if (cams && cams.length > 0 && !selectedCameraId) {
+          setSelectedCameraId(cams[0].id);
+        }
+      } catch (err) {
+        // ignore — not critical
+      }
+
+      // determine a responsive qrbox size based on container width
+      let qrboxSize = 250;
+      try {
+        const rect = qrReaderElement.getBoundingClientRect();
+        qrboxSize = Math.max(160, Math.min(360, Math.floor(rect.width * 0.75)));
+      } catch (err) {
+        // fallback to default
+      }
+
+      const cameraConfig = selectedCameraId
+        ? { deviceId: { exact: selectedCameraId } }
+        : { facingMode: 'environment' };
+
       await html5QrCode.start(
-        { facingMode: 'environment' },
+        cameraConfig,
         {
           fps: 10,
-          qrbox: { width: 250, height: 250 },
+          qrbox: { width: qrboxSize, height: qrboxSize },
+          aspectRatio: 1,
         },
         async (decodedText) => {
           setScanning(false);
@@ -176,6 +205,53 @@ export default function QRScannerModal({
     }
   };
 
+  const handleSwitchCamera = async () => {
+    // cycle through available cameras
+    if (!cameras || cameras.length <= 1) return;
+    const idx = cameras.findIndex((c) => c.id === selectedCameraId);
+    const next = cameras[(idx + 1) % cameras.length];
+    setSelectedCameraId(next.id);
+
+    // restart scanner with new camera
+    await stopScanning();
+    setTimeout(() => initializeScanner(), 200);
+  };
+
+  const handleScanFile = async (file: File | null) => {
+    if (!file) return;
+    setProcessing(true);
+    setCameraError(null);
+    try {
+      if (scannerRef.current && (scannerRef.current as any).scanFile) {
+        const result = await (scannerRef.current as any).scanFile(file, true);
+        // simulate callback flow
+        await onScanSuccess(result);
+        setSuccess(true);
+        setTimeout(() => handleClose(), 1200);
+      } else {
+        setCameraError('File scanning not supported in this browser.');
+      }
+    } catch (err) {
+      console.error('File scan error:', err);
+      setCameraError('No QR code found in the selected image.');
+    }
+    setProcessing(false);
+  };
+
+  const handleSubmitManual = async () => {
+    if (!manualCode) return setCameraError('Please enter a code.');
+    setProcessing(true);
+    try {
+      await onScanSuccess(manualCode);
+      setSuccess(true);
+      setTimeout(() => handleClose(), 1200);
+    } catch (err) {
+      console.error('Manual scan error:', err);
+      setCameraError('Failed to verify the provided code.');
+    }
+    setProcessing(false);
+  };
+
   const handleClose = async () => {
     await stopScanning();
     setScanning(false);
@@ -198,6 +274,36 @@ export default function QRScannerModal({
         <div className="space-y-4">
           {/* Camera Preview */}
           <div className="relative">
+            {/* Controls toolbar */}
+            <div className="absolute top-3 right-3 z-20 flex items-center gap-2">
+              {cameras && cameras.length > 0 && (
+                <button
+                  title="Switch camera"
+                  onClick={handleSwitchCamera}
+                  className="rounded-md bg-white/10 px-2 py-1 text-xs text-white/90 backdrop-blur-sm"
+                >
+                  {cameras.length > 1 ? 'Switch Camera' : 'Camera'}
+                </button>
+              )}
+
+              <label className="cursor-pointer rounded-md bg-white/10 px-2 py-1 text-xs text-white/90 backdrop-blur-sm">
+                Upload
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => handleScanFile(e.target.files ? e.target.files[0] : null)}
+                />
+              </label>
+
+              <button
+                onClick={() => setShowManualInput((s) => !s)}
+                className="rounded-md bg-white/10 px-2 py-1 text-xs text-white/90 backdrop-blur-sm"
+              >
+                Manual
+              </button>
+            </div>
+
             <div
               id="qr-reader"
               className="h-64 w-full overflow-hidden rounded-lg border-2 border-gray-200 bg-black dark:border-gray-700"
@@ -265,6 +371,21 @@ export default function QRScannerModal({
               <p className="text-xs text-gray-500">
                 The scanner will automatically detect and verify the code
               </p>
+
+              {/* Manual input area */}
+              {showManualInput && (
+                <div className="mt-2 flex items-center justify-center gap-2">
+                  <input
+                    value={manualCode}
+                    onChange={(e) => setManualCode(e.target.value)}
+                    placeholder="Paste QR payload or token"
+                    className="w-2/3 rounded-md border px-2 py-1 text-sm"
+                  />
+                  <Button onClick={handleSubmitManual} className="text-sm">
+                    Submit
+                  </Button>
+                </div>
+              )}
             </div>
           )}
 
