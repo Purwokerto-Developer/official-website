@@ -1,104 +1,99 @@
 'use client';
 
 import { useTheme } from 'next-themes';
-import { People, Calendar, Code1 } from 'iconsax-reactjs';
-
-const features = [
-  {
-    icon: People,
-    title: 'Komunitas Developer',
-    description:
-      'Bergabung dengan developer dari berbagai latar belakang di Purwokerto. Saling belajar, berbagi pengalaman, dan tumbuh bersama.',
-    gradient: 'from-sky-500 to-blue-600',
-  },
-  {
-    icon: Calendar,
-    title: 'Events & Meetup',
-    description:
-      'Workshop, seminar, dan meetup rutin yang membahas teknologi terkini. Dari frontend hingga cloud infrastructure.',
-    gradient: 'from-violet-500 to-purple-600',
-  },
-  {
-    icon: Code1,
-    title: 'Open Source',
-    description:
-      'Berkontribusi dalam proyek-proyek open source bersama. Tingkatkan skill coding sambil membangun portofolio nyata.',
-    gradient: 'from-emerald-500 to-teal-600',
-  },
-];
+import { People, Calendar, Code1, ArrowRight2 } from 'iconsax-reactjs';
+import Link from 'next/link';
 
 const AboutSection = () => {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
 
   return (
-    <section
-      id="about"
-      className="relative w-full overflow-hidden px-4 py-24 sm:px-6 lg:px-8"
-    >
-      {/* Subtle background */}
-      <div className="absolute inset-0 -z-10">
-        <div
-          className={`absolute top-1/2 left-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[120px] ${
-            isDark ? 'bg-blue-950/30' : 'bg-blue-100/60'
-          }`}
-        />
-      </div>
-
+    <section id="about" className="relative w-full px-5 pt-16 pb-20 sm:px-8 md:pt-24 md:pb-28">
       <div className="mx-auto max-w-6xl">
-        {/* Header */}
-        <div className="mb-16 text-center">
-          <span className="mb-4 inline-block rounded-full border border-sky-500/20 bg-sky-500/10 px-4 py-1.5 text-sm font-medium text-sky-500">
-            Tentang Kami
-          </span>
-          <h2
-            className={`mt-4 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl ${
-              isDark
-                ? 'bg-gradient-to-b from-white to-slate-400 bg-clip-text text-transparent'
-                : 'text-slate-900'
-            }`}
-          >
-            Wadah Developer Purwokerto
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-500 dark:text-slate-400">
-            Kami percaya bahwa teknologi tumbuh lebih baik saat dikembangkan bersama.
-            PurwokertoDev adalah rumah bagi para developer yang ingin berkreasi dan berkolaborasi.
-          </p>
-        </div>
-
-        {/* Feature Cards */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {features.map((feature, idx) => (
-            <div
-              key={feature.title}
-              className="animate-in fade-in slide-in-from-bottom-4 group relative rounded-2xl border border-slate-200/60 bg-white/50 p-8 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-slate-700/40 dark:bg-slate-900/50"
-              style={{
-                animationDelay: `${idx * 150}ms`,
-                animationFillMode: 'both',
-                animationDuration: '600ms',
-              }}
+        {/* Two-column layout — text left, bento grid right */}
+        <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-16">
+          {/* Left — sticky intro text */}
+          <div className="shrink-0 lg:sticky lg:top-28 lg:w-[380px]">
+            <p className="text-primary mb-2 text-sm font-semibold tracking-widest uppercase">
+              Tentang Kami
+            </p>
+            <h2 className="text-3xl leading-tight font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-white">
+              Bukan sekadar
+              <br />
+              <span className="bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent">
+                komunitas biasa.
+              </span>
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-slate-500 dark:text-slate-400">
+              PurwokertoDev lahir dari kebutuhan sederhana — tempat bertukar pikiran antar developer
+              di Purwokerto. Sekarang kami tumbuh jadi wadah untuk belajar, membangun proyek nyata,
+              dan saling support.
+            </p>
+            <Link
+              href="/login"
+              className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-sky-500 transition-colors hover:text-sky-400"
             >
-              {/* Icon */}
-              <div
-                className={`mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br ${feature.gradient} shadow-lg`}
-              >
-                <feature.icon size={28} className="text-white" variant="Bulk" />
+              Gabung sekarang
+              <ArrowRight2 size={16} className="transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </div>
+
+          {/* Right — Bento-style cards */}
+          <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
+            {/* Card 1 — tall */}
+            <div className="row-span-2 flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-gradient-to-b from-sky-50 to-white p-6 sm:p-8 dark:border-slate-800 dark:from-sky-950/30 dark:to-slate-900/80">
+              <div>
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10">
+                  <People size={24} className="text-sky-500" variant="Bulk" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                  Komunitas Developer
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                  Developer frontend, backend, mobile, DevOps — semua ada di sini. Dari yang baru
+                  mulai sampai yang sudah senior, kita belajar bareng tanpa pressure.
+                </p>
               </div>
-
-              {/* Content */}
-              <h3 className="mb-3 text-xl font-semibold text-slate-900 dark:text-white">
-                {feature.title}
-              </h3>
-              <p className="leading-relaxed text-slate-500 dark:text-slate-400">
-                {feature.description}
-              </p>
-
-              {/* Hover glow */}
-              <div
-                className={`pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br ${feature.gradient} opacity-0 transition-opacity duration-300 group-hover:opacity-5`}
-              />
+              <div className="mt-6 flex items-center gap-3">
+                <div className="flex -space-x-2">
+                  {['bg-sky-500', 'bg-violet-500', 'bg-emerald-500', 'bg-amber-500'].map(
+                    (bg, i) => (
+                      <div
+                        key={i}
+                        className={`h-8 w-8 rounded-full border-2 border-white ${bg} dark:border-slate-900`}
+                      />
+                    ),
+                  )}
+                </div>
+                <span className="text-xs text-slate-400">100+ members</span>
+              </div>
             </div>
-          ))}
+
+            {/* Card 2 */}
+            <div className="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-violet-50 to-white p-6 dark:border-slate-800 dark:from-violet-950/20 dark:to-slate-900/80">
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-violet-500/10">
+                <Calendar size={20} className="text-violet-500" variant="Bulk" />
+              </div>
+              <h3 className="font-semibold text-slate-900 dark:text-white">Events & Meetup</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                Workshop hands-on, tech talk, dan meetup santai. Offline di Purwokerto, online buat
+                yang jauh.
+              </p>
+            </div>
+
+            {/* Card 3 */}
+            <div className="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-emerald-50 to-white p-6 dark:border-slate-800 dark:from-emerald-950/20 dark:to-slate-900/80">
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10">
+                <Code1 size={20} className="text-emerald-500" variant="Bulk" />
+              </div>
+              <h3 className="font-semibold text-slate-900 dark:text-white">Open Source</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                Bangun proyek bareng, kontribusi ke repo komunitas, dan bangun portofolio yang
+                nyata.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>

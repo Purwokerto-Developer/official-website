@@ -2,61 +2,69 @@
 
 import Link from 'next/link';
 import { Login, ArrowRight2 } from 'iconsax-reactjs';
-import { cn } from '@/lib/utils';
-import { buttonVariants } from '@/components/ui/button';
 
 const JoinSection = () => {
   return (
-    <section
-      id="join"
-      className="relative w-full overflow-hidden px-4 py-24 sm:px-6 lg:px-8"
-    >
-      <div className="mx-auto max-w-4xl">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-sky-500 via-blue-600 to-violet-600 p-12 text-center shadow-2xl sm:p-16">
-          {/* Decorative elements */}
-          <div className="absolute top-0 left-0 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute right-0 bottom-0 h-64 w-64 translate-x-1/2 translate-y-1/2 rounded-full bg-violet-400/20 blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 h-32 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-sky-300/10 blur-2xl" />
+    <section id="join" className="relative w-full px-5 pt-8 pb-20 sm:px-8 md:pt-12 md:pb-28">
+      <div className="mx-auto max-w-6xl">
+        {/* Split layout: text left, visual right */}
+        <div className="relative overflow-hidden rounded-3xl bg-slate-900 dark:bg-slate-800/60">
+          <div className="flex flex-col lg:flex-row">
+            {/* Content */}
+            <div className="relative z-10 flex flex-col justify-center px-8 py-12 sm:px-12 sm:py-16 lg:w-[55%]">
+              <h2 className="text-3xl leading-tight font-bold text-white sm:text-4xl">
+                Siap jadi bagian
+                <br />
+                dari cerita ini?
+              </h2>
+              <p className="mt-4 max-w-md text-base leading-relaxed text-slate-300">
+                Tidak peduli tech stack-mu apa, level-mu di mana — semua developer Purwokerto
+                punya tempat di sini. Gratis, tanpa syarat.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <Link
+                  href="/login"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition-all hover:bg-slate-100 active:scale-[0.98]"
+                >
+                  <Login size={18} variant="Bulk" />
+                  Daftar Sekarang
+                </Link>
+                <Link
+                  href="https://github.com/Purwokerto-Developer"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-center justify-center gap-1.5 rounded-full border border-slate-600 px-6 py-3 text-sm font-medium text-slate-300 transition-all hover:border-slate-500 hover:text-white"
+                >
+                  GitHub
+                  <ArrowRight2
+                    size={14}
+                    className="transition-transform group-hover:translate-x-0.5"
+                  />
+                </Link>
+              </div>
+            </div>
 
-          <div className="relative z-10">
-            <span className="mb-4 inline-block rounded-full bg-white/20 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-sm">
-              🎉 Open for Everyone
-            </span>
-
-            <h2 className="mt-4 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-              Bergabung dengan
-              <br />
-              PurwokertoDev
-            </h2>
-
-            <p className="mx-auto mt-4 max-w-lg text-lg text-blue-100/90">
-              Tidak peduli kamu pemula atau expert — semua developer Purwokerto punya tempat di sini.
-              Mulai perjalananmu hari ini.
-            </p>
-
-            <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link
-                href="/login"
-                className={cn(
-                  buttonVariants({ size: 'lg' }),
-                  'rounded-full bg-white px-8 text-base font-semibold text-blue-600 shadow-lg transition-all hover:scale-105 hover:bg-blue-50 hover:shadow-xl',
-                )}
-              >
-                <Login size={20} className="mr-2" variant="Bulk" />
-                Daftar Sekarang
-              </Link>
-              <Link
-                href="https://github.com/Purwokerto-Developer"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center gap-2 rounded-full border border-white/30 px-6 py-3 text-sm font-medium text-white transition-all hover:border-white/60 hover:bg-white/10"
-              >
-                GitHub Organization
-                <ArrowRight2
-                  size={16}
-                  className="transition-transform group-hover:translate-x-1"
-                />
-              </Link>
+            {/* Visual side — abstract grid pattern */}
+            <div className="relative hidden lg:block lg:w-[45%]">
+              <div className="absolute inset-0 bg-gradient-to-l from-sky-500/10 to-transparent" />
+              <div className="absolute inset-0 grid grid-cols-4 grid-rows-4 gap-2 p-6 opacity-30">
+                {Array.from({ length: 16 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="rounded-lg"
+                    style={{
+                      background:
+                        i % 5 === 0
+                          ? 'linear-gradient(135deg, #38bdf8, #818cf8)'
+                          : i % 3 === 0
+                            ? 'rgba(56,189,248,0.15)'
+                            : 'rgba(100,116,139,0.08)',
+                    }}
+                  />
+                ))}
+              </div>
+              {/* Gradient orb */}
+              <div className="absolute top-1/2 right-12 h-48 w-48 -translate-y-1/2 rounded-full bg-gradient-to-br from-sky-500/20 to-violet-500/20 blur-3xl" />
             </div>
           </div>
         </div>
