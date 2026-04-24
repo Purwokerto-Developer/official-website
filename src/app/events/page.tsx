@@ -126,13 +126,14 @@ function EventCard({
   const time = date.toLocaleString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
   return (
-    <div
-      className={`group flex gap-4 rounded-xl border bg-white p-4 transition-all hover:shadow-md sm:gap-5 sm:p-5 dark:bg-slate-900/80 ${
-        isUpcoming
-          ? 'border-sky-200/60 dark:border-sky-900/40'
-          : 'border-slate-200/80 dark:border-slate-800'
-      }`}
-    >
+    <Link href={`/events/${event.slug}`} className="block">
+      <div
+        className={`group flex gap-4 rounded-xl border bg-white p-4 transition-all hover:shadow-md sm:gap-5 sm:p-5 dark:bg-slate-900/80 ${
+          isUpcoming
+            ? 'border-sky-200/60 dark:border-sky-900/40'
+            : 'border-slate-200/80 dark:border-slate-800'
+        }`}
+      >
       {/* Date block */}
       <div
         className={`flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-xl sm:h-18 sm:w-18 ${
@@ -193,6 +194,7 @@ function EventCard({
           <Image src={event.image} alt={event.title} fill className="object-cover" />
         </div>
       )}
-    </div>
+      </div>
+    </Link>
   );
 }

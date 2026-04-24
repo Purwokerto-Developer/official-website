@@ -2,11 +2,11 @@ import { NavItem } from '@/types/sidebar';
 export const navItems = [
   {
     name: 'Home',
-    link: '#hero',
+    link: '/',
   },
   {
     name: 'About',
-    link: '#about',
+    link: '/#about',
   },
   {
     name: 'Events',
@@ -18,11 +18,11 @@ export const navItems = [
   },
   {
     name: 'Showcase',
-    link: '#showcase',
+    link: '/#showcase',
   },
   {
     name: 'Join',
-    link: '#join',
+    link: '/#join',
   },
 ];
 

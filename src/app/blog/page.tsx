@@ -5,6 +5,7 @@ import { getServerSession } from '@/lib/better-auth/get-session';
 import NavbarSection from '@/components/navbar';
 import FooterSection from '@/components/landing/footer-section';
 import { DocumentText } from 'iconsax-reactjs';
+import Link from 'next/link';
 
 export const metadata = {
   title: 'Blog — PurwokertoDev',
@@ -70,43 +71,42 @@ export default async function PublicBlogPage() {
                 : '';
 
               return (
-                <article
-                  key={article.id}
-                  className="group rounded-xl border border-slate-200/80 bg-white p-5 transition-all hover:shadow-md sm:p-6 dark:border-slate-800 dark:bg-slate-900/80"
-                >
-                  <div className="flex items-center gap-3 text-xs text-slate-400 dark:text-slate-500">
-                    {/* Author */}
-                    {article.author_name && (
-                      <>
-                        <div className="flex items-center gap-1.5">
-                          {article.author_image ? (
-                            <img
-                              src={article.author_image}
-                              alt={article.author_name}
-                              className="h-5 w-5 rounded-full"
-                            />
-                          ) : (
-                            <div className="h-5 w-5 rounded-full bg-sky-500" />
-                          )}
-                          <span className="font-medium text-slate-600 dark:text-slate-300">
-                            {article.author_name}
-                          </span>
-                        </div>
-                        <span>·</span>
-                      </>
-                    )}
-                    <span>{date}</span>
-                    <span>·</span>
-                    <span>{getReadingTime(article.content)}</span>
-                  </div>
+                <Link key={article.id} href={`/blog/${article.id}`} className="block">
+                  <article className="group rounded-xl border border-slate-200/80 bg-white p-5 transition-all hover:shadow-md sm:p-6 dark:border-slate-800 dark:bg-slate-900/80">
+                    <div className="flex items-center gap-3 text-xs text-slate-400 dark:text-slate-500">
+                      {/* Author */}
+                      {article.author_name && (
+                        <>
+                          <div className="flex items-center gap-1.5">
+                            {article.author_image ? (
+                              <img
+                                src={article.author_image}
+                                alt={article.author_name}
+                                className="h-5 w-5 rounded-full"
+                              />
+                            ) : (
+                              <div className="h-5 w-5 rounded-full bg-sky-500" />
+                            )}
+                            <span className="font-medium text-slate-600 dark:text-slate-300">
+                              {article.author_name}
+                            </span>
+                          </div>
+                          <span>·</span>
+                        </>
+                      )}
+                      <span>{date}</span>
+                      <span>·</span>
+                      <span>{getReadingTime(article.content)}</span>
+                    </div>
 
-                  <h2 className="mt-3 text-lg font-semibold text-slate-900 dark:text-white">
-                    {article.title}
-                  </h2>
-                  <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-                    {getExcerpt(article.content)}
-                  </p>
-                </article>
+                    <h2 className="mt-3 text-lg font-semibold text-slate-900 group-hover:text-sky-600 dark:text-white dark:group-hover:text-sky-400 transition-colors">
+                      {article.title}
+                    </h2>
+                    <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                      {getExcerpt(article.content)}
+                    </p>
+                  </article>
+                </Link>
               );
             })}
           </div>
