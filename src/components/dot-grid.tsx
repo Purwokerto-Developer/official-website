@@ -133,9 +133,11 @@ const DotGrid: React.FC<DotGridProps> = ({
     if (!circlePath) return;
 
     let rafId: number;
+    let isVisible = true;
     const proxSq = proximity * proximity;
 
     const draw = () => {
+      if (!isVisible) return;
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
@@ -171,8 +173,41 @@ const DotGrid: React.FC<DotGridProps> = ({
       rafId = requestAnimationFrame(draw);
     };
 
+    // Only animate when the component is visible in viewport
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) {
+          rafId = requestAnimationFrame(draw);
+        } else {
+          cancelAnimationFrame(rafId);
+        }
+      },
+      { threshold: 0 },
+    );
+
+    if (wrapperRef.current) observer.observe(wrapperRef.current);
+
+    // Also pause when tab is hidden
+    const onVisChange = () => {
+      if (document.hidden) {
+        isVisible = false;
+        cancelAnimationFrame(rafId);
+      } else if (wrapperRef.current) {
+        // Re-check intersection when tab becomes visible again
+        const rect = wrapperRef.current.getBoundingClientRect();
+        isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+        if (isVisible) rafId = requestAnimationFrame(draw);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisChange);
+
     draw();
-    return () => cancelAnimationFrame(rafId);
+    return () => {
+      cancelAnimationFrame(rafId);
+      observer.disconnect();
+      document.removeEventListener('visibilitychange', onVisChange);
+    };
   }, [proximity, baseColor, activeRgb, baseRgb, circlePath]);
 
   useEffect(() => {

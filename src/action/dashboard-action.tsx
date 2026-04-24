@@ -3,24 +3,29 @@ import { DashboardState } from '@/types/dashboard-state-type';
 import { db } from '@/db';
 import { events } from '@/db/schema/event-schema';
 import { articles } from '@/db/schema/articles-schema';
-import { eq, lt, gt } from 'drizzle-orm';
+import { eq, lt, gt, count } from 'drizzle-orm';
 import { getServerSession } from '@/lib/better-auth/get-session';
 
 export async function getDashboardStates(): Promise<DashboardState[]> {
   const session = await getServerSession();
   const userId = session?.user?.id;
 
-  // Total event
-  const totalEvents = await db.select().from(events);
-  // Upcoming event (start_time > hari ini)
-  const upcomingEvents = await db.select().from(events).where(gt(events.start_time, new Date()));
-  // Past event (start_time < hari ini)
-  const pastEvents = await db.select().from(events).where(lt(events.start_time, new Date()));
-  // Artikel user
-  let myArticles = [];
-  if (userId) {
-    myArticles = await db.select().from(articles).where(eq(articles.author_id, userId));
-  }
+  const now = new Date();
+
+  // Run all COUNT queries in parallel — much faster than SELECT *
+  const [totalResult, upcomingResult, pastResult, articlesResult] = await Promise.all([
+    db.select({ count: count() }).from(events),
+    db.select({ count: count() }).from(events).where(gt(events.start_time, now)),
+    db.select({ count: count() }).from(events).where(lt(events.start_time, now)),
+    userId
+      ? db.select({ count: count() }).from(articles).where(eq(articles.author_id, userId))
+      : Promise.resolve([{ count: 0 }]),
+  ]);
+
+  const totalCount = totalResult[0]?.count ?? 0;
+  const upcomingCount = upcomingResult[0]?.count ?? 0;
+  const pastCount = pastResult[0]?.count ?? 0;
+  const articlesCount = articlesResult[0]?.count ?? 0;
 
   return [
     {
@@ -28,29 +33,29 @@ export async function getDashboardStates(): Promise<DashboardState[]> {
       description: 'Jumlah seluruh event yang terdaftar.',
       // use a string key for the icon to keep the returned data plain
       icon: 'MoneySend',
-      count: totalEvents.length,
+      count: totalCount,
       status: 'Aktif',
     },
     {
       title: 'Upcoming',
       description: 'Event yang akan datang dalam bulan ini.',
       icon: 'Calendar',
-      count: upcomingEvents.length,
-      status: upcomingEvents.length > 0 ? 'Ada Event' : 'Tidak Ada',
+      count: upcomingCount,
+      status: upcomingCount > 0 ? 'Ada Event' : 'Tidak Ada',
     },
     {
       title: 'My Articles',
       description: 'Artikel yang telah kamu publikasikan.',
       icon: 'DocumentText',
-      count: myArticles.length,
-      status: myArticles.length > 0 ? 'Aktif' : 'Belum Ada',
+      count: articlesCount,
+      status: articlesCount > 0 ? 'Aktif' : 'Belum Ada',
     },
     {
       title: 'Past Events',
       description: 'Event yang sudah selesai.',
       icon: 'Archive',
-      count: pastEvents.length,
-      status: pastEvents.length > 0 ? 'Sudah Selesai' : 'Belum Ada',
+      count: pastCount,
+      status: pastCount > 0 ? 'Sudah Selesai' : 'Belum Ada',
     },
   ];
 }

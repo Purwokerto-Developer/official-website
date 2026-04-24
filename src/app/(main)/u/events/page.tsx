@@ -18,9 +18,10 @@ const EventPage = async ({ searchParams }: EventPageProps) => {
   const pageSize = parseInt(params?.pageSize ?? '') || 5;
   const search = params?.search ?? '';
   const result = await getEvent(page, pageSize, search);
-  const events = result.success ? (result.data ?? []) : [];
+  const events = result.success ? (result.data?.events ?? []) : [];
+  const totalCount = result.success ? (result.data?.totalCount ?? 0) : 0;
 
-  return <EventContent events={events} page={page} pageSize={pageSize} />;
+  return <EventContent events={events} page={page} pageSize={pageSize} totalCount={totalCount} />;
 };
 
 export default EventPage;

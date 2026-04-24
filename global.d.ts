@@ -1,5 +1,5 @@
 import { MeshLineGeometry, MeshLineMaterial } from 'meshline';
-import { extend, Object3DNode, MaterialNode } from '@react-three/fiber';
+import { Object3DNode, MaterialNode } from '@react-three/fiber';
 
 declare module '@react-three/fiber' {
   interface ThreeElements {
@@ -7,5 +7,3 @@ declare module '@react-three/fiber' {
     meshLineMaterial: MaterialNode<MeshLineMaterial, typeof MeshLineMaterial>;
   }
 }
-
-extend({ MeshLineGeometry, MeshLineMaterial });

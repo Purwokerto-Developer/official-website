@@ -10,7 +10,6 @@ import {
 import EmptyState from '@/components/ui/empty-state';
 import { Input } from '@/components/ui/input';
 import type { EventListItem } from '@/types/event-type';
-import { motion } from 'framer-motion';
 import { ArrowDown2, ArrowUp2, SearchNormal, Sort } from 'iconsax-reactjs';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -21,9 +20,10 @@ interface EventContentProps {
   events: EventListItem[];
   page: number;
   pageSize: number;
+  totalCount: number;
 }
 
-export default function EventContent({ events = [], page, pageSize }: EventContentProps) {
+export default function EventContent({ events = [], page, pageSize, totalCount }: EventContentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -216,22 +216,19 @@ export default function EventContent({ events = [], page, pageSize }: EventConte
       ) : (
         <>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredEvents.map((event) => (
-              <motion.div
+            {filteredEvents.map((event, idx) => (
+              <div
                 key={event.id}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.28, ease: 'easeOut' }}
-                whileHover={{ y: -6 }}
+                className="animate-in fade-in slide-in-from-bottom-1 transition-transform duration-200 hover:-translate-y-1.5"
+                style={{ animationDelay: `${idx * 50}ms`, animationFillMode: 'both' }}
               >
-                {/* EventList is assumed to be a card. If not, it will render inside this motion wrapper */}
                 <EventList item={event} />
-              </motion.div>
+              </div>
             ))}
           </div>
 
           {/* Pagination */}
-          {filteredEvents.length > pageSize && (
+          {totalCount > pageSize && (
             <div className="mt-8 flex items-center justify-center gap-4">
               <Link
                 href={`?page=${Math.max(1, page - 1)}&pageSize=${pageSize}`}
@@ -242,13 +239,13 @@ export default function EventContent({ events = [], page, pageSize }: EventConte
               >
                 Previous
               </Link>
-              <span className="text-sm text-neutral-600">Page {page}</span>
+              <span className="text-sm text-neutral-600">Page {page} of {Math.ceil(totalCount / pageSize)}</span>
               <Link
                 href={`?page=${page + 1}&pageSize=${pageSize}`}
                 className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition ${
-                  events.length < pageSize ? 'pointer-events-none opacity-50' : 'hover:bg-sky-50'
+                  page * pageSize >= totalCount ? 'pointer-events-none opacity-50' : 'hover:bg-sky-50'
                 }`}
-                aria-disabled={events.length < pageSize}
+                aria-disabled={page * pageSize >= totalCount}
               >
                 Next
               </Link>

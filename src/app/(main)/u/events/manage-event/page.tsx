@@ -21,7 +21,7 @@ const ManageEventPage = async ({ searchParams }: ManageEventPageProps) => {
   const search = params?.search ?? '';
 
   const result = await getEvent(page, pageSize, search);
-  const events = result.success ? (result.data ?? []) : [];
+  const events = result.success ? (result.data?.events ?? []) : [];
   return <ManageEventContent events={events} page={page} pageSize={pageSize} />;
 };
 

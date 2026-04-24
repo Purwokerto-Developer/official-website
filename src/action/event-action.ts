@@ -7,7 +7,7 @@ import { event_categories } from '@/db/schema/event_categories-schema';
 import { user } from '../../auth-schema';
 import { categoryInsertSchema } from '@/lib/zod';
 import { eventInsertSchema, EventType } from '@/db/zod/events';
-import { asc, eq, ilike, or, and, getTableColumns, type InferSelectModel } from 'drizzle-orm';
+import { asc, eq, ilike, or, and, count, getTableColumns, type InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
 import ImageKit from 'imagekit';
 import { deslugify, slugify } from '@/lib/utils';
@@ -25,11 +25,17 @@ export type EventParticipantRow = {
   joined_at: Date | null;
   attendance_time: Date | null;
 };
-const imagekit = new ImageKit({
-  publicKey: process.env.IMAGEKIT_PUBLIC_KEY!,
-  privateKey: process.env.IMAGEKIT_PRIVATE_KEY!,
-  urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT!,
-});
+let _imagekit: ImageKit | null = null;
+function getImageKit() {
+  if (!_imagekit) {
+    _imagekit = new ImageKit({
+      publicKey: process.env.IMAGEKIT_PUBLIC_KEY!,
+      privateKey: process.env.IMAGEKIT_PRIVATE_KEY!,
+      urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT!,
+    });
+  }
+  return _imagekit;
+}
 
 type EventWithRelations = InferSelectModel<typeof events> & {
   category_name: string | null;
@@ -56,35 +62,42 @@ export async function getEvent(
   page = 1,
   pageSize = 5,
   search = '',
-): Promise<QueryResult<EventWithRelations[]>> {
+): Promise<QueryResult<{ events: EventWithRelations[]; totalCount: number }>> {
   try {
-    const baseQuery = db
-      .select({
-        ...getTableColumns(events),
-        category_name: event_categories.name,
-        collaborator_name: user.name,
-      })
-      .from(events)
-      .leftJoin(event_categories, eq(events.category_id, event_categories.id))
-      .leftJoin(user, eq(events.collaborator_id, user.id));
-
-    const query = search
-      ? baseQuery.where(
-          or(
-            ilike(events.title, `%${search}%`),
-            ilike(event_categories.name, `%${search}%`),
-            ilike(user.name, `%${search}%`),
-          ),
+    const searchCondition = search
+      ? or(
+          ilike(events.title, `%${search}%`),
+          ilike(event_categories.name, `%${search}%`),
+          ilike(user.name, `%${search}%`),
         )
-      : baseQuery;
+      : undefined;
 
-    const result = await query
-      .limit(pageSize)
-      .offset((page - 1) * pageSize)
-      .orderBy(asc(events.created_at))
-      .execute();
+    // Run data + count queries in parallel
+    const [result, countResult] = await Promise.all([
+      db
+        .select({
+          ...getTableColumns(events),
+          category_name: event_categories.name,
+          collaborator_name: user.name,
+        })
+        .from(events)
+        .leftJoin(event_categories, eq(events.category_id, event_categories.id))
+        .leftJoin(user, eq(events.collaborator_id, user.id))
+        .where(searchCondition)
+        .limit(pageSize)
+        .offset((page - 1) * pageSize)
+        .orderBy(asc(events.created_at))
+        .execute(),
+      db
+        .select({ count: count() })
+        .from(events)
+        .leftJoin(event_categories, eq(events.category_id, event_categories.id))
+        .leftJoin(user, eq(events.collaborator_id, user.id))
+        .where(searchCondition)
+        .execute(),
+    ]);
 
-    return success(result);
+    return success({ events: result, totalCount: countResult[0]?.count ?? 0 });
   } catch (error) {
     console.error('❌ Get events failed:', error);
     return fail(error instanceof Error ? error.message : 'Failed to fetch events');
@@ -172,7 +185,7 @@ export async function createEventWithImage(
     }
 
     const buffer = Buffer.from(await image.arrayBuffer());
-    const upload = await imagekit.upload({
+    const upload = await getImageKit().upload({
       file: buffer,
       fileName: image.name || 'event-image',
       folder: '/events',
@@ -263,7 +276,7 @@ export async function deleteEvent(
     const row = rows && rows.length > 0 ? rows[0] : null;
     if (row && (row as any).image_file_id) {
       try {
-        await imagekit.deleteFile((row as any).image_file_id);
+        await getImageKit().deleteFile((row as any).image_file_id);
       } catch (err) {
         // Log but don't block deletion if external delete fails
         console.error('⚠️ Failed to delete image from ImageKit:', err);
@@ -306,7 +319,7 @@ export async function updateEventWithImage(
       }
 
       const buffer = Buffer.from(await image.arrayBuffer());
-      const uploadResponse = await imagekit.upload({
+      const uploadResponse = await getImageKit().upload({
         file: buffer,
         fileName: image.name || 'event-image',
         folder: '/events',
