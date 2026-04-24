@@ -43,7 +43,7 @@ const EventsSection = ({ events }: { events: EventItem[] }) => {
             </h2>
           </div>
           <Link
-            href="/u/events"
+            href="/events"
             className="group flex w-fit items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-sky-500 dark:text-slate-400"
           >
             Lihat semua event
